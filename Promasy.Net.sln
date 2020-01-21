@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Net.Web.App", "Promasy.Net.Web.App\Promasy.Net.Web.App.csproj", "{62458C54-2B67-47B1-88B3-646321317E21}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Domain", "Promasy.Domain\Promasy.Domain.csproj", "{B9B392D1-F4B4-4EFD-A31D-D11C781F64C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Application", "Promasy.Application\Promasy.Application.csproj", "{7DC84B4D-D6D0-4D6E-8085-9D92F799D6FE}"
@@ -12,16 +10,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Persistence.Dao", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Infrastructure", "Promasy.Infrastructure\Promasy.Infrastructure.csproj", "{1D435518-CA05-4A5A-AB80-52382E62C6AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Web.App", "Promasy.Web.App\Promasy.Web.App.csproj", "{754004D4-85C7-4138-9709-AA90448E2DA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{62458C54-2B67-47B1-88B3-646321317E21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62458C54-2B67-47B1-88B3-646321317E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62458C54-2B67-47B1-88B3-646321317E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62458C54-2B67-47B1-88B3-646321317E21}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9B392D1-F4B4-4EFD-A31D-D11C781F64C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B9B392D1-F4B4-4EFD-A31D-D11C781F64C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9B392D1-F4B4-4EFD-A31D-D11C781F64C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -42,5 +38,9 @@ Global
 		{1D435518-CA05-4A5A-AB80-52382E62C6AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D435518-CA05-4A5A-AB80-52382E62C6AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D435518-CA05-4A5A-AB80-52382E62C6AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{754004D4-85C7-4138-9709-AA90448E2DA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{754004D4-85C7-4138-9709-AA90448E2DA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{754004D4-85C7-4138-9709-AA90448E2DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{754004D4-85C7-4138-9709-AA90448E2DA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
