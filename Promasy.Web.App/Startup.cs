@@ -47,10 +47,9 @@ namespace Promasy.Web.App
                 app.UseHttpsRedirection();
             }
 
+            app.UseRouting();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
-            app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
