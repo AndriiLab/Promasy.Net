@@ -1,9 +1,16 @@
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Promasy.Domain.Users;
+using Promasy.Persistence;
+using Promasy.Persistence.Context;
 using VueCliMiddleware;
 
 namespace Promasy.Web.App
@@ -21,6 +28,25 @@ namespace Promasy.Web.App
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddPersistence(Configuration.GetConnectionString("DatabaseConnection"));
+            
+            services.AddDefaultIdentity<Employee>()
+                .AddRoles<Role>()
+                .AddEntityFrameworkStores<PromasyContext>();
+            
+            services.AddIdentityServer()
+                .AddApiAuthorization<Employee, PromasyContext>();
+            
+            services.Configure<JwtBearerOptions>(
+                IdentityServerJwtConstants.IdentityServerJwtBearerScheme, 
+                options =>
+                {
+                    options.Authority = "{AUTHORITY}";
+                });
+            
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
 
             // Add AddRazorPages if the app uses Razor Pages.
             services.AddRazorPages();
@@ -46,10 +72,14 @@ namespace Promasy.Web.App
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
+            
 
             app.UseRouting();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            
+            app.UseAuthentication();
+            app.UseIdentityServer();
 
             app.UseEndpoints(endpoints =>
             {
@@ -74,6 +104,8 @@ namespace Promasy.Web.App
             {
                 spa.Options.SourcePath = "ClientApp";
             });
+            
+            app.PreparePersistence();
         }
     }
 }

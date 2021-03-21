@@ -1,21 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Promasy.Persistence.Dao.Bids;
-using Promasy.Persistence.Dao.Finances;
-using Promasy.Persistence.Dao.Institutes;
-using Promasy.Persistence.Dao.Internals;
-using Promasy.Persistence.Dao.Producers;
-using Promasy.Persistence.Dao.Suppliers;
-using Promasy.Persistence.Dao.Users;
-using Promasy.Persistence.Dao.Vocabulary;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using IdentityServer4.EntityFramework.Entities;
+using IdentityServer4.EntityFramework.Interfaces;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Promasy.Common.Persistence;
+using Promasy.Domain.Bids;
+using Promasy.Domain.Finances;
+using Promasy.Domain.Institutes;
+using Promasy.Domain.Producers;
+using Promasy.Domain.Suppliers;
+using Promasy.Domain.Users;
+using Promasy.Domain.Vocabulary;
 
 namespace Promasy.Persistence.Context
 {
-    public class PromasyContext : DbContext
+    public class PromasyContext : IdentityDbContext<Employee, Role, int>, IPersistedGrantDbContext
     {
-        public PromasyContext()
-        {
-        }
-
         public PromasyContext(DbContextOptions<PromasyContext> options) : base(options)
         {
         }
@@ -32,14 +35,77 @@ namespace Promasy.Persistence.Context
         public DbSet<Institute> Institutes { get; set; }
         public DbSet<Producer> Producers { get; set; }
         public DbSet<ReasonForSupplier> ReasonForSuppliers { get; set; }
-        public DbSet<RegistrationsLeft> Registrations { get; set; }
-        public DbSet<Subdepartment> Subdepartments { get; set; }
+        public DbSet<SubDepartment> SubDepartments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<Version> Versions { get; set; }
+
+        
+        public DbSet<PersistedGrant> PersistedGrants { get; set; }
+        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasSequence("hilo_seqeunce");
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PromasyContext).Assembly);
+            modelBuilder.UseIdentityAlwaysColumns();
+            modelBuilder.HasDefaultSchema("PromasyCore");
+        }
+        
+        public override int SaveChanges()
+        {
+            UpdateEntities();
+            return base.SaveChanges();
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            UpdateEntities();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            UpdateEntities();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+                                                   CancellationToken cancellationToken = new CancellationToken())
+        {
+            UpdateEntities();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+        
+        public Task<int> SaveChangesAsync()
+        {
+            return SaveChangesAsync(new CancellationToken());
+        }
+
+        private void UpdateEntities()
+        {
+            foreach (var e in ChangeTracker.Entries().Where(e => e.Entity is IEntity))
+            {
+                var entity = (IEntity)e.Entity;
+                switch (e.State)
+                {
+                    case EntityState.Added:
+                        entity.CreatedDate = DateTime.UtcNow;
+                        //todo: entry.CreatedBy = ;
+                        break;
+                    case EntityState.Modified:
+                        entity.ModifiedDate = DateTime.UtcNow;
+                        //todo: entity.ModifiedBy = ;
+                        break;
+                    case EntityState.Deleted:
+                        e.State = EntityState.Modified;
+                        entity.ModifiedDate = DateTime.UtcNow;
+                        //todo: entity.ModifiedBy = ;
+                        break;
+                    case EntityState.Detached:
+                    case EntityState.Unchanged:
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
