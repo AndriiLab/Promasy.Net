@@ -156,11 +156,10 @@ namespace Promasy.Persistence.Migrations
                     CatNum = table.Column<string>("character varying(300)", maxLength: 300,
                         nullable: true),
                     OnePrice = table.Column<decimal>("numeric", nullable: false),
-                    Type = table.Column<string>("character varying(300)", maxLength: 300,
-                        nullable: true),
+                    Type = table.Column<int>("integer", nullable: false),
                     Kekv = table.Column<int>("integer", nullable: true),
                     ProcurementStartDate =
-                        table.Column<DateTime>("timestamp without time zone", nullable: false),
+                        table.Column<DateTime>("timestamp without time zone", nullable: true),
                     AmountUnitId = table.Column<int>("integer", nullable: false),
                     CpvCode = table.Column<string>("character varying(300)", nullable: true),
                     FinanceDepartmentId = table.Column<int>("integer", nullable: false),
@@ -195,8 +194,7 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>("integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy",
                             NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    Status = table.Column<string>("character varying(300)", maxLength: 300,
-                        nullable: false),
+                    Status = table.Column<int>("integer", nullable: false),
                     BidId = table.Column<int>("integer", nullable: false),
                     CreatedDate =
                         table.Column<DateTime>("timestamp without time zone", nullable: false),
@@ -453,21 +451,11 @@ namespace Promasy.Persistence.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>("integer", nullable: false),
-                    RoleId = table.Column<int>("integer", nullable: false),
-                    Discriminator = table.Column<string>("text", nullable: false),
-                    EmployeeId = table.Column<int>("integer", nullable: true),
-                    RoleId1 = table.Column<int>("integer", nullable: true)
+                    RoleId = table.Column<int>("integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        "FK_AspNetUserRoles_Employees_EmployeeId",
-                        x => x.EmployeeId,
-                        principalSchema: "PromasyCore",
-                        principalTable: "Employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         "FK_AspNetUserRoles_Employees_UserId",
                         x => x.UserId,
@@ -482,13 +470,6 @@ namespace Promasy.Persistence.Migrations
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        "FK_AspNetUserRoles_Roles_RoleId1",
-                        x => x.RoleId1,
-                        principalSchema: "PromasyCore",
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -571,8 +552,7 @@ namespace Promasy.Persistence.Migrations
                         nullable: false),
                     Number = table.Column<string>("character varying(300)", maxLength: 300,
                         nullable: false),
-                    FundType = table.Column<string>("character varying(300)", maxLength: 300,
-                        nullable: false),
+                    FundType = table.Column<int>("integer", nullable: false),
                     Kpkvk = table.Column<string>("character varying(10)", maxLength: 10,
                         nullable: false),
                     StartsOn =
@@ -820,22 +800,10 @@ namespace Promasy.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                "IX_AspNetUserRoles_EmployeeId",
-                schema: "PromasyCore",
-                table: "AspNetUserRoles",
-                column: "EmployeeId");
-
-            migrationBuilder.CreateIndex(
                 "IX_AspNetUserRoles_RoleId",
                 schema: "PromasyCore",
                 table: "AspNetUserRoles",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                "IX_AspNetUserRoles_RoleId1",
-                schema: "PromasyCore",
-                table: "AspNetUserRoles",
-                column: "RoleId1");
 
             migrationBuilder.CreateIndex(
                 "IX_Bids_AmountUnitId",

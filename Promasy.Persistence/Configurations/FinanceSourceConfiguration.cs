@@ -14,9 +14,6 @@ namespace Promasy.Persistence.Configurations
             builder.Property(b => b.Number)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired();
-            builder.Property(b => b.FundType)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired();
             builder.Property(b => b.Kpkvk)
                 .HasMaxLength(10)
                 .IsRequired();

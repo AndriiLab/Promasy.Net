@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
-using Promasy.Common.Persistence;
 
 namespace Promasy.Domain.Users
 {
     public class Role : IdentityRole<int>
     {
-        public ICollection<EmployeeRole> Employees { get; set; } = new List<EmployeeRole>();
-
         private Role()
         {
         }

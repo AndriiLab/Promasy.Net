@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Promasy.Common.Persistence;
 
 namespace Promasy.Domain.Finances
 {
@@ -8,7 +7,7 @@ namespace Promasy.Domain.Finances
     {
         public string Name { get; set; }
         public string Number { get; set; }
-        public string FundType { get; set; }
+        public FinanceFundType FundType { get; set; }
         public string Kpkvk { get; set; }
 
         public DateTime StartsOn { get; set; }

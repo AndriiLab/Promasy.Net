@@ -1,12 +1,12 @@
-﻿using Promasy.Common.Persistence;
-
 namespace Promasy.Domain.Bids
 {
-    public class BidStatus : Entity
+    public enum BidStatus
     {
-        public string Status { get; set; }
-
-        public int BidId { get; set; }
-        public Bid Bid { get; set; }
+        Created = 1,
+        Submitted = 2,
+        PostedToAuction = 3,
+        Received = 4,
+        NotReceived = 10,
+        Declined = 20
     }
 }

@@ -25,7 +25,7 @@ namespace Promasy.Persistence.Context
 
         public DbSet<Address> Addresses { get; set; }
         public DbSet<AmountUnit> AmountUnits { get; set; }
-        public DbSet<BidStatus> BidStatuses { get; set; }
+        public DbSet<BidStatusHistory> BidStatuses { get; set; }
         public DbSet<Bid> Bids { get; set; }
         public DbSet<Cpv> Cpvs { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -38,9 +38,14 @@ namespace Promasy.Persistence.Context
         public DbSet<SubDepartment> SubDepartments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
 
-        
+
         public DbSet<PersistedGrant> PersistedGrants { get; set; }
         public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
+
+        public Task<int> SaveChangesAsync()
+        {
+            return SaveChangesAsync(new CancellationToken());
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,7 +54,7 @@ namespace Promasy.Persistence.Context
             modelBuilder.UseIdentityAlwaysColumns();
             modelBuilder.HasDefaultSchema("PromasyCore");
         }
-        
+
         public override int SaveChanges()
         {
             UpdateEntities();
@@ -62,29 +67,24 @@ namespace Promasy.Persistence.Context
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             UpdateEntities();
             return base.SaveChangesAsync(cancellationToken);
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
-                                                   CancellationToken cancellationToken = new CancellationToken())
+                                                   CancellationToken cancellationToken = new())
         {
             UpdateEntities();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-        
-        public Task<int> SaveChangesAsync()
-        {
-            return SaveChangesAsync(new CancellationToken());
         }
 
         private void UpdateEntities()
         {
             foreach (var e in ChangeTracker.Entries().Where(e => e.Entity is IEntity))
             {
-                var entity = (IEntity)e.Entity;
+                var entity = (IEntity) e.Entity;
                 switch (e.State)
                 {
                     case EntityState.Added:

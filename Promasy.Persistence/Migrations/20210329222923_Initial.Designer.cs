@@ -10,7 +10,7 @@ using Promasy.Persistence.Context;
 namespace Promasy.Persistence.Migrations
 {
     [DbContext(typeof(PromasyContext))]
-    [Migration("20210322235735_Initial")]
+    [Migration("20210329222923_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,17 +178,11 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserRole<int>");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -295,7 +289,7 @@ namespace Promasy.Persistence.Migrations
                     b.Property<decimal>("OnePrice")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime>("ProcurementStartDate")
+                    b.Property<DateTime?>("ProcurementStartDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("ProducerId")
@@ -307,9 +301,8 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -332,7 +325,7 @@ namespace Promasy.Persistence.Migrations
                     b.ToTable("Bids");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Bids.BidStatus", b =>
+            modelBuilder.Entity("Promasy.Domain.Bids.BidStatusHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -357,10 +350,8 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int?>("ModifierId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -478,10 +469,8 @@ namespace Promasy.Persistence.Migrations
                     b.Property<DateTime>("DueTo")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("FundType")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                    b.Property<int>("FundType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Kpkvk")
                         .IsRequired()
@@ -987,23 +976,6 @@ namespace Promasy.Persistence.Migrations
                     b.ToTable("Cpvs");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Users.EmployeeRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUserRole<int>");
-
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("RoleId1")
-                        .HasColumnType("integer");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("RoleId1");
-
-                    b.HasDiscriminator().HasValue("EmployeeRole");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Promasy.Domain.Users.Role", null)
@@ -1129,10 +1101,10 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Bids.BidStatus", b =>
+            modelBuilder.Entity("Promasy.Domain.Bids.BidStatusHistory", b =>
                 {
                     b.HasOne("Promasy.Domain.Bids.Bid", "Bid")
-                        .WithMany("BidStatuses")
+                        .WithMany("Statuses")
                         .HasForeignKey("BidId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1354,20 +1326,9 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("SubDepartment");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Users.EmployeeRole", b =>
-                {
-                    b.HasOne("Promasy.Domain.Users.Employee", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("EmployeeId");
-
-                    b.HasOne("Promasy.Domain.Users.Role", null)
-                        .WithMany("Employees")
-                        .HasForeignKey("RoleId1");
-                });
-
             modelBuilder.Entity("Promasy.Domain.Bids.Bid", b =>
                 {
-                    b.Navigation("BidStatuses");
+                    b.Navigation("Statuses");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Finances.FinanceDepartment", b =>
@@ -1395,16 +1356,6 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("Employees");
 
                     b.Navigation("FinanceDepartments");
-                });
-
-            modelBuilder.Entity("Promasy.Domain.Users.Employee", b =>
-                {
-                    b.Navigation("Roles");
-                });
-
-            modelBuilder.Entity("Promasy.Domain.Users.Role", b =>
-                {
-                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }
