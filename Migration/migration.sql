@@ -2,13 +2,13 @@
 ALTER TABLE "PromasyCore"."Addresses"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."AmountUnits"
+ALTER TABLE "PromasyCore"."Units"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."Bids"
+ALTER TABLE "PromasyCore"."Orders"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."BidStatuses"
+ALTER TABLE "PromasyCore"."OrderStatuses"
     ADD COLUMN OldId INT;
 
 ALTER TABLE "PromasyCore"."Departments"
@@ -23,13 +23,13 @@ ALTER TABLE "PromasyCore"."FinanceDepartments"
 ALTER TABLE "PromasyCore"."FinanceSources"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."Institutes"
+ALTER TABLE "PromasyCore"."Organizations"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."Producers"
+ALTER TABLE "PromasyCore"."Manufacturers"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."ReasonForSuppliers"
+ALTER TABLE "PromasyCore"."ReasonForSupplierChoice"
     ADD COLUMN OldId INT;
 
 ALTER TABLE "PromasyCore"."SubDepartments"
@@ -40,13 +40,21 @@ ALTER TABLE "PromasyCore"."Suppliers"
 
 -- MIGRATION
 
-INSERT INTO "PromasyCore"."Cpvs" ("CpvCode", "CpvEng", "CpvUkr", "CpvLevel", "Terminal")
+INSERT INTO "PromasyCore"."Cpvs" ("Code", "DescriptionEnglish", "DescriptionUkrainian", "Level", "IsTerminal")
 SELECT cpv_code, cpv_eng, cpv_ukr, cpv_level, terminal
 FROM promasy.cpv;
 
+UPDATE "PromasyCore"."Cpvs"
+SET "ParentId" = SQ.ParentId
+FROM (SELECT C."Id" AS Id,
+       (SELECT CP."Id" FROM "PromasyCore"."Cpvs" CP WHERE CP."Level" = C."Level" - 1 AND CP."Code" LIKE concat(substr(C."Code", 1, C."Level"), '0%')) AS ParentId
+FROM "PromasyCore"."Cpvs" C
+WHERE C."Level" > 1) AS SQ
+WHERE "Level" > 1 AND "Id" = SQ.Id AND SQ.ParentId IS NOT NULL;
+
 INSERT INTO "PromasyCore"."Addresses" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "BuildingNumber", "City",
                                        "CityType", "CorpusNumber", "Country", "PostalCode", "Region", "Street",
-                                       "StreetType")
+                                       "StreetType", "CreatorId")
 SELECT created_date,
        modified_date,
        active = FALSE,
@@ -59,11 +67,12 @@ SELECT created_date,
        postal_code,
        region,
        street,
-       streettype
+       streettype,
+       0
 FROM promasy.addresses;
 
-INSERT INTO "PromasyCore"."Institutes" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "Email", "Edrpou",
-                                        "FaxNumber", "PhoneNumber", "AddressId")
+INSERT INTO "PromasyCore"."Organizations" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "Email", "Edrpou",
+                                        "FaxNumber", "PhoneNumber", "AddressId", "CreatorId")
 SELECT I.created_date,
        I.modified_date,
        I.active = FALSE,
@@ -73,25 +82,24 @@ SELECT I.created_date,
        I.edrpou,
        I.fax_number,
        I.phone_number,
-       AD."Id"
+       AD."Id",
+       0
 FROM promasy.institutes I
          JOIN "PromasyCore"."Addresses" AD ON AD.OldId = address_id;
 
-INSERT INTO "PromasyCore"."Departments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "InstituteId")
-SELECT D.created_date, D.modified_date, D.active = FALSE, D.id, D.dep_name, I."Id"
+INSERT INTO "PromasyCore"."Departments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "OrganizationId", "CreatorId")
+SELECT D.created_date, D.modified_date, D.active = FALSE, D.id, D.dep_name, I."Id", 0
 FROM promasy.departments D
-         JOIN "PromasyCore"."Institutes" I ON I.OldId = D.inst_id;
+         JOIN "PromasyCore"."Organizations" I ON I.OldId = D.inst_id;
 
-INSERT INTO "PromasyCore"."SubDepartments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "DepartmentId")
-SELECT S.created_date, S.modified_date, S.active = FALSE, S.id, S.subdep_name, D."Id"
+INSERT INTO "PromasyCore"."SubDepartments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "DepartmentId", "CreatorId")
+SELECT S.created_date, S.modified_date, S.active = FALSE, S.id, S.subdep_name, D."Id", 0
 FROM promasy.subdepartments S
          JOIN "PromasyCore"."Departments" D ON D.OldId = S.dep_id;
 
 INSERT INTO "PromasyCore"."Employees" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "FirstName", "MiddleName",
-                                       "LastName", "PhoneNumber", "PhoneReserve", "SubDepartmentId", "UserName",
-                                       "NormalizedUserName", "Email", "NormalizedEmail", "LockoutEnabled",
-                                       "PhoneNumberConfirmed", "AccessFailedCount", "EmailConfirmed",
-                                       "TwoFactorEnabled")
+                                       "LastName", "PrimaryPhone", "ReservePhone", "SubDepartmentId", "UserName",
+                                       "Email", "CreatorId", "Password", "Salt")
 SELECT E.created_date,
        E.modified_date,
        E.active = FALSE,
@@ -103,14 +111,10 @@ SELECT E.created_date,
        TRANSLATE(TRIM(E.phone_reserve), '- ()', ''),
        SUB."Id",
        E.login,
-       UPPER(E.login),
        TRIM(E.email),
-       UPPER(TRIM(E.email)),
-       FALSE,
-       FALSE,
        0,
-       FALSE,
-       FALSE
+       E.password,
+       E.salt
 FROM promasy.employees E
          JOIN "PromasyCore"."SubDepartments" SUB ON SUB.OldId = E.subdep_id;
 
@@ -120,10 +124,10 @@ WHERE "CreatedDate" IS NOT NULL;
 UPDATE "PromasyCore"."Addresses"
 SET "ModifierId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "ModifiedDate" IS NOT NULL;
-UPDATE "PromasyCore"."Institutes"
+UPDATE "PromasyCore"."Organizations"
 SET "CreatorId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "CreatedDate" IS NOT NULL;
-UPDATE "PromasyCore"."Institutes"
+UPDATE "PromasyCore"."Organizations"
 SET "ModifierId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "ModifiedDate" IS NOT NULL;
 UPDATE "PromasyCore"."Departments"
@@ -177,7 +181,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO "PromasyCore"."AspNetUserRoles"("UserId", "RoleId")
+INSERT INTO "PromasyCore"."EmployeeRoles"("EmployeesId", "RolesId")
 SELECT EN."Id", FN_RoleConverter(EO.role)
 FROM "PromasyCore"."Employees" EN
          JOIN promasy.employees EO ON EO.id = EN.OldId;
@@ -195,14 +199,14 @@ FROM promasy.employees EO
 WHERE EO.id = EN.OldId
   AND EO.modified_by IS NOT NULL;
 
-INSERT INTO "PromasyCore"."AmountUnits"("Description", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
+INSERT INTO "PromasyCore"."Units"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
                                         "ModifierId", oldid)
 SELECT TRIM(A.amount_unit_desc), A.created_date, A.modified_date, A.active = FALSE, CR."Id", ED."Id", A.id
 FROM promasy.amount_units A
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = A.created_by
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = A.modified_by AND A.modified_by IS NOT NULL;
 
-INSERT INTO "PromasyCore"."Producers"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
+INSERT INTO "PromasyCore"."Manufacturers"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
                                       OldId)
 SELECT TRIM(P.brand_name), P.created_date, P.modified_date, P.active = FALSE, CR."Id", ED."Id", P.id
 FROM promasy.producers P
@@ -224,7 +228,7 @@ FROM promasy.suppliers S
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = S.created_by
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = S.modified_by AND S.modified_by IS NOT NULL;
 
-INSERT INTO "PromasyCore"."ReasonForSuppliers"("Description", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
+INSERT INTO "PromasyCore"."ReasonForSupplierChoice"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
                                                "ModifierId", oldid)
 SELECT TRIM(R.reason_name), R.created_date, R.modified_date, R.active = FALSE, CR."Id", ED."Id", R.id
 FROM promasy.reasons_for_suppl R
@@ -305,8 +309,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO "PromasyCore"."Bids"("Amount", "Description", "CatNum", "OnePrice", "Type", "Kekv", "ProcurementStartDate",
-                                 "AmountUnitId", "CpvCode", "FinanceDepartmentId", "ProducerId", "ReasonId",
+INSERT INTO "PromasyCore"."Orders"("Amount", "Description", "CatNum", "OnePrice", "Type", "Kekv", "ProcurementStartDate",
+                                 "UnitId", "CpvId", "FinanceDepartmentId", "ManufacturerId", "ReasonId",
                                  "SupplierId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
                                  oldid)
 SELECT B.amount,
@@ -317,7 +321,7 @@ SELECT B.amount,
        B.kekv,
        B.proc_start_date,
        AU."Id",
-       B.cpv_code,
+       (SELECT Id FROM "PromasyCore"."Cpvs" WHERE "Code" = B.cpv_code),
        FD."Id",
        COALESCE(PR."Id", 1),
        COALESCE(RS."Id", 1),
@@ -329,10 +333,10 @@ SELECT B.amount,
        ED."Id",
        B.id
 FROM promasy.bids B
-         JOIN "PromasyCore"."AmountUnits" AU on AU.OldId = B.am_unit_id
+         JOIN "PromasyCore"."Units" AU on AU.OldId = B.am_unit_id
          JOIN "PromasyCore"."FinanceDepartments" FD on FD.OldId = B.finance_dep_id
-         LEFT JOIN "PromasyCore"."Producers" PR on PR.OldId = B.producer_id
-         LEFT JOIN "PromasyCore"."ReasonForSuppliers" RS on RS.OldId = B.reason_id
+         LEFT JOIN "PromasyCore"."Manufacturers" PR on PR.OldId = B.producer_id
+         LEFT JOIN "PromasyCore"."ReasonForSupplierChoice" RS on RS.OldId = B.reason_id
          LEFT JOIN "PromasyCore"."Suppliers" SUP on SUP.OldId = B.supplier_id
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = B.created_by
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = B.modified_by AND B.modified_by IS NOT NULL;
@@ -360,7 +364,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO "PromasyCore"."BidStatuses" ("Status", "BidId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
+INSERT INTO "PromasyCore"."OrderStatuses" ("Status", "OrderId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
                                          "ModifierId", oldid)
 SELECT FN_BidStatusConverter(BS.status),
        B."Id",
@@ -371,7 +375,7 @@ SELECT FN_BidStatusConverter(BS.status),
        ED."Id",
        BS.id
 FROM promasy.bid_statuses BS
-         JOIN "PromasyCore"."Bids" B ON B.OldId = BS.bid_id
+         JOIN "PromasyCore"."Orders" B ON B.OldId = BS.bid_id
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = BS.created_by
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = BS.modified_by AND BS.modified_by IS NOT NULL;
 
@@ -381,13 +385,13 @@ FROM promasy.bid_statuses BS
 ALTER TABLE "PromasyCore"."Addresses"
     DROP COLUMN OldId;
 
-ALTER TABLE "PromasyCore"."AmountUnits"
+ALTER TABLE "PromasyCore"."Units"
     DROP COLUMN OldId;
 
-ALTER TABLE "PromasyCore"."Bids"
+ALTER TABLE "PromasyCore"."Orders"
     DROP COLUMN OldId;
 
-ALTER TABLE "PromasyCore"."BidStatuses"
+ALTER TABLE "PromasyCore"."OrderStatuses"
     DROP COLUMN OldId;
 
 ALTER TABLE "PromasyCore"."Departments"
@@ -402,10 +406,10 @@ ALTER TABLE "PromasyCore"."FinanceDepartments"
 ALTER TABLE "PromasyCore"."FinanceSources"
     DROP COLUMN OldId;
 
-ALTER TABLE "PromasyCore"."Institutes"
+ALTER TABLE "PromasyCore"."Organizations"
     DROP COLUMN OldId;
 
-ALTER TABLE "PromasyCore"."Producers"
+ALTER TABLE "PromasyCore"."Manufacturers"
     DROP COLUMN OldId;
 
 ALTER TABLE "PromasyCore"."SubDepartments"

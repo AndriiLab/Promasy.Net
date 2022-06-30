@@ -2,57 +2,50 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityServer4.EntityFramework.Entities;
-using IdentityServer4.EntityFramework.Interfaces;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Promasy.Common.Persistence;
-using Promasy.Domain.Bids;
+using Promasy.Core.Persistence;
+using Promasy.Core.UserContext;
+using Promasy.Domain.Employees;
 using Promasy.Domain.Finances;
-using Promasy.Domain.Institutes;
-using Promasy.Domain.Producers;
+using Promasy.Domain.Manufacturers;
+using Promasy.Domain.Orders;
+using Promasy.Domain.Organizations;
 using Promasy.Domain.Suppliers;
-using Promasy.Domain.Users;
 using Promasy.Domain.Vocabulary;
 
 namespace Promasy.Persistence.Context
 {
-    public class PromasyContext : IdentityDbContext<Employee, Role, int>, IPersistedGrantDbContext
+    public class PromasyContext : DbContext
     {
-        public PromasyContext(DbContextOptions<PromasyContext> options) : base(options)
+        private readonly IUserContext? _userContext;
+
+        public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext? userContext) : base(options)
         {
+            _userContext = userContext;
         }
 
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<AmountUnit> AmountUnits { get; set; }
-        public DbSet<BidStatusHistory> BidStatuses { get; set; }
-        public DbSet<Bid> Bids { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatuses { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Cpv> Cpvs { get; set; }
         public DbSet<Department> Departments { get; set; }
-        public DbSet<Employee> Employees { get; set; }
         public DbSet<FinanceDepartment> FinanceDepartments { get; set; }
         public DbSet<FinanceSource> FinanceSources { get; set; }
-        public DbSet<Institute> Institutes { get; set; }
-        public DbSet<Producer> Producers { get; set; }
-        public DbSet<ReasonForSupplier> ReasonForSuppliers { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<Manufacturer> Manufacturers { get; set; }
+        public DbSet<ReasonForSupplierChoice> ReasonForSupplierChoice { get; set; }
         public DbSet<SubDepartment> SubDepartments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
 
 
-        public DbSet<PersistedGrant> PersistedGrants { get; set; }
-        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
-
         public Task<int> SaveChangesAsync()
         {
             return SaveChangesAsync(new CancellationToken());
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PromasyContext).Assembly);
-            modelBuilder.UseIdentityAlwaysColumns();
-            modelBuilder.HasDefaultSchema("PromasyCore");
         }
 
         public override int SaveChanges()
@@ -79,6 +72,14 @@ namespace Promasy.Persistence.Context
             UpdateEntities();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PromasyContext).Assembly);
+            modelBuilder.UseIdentityAlwaysColumns();
+            modelBuilder.HasDefaultSchema("PromasyCore");
+        }
 
         private void UpdateEntities()
         {
@@ -89,16 +90,16 @@ namespace Promasy.Persistence.Context
                 {
                     case EntityState.Added:
                         entity.CreatedDate = DateTime.UtcNow;
-                        //todo: entry.CreatedBy = ;
+                        entity.CreatorId = _userContext?.Id ?? -1;
                         break;
                     case EntityState.Modified:
                         entity.ModifiedDate = DateTime.UtcNow;
-                        //todo: entity.ModifiedBy = ;
+                        entity.ModifierId = _userContext?.Id;
                         break;
                     case EntityState.Deleted:
                         e.State = EntityState.Modified;
                         entity.ModifiedDate = DateTime.UtcNow;
-                        //todo: entity.ModifiedBy = ;
+                        entity.ModifierId = _userContext?.Id;
                         break;
                     case EntityState.Detached:
                     case EntityState.Unchanged:

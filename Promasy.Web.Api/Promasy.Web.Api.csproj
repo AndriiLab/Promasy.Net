@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Promasy.Web.App</RootNamespace>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Promasy.Modules.Auth\Promasy.Modules.Auth.csproj" />
+    <ProjectReference Include="..\Modules\Promasy.Modules.Core\Promasy.Modules.Core.csproj" />
+    <ProjectReference Include="..\Modules\Promasy.Modules.Cpv\Promasy.Modules.Cpv.csproj" />
+    <ProjectReference Include="..\Modules\Promasy.Modules.Employees\Promasy.Modules.Employees.csproj" />
+    <ProjectReference Include="..\Modules\Promasy.Modules.Units\Promasy.Modules.Units.csproj" />
+    <ProjectReference Include="..\Promasy.Persistence\Promasy.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,8 +1,7 @@
-namespace Promasy.Domain.Finances
+namespace Promasy.Domain.Finances;
+
+public enum FinanceFundType
 {
-    public enum FinanceFundType
-    {
-        CommonFund = 1,
-        SpecialFund = 2
-    }
+    CommonFund = 1,
+    SpecialFund = 2
 }

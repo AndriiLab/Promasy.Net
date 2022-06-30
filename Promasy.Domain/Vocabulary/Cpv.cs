@@ -1,11 +1,14 @@
-﻿namespace Promasy.Domain.Vocabulary
+﻿namespace Promasy.Domain.Vocabulary;
+
+public class Cpv
 {
-    public class Cpv
-    {
-        public string CpvCode { get; set; }
-        public string CpvEng { get; set; }
-        public string CpvUkr { get; set; }
-        public int CpvLevel { get; set; }
-        public bool Terminal { get; set; }
-    }
+    public int Id { get; set; }
+    public string Code { get; set; }
+    public string DescriptionEnglish { get; set; }
+    public string DescriptionUkrainian { get; set; }
+    public int Level { get; set; }
+    public bool IsTerminal { get; set; }
+
+    public int? ParentId { get; set; }
+    public Cpv Parent { get; set; }
 }

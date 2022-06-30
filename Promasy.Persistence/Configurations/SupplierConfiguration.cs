@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Common.Persistence;
+using Promasy.Core.Persistence;
 using Promasy.Domain.Suppliers;
 
 namespace Promasy.Persistence.Configurations

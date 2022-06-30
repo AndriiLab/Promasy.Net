@@ -1,9 +1,9 @@
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Promasy.Domain.Users;
+using Promasy.Domain.Employees;
+using Promasy.Domain.Persistence;
 using Promasy.Persistence.Context;
 
 namespace Promasy.Persistence
@@ -12,8 +12,9 @@ namespace Promasy.Persistence
     {
         public static IServiceCollection AddPersistence(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<PromasyContext>(options =>
-                options.UseNpgsql(connectionString));
+            services.AddDbContext<PromasyContext>(o =>
+                o.UseNpgsql(connectionString));
+            services.AddScoped<IDatabase, PromasyDatabase>();
 
             return services;
         }
@@ -26,35 +27,34 @@ namespace Promasy.Persistence
             using var context = serviceScope.ServiceProvider.GetRequiredService<PromasyContext>();
             context.Database.Migrate();
 
-            using var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-
-            EnsureRolesCreated(context, roleManager);
+            EnsureRolesCreated(context);
+            context.SaveChanges();
 
             return app;
         }
 
-        private static void EnsureRolesCreated(PromasyContext context, RoleManager<Role> roleManager)
+        private static void EnsureRolesCreated(PromasyContext context)
         {
-            EnsureRole(RoleName.Administrator, context, roleManager);
-            EnsureRole(RoleName.Director, context, roleManager);
-            EnsureRole(RoleName.DeputyDirector, context, roleManager);
-            EnsureRole(RoleName.ChiefEconomist, context, roleManager);
-            EnsureRole(RoleName.ChiefAccountant, context, roleManager);
-            EnsureRole(RoleName.HeadOfTenderCommittee, context, roleManager);
-            EnsureRole(RoleName.SecretaryOfTenderCommittee, context, roleManager);
-            EnsureRole(RoleName.HeadOfDepartment, context, roleManager);
-            EnsureRole(RoleName.PersonallyLiableEmployee, context, roleManager);
-            EnsureRole(RoleName.User, context, roleManager);
+            EnsureRole(RoleName.Administrator, context);
+            EnsureRole(RoleName.Director, context);
+            EnsureRole(RoleName.DeputyDirector, context);
+            EnsureRole(RoleName.ChiefEconomist, context);
+            EnsureRole(RoleName.ChiefAccountant, context);
+            EnsureRole(RoleName.HeadOfTenderCommittee, context);
+            EnsureRole(RoleName.SecretaryOfTenderCommittee, context);
+            EnsureRole(RoleName.HeadOfDepartment, context);
+            EnsureRole(RoleName.PersonallyLiableEmployee, context);
+            EnsureRole(RoleName.User, context);
         }
 
-        private static void EnsureRole(string role, PromasyContext context, RoleManager<Role> roleManager)
+        private static void EnsureRole(string role, PromasyContext context)
         {
             if (context.Roles.Any(r => r.Name == role))
             {
                 return;
             }
 
-            roleManager.CreateAsync(new Role(role)).GetAwaiter().GetResult();
+            context.Roles.Add(new Role(role));
         }
     }
 }

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Common.Persistence;
+using Promasy.Core.Persistence;
 using Promasy.Domain.Vocabulary;
 
 namespace Promasy.Persistence.Configurations
@@ -9,19 +9,19 @@ namespace Promasy.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Cpv> builder)
         {
-            builder.Property(b => b.CpvCode)
+            builder.HasKey(b => b.Id);
+
+            builder.Property(b => b.Code)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired();
             
-            builder.Property(b => b.CpvEng)
+            builder.Property(b => b.DescriptionEnglish)
                 .HasMaxLength(PersistenceConstant.FieldLarge)
                 .IsRequired();
                 
-            builder.Property(b => b.CpvUkr)
+            builder.Property(b => b.DescriptionUkrainian)
                 .HasMaxLength(PersistenceConstant.FieldLarge)
                 .IsRequired();
-
-            builder.HasKey(b => b.CpvCode);
         }
     }
 }

@@ -1,16 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Common.Persistence;
-using Promasy.Domain.Users;
+using Promasy.Core.Persistence;
+using Promasy.Domain.Employees;
 
 namespace Promasy.Persistence.Configurations
 {
-    public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
+    public class EmployeeConfiguration : BaseConfiguration<Employee>
     {
-        public void Configure(EntityTypeBuilder<Employee> builder)
+        protected override void Config(EntityTypeBuilder<Employee> builder)
         {
-            builder.ToTable("Employees");
-
             builder.Property(b => b.Email)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired();
@@ -31,23 +29,22 @@ namespace Promasy.Persistence.Configurations
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired();
             
-            builder.Property(b => b.PhoneNumber)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired(false);
-            
-            builder.Property(b => b.PhoneReserve)
+            builder.Property(b => b.PrimaryPhone)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired(false);
 
-            builder.HasOne(b => b.Creator)
-                .WithMany()
-                .HasForeignKey(b => b.CreatorId)
-                .OnDelete(DeleteBehavior.SetNull);
+            builder.Property(b => b.ReservePhone)
+                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .IsRequired(false);
             
-            builder.HasOne(b => b.Modifier)
-                .WithMany()
-                .HasForeignKey(b => b.ModifierId)
-                .OnDelete(DeleteBehavior.SetNull);
+            builder.Property(b => b.Password)
+                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .IsRequired();
+            
+            builder
+                .HasMany(p => p.Roles)
+                .WithMany(p => p.Employees)
+                .UsingEntity(j => j.ToTable("EmployeeRoles"));
         }
     }
 }

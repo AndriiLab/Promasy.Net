@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Common.Persistence;
-using Promasy.Domain.Institutes;
+using Promasy.Core.Persistence;
+using Promasy.Domain.Organizations;
 
 namespace Promasy.Persistence.Configurations
 {
@@ -16,16 +16,6 @@ namespace Promasy.Persistence.Configurations
             builder.HasMany(b => b.Employees)
                 .WithOne(e => e.SubDepartment)
                 .HasForeignKey(e => e.SubDepartmentId);
-
-            builder.HasOne(b => b.Creator)
-                .WithMany()
-                .HasForeignKey(b => b.CreatorId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder.HasOne(b => b.Modifier)
-                .WithMany()
-                .HasForeignKey(b => b.ModifierId)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

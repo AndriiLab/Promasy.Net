@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Common.Persistence;
-using Promasy.Domain.Institutes;
+using Promasy.Core.Persistence;
+using Promasy.Domain.Organizations;
 
 namespace Promasy.Persistence.Configurations
 {

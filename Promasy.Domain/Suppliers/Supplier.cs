@@ -1,11 +1,10 @@
-﻿using Promasy.Common.Persistence;
+﻿using Promasy.Core.Persistence;
 
-namespace Promasy.Domain.Suppliers
+namespace Promasy.Domain.Suppliers;
+
+public class Supplier : Entity
 {
-    public class Supplier : Entity
-    {
-        public string Name { get; set; }
-        public string Comment { get; set; }
-        public string Phone { get; set; }
-    }
+    public string Name { get; set; }
+    public string Comment { get; set; }
+    public string Phone { get; set; }
 }

@@ -1,0 +1,6 @@
+{
+  "validations": {
+    "required": "The field is required.",
+    "minLength": "The field has a value of '{model}', but it must have a min length of {min}."
+  }
+}

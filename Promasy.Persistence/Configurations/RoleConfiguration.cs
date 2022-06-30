@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Common.Persistence;
-using Promasy.Domain.Users;
+using Promasy.Core.Persistence;
+using Promasy.Domain.Employees;
 
 namespace Promasy.Persistence.Configurations
 {
@@ -9,9 +9,9 @@ namespace Promasy.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.ToTable("Roles");
+            builder.HasKey(b => b.Id);
             builder.Property(b => b.Name)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
         }
     }
