@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Promasy.Core.Persistence;
 
 namespace Promasy.Domain.Employees;
 

@@ -1,41 +1,44 @@
+import { Router } from "@/router";
 import { useSessionStore, SessionUser } from "@/store/session";
 
-export const Fetch: FetchMethods = {
+export const Fetch = {
   Get: function <TOkResponse, TErrorResponse>(
     input: RequestInfo | URL,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ): Promise<Response<TOkResponse, TErrorResponse>> {
-    return typedFetchAsync<TOkResponse, TErrorResponse>("GET", input, init);
+    return typedFetchAsync<TOkResponse, TErrorResponse>("GET", input, init, true);
   },
   Post: function <TOkResponse, TErrorResponse>(
     input: RequestInfo | URL,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ): Promise<Response<TOkResponse, TErrorResponse>> {
-    return typedFetchAsync<TOkResponse, TErrorResponse>("POST", input, init);
+    return typedFetchAsync<TOkResponse, TErrorResponse>("POST", input, init, true);
   },
   Put: function <TOkResponse, TErrorResponse>(
     input: RequestInfo | URL,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ): Promise<Response<TOkResponse, TErrorResponse>> {
-    return typedFetchAsync<TOkResponse, TErrorResponse>("PUT", input, init);
+    return typedFetchAsync<TOkResponse, TErrorResponse>("PUT", input, init, true);
   },
   Delete: function <TOkResponse, TErrorResponse>(
     input: RequestInfo | URL,
-    init?: RequestInit | undefined
+    init?: RequestInit | undefined,
   ): Promise<Response<TOkResponse, TErrorResponse>> {
-    return typedFetchAsync<TOkResponse, TErrorResponse>("DELETE", input, init);
+    return typedFetchAsync<TOkResponse, TErrorResponse>("DELETE", input, init, true);
   },
 };
+
 async function typedFetchAsync<TOkResponse, TErrorResponse>(
   method: string,
   input: RequestInfo | URL,
-  init?: RequestInit
+  init?: RequestInit,
+  retry?: boolean,
 ): Promise<Response<TOkResponse, TErrorResponse>> {
   const ri = init ?? ({} as RequestInit);
   ri.method = method;
 
-  const { user, refreshTokenAsync } = useSessionStore();
-  ri.headers = buildHeaders(ri, user);
+  const sessionStore = useSessionStore();
+  ri.headers = buildHeaders(ri, sessionStore.user);
 
   const fetchResponse = await fetch(input, ri);
   const response: Response<TOkResponse, TErrorResponse> = {
@@ -43,12 +46,18 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
     status: fetchResponse.status,
     statusText: fetchResponse.statusText,
   };
-  
+
   const body = await safeReadJsonBodyAsync(fetchResponse);
   if (fetchResponse.ok) {
     response.data = body as TOkResponse;
   } else if (fetchResponse.status === 401) {
-    await refreshTokenAsync();
+    if (retry) {
+      await sessionStore.refreshTokenAsync();
+      if (sessionStore.user) {
+        return typedFetchAsync<TOkResponse, TErrorResponse>(method, input, init, false);
+      }
+    }
+    Router.push("/");
   } else {
     response.error = body as TErrorResponse;
   }
@@ -59,7 +68,7 @@ function buildHeaders(ri: RequestInit, user: SessionUser | undefined): Headers {
   const headers = (ri.headers as Headers) ?? (new Headers());
   const token = user?.token;
   if (token) {
-    headers.append("Authorization", `Bearer ${token}`);
+    headers.append("Authorization", `Bearer ${ token }`);
   }
   const contentNotDefined = !headers.has("Content-Type");
   if (contentNotDefined && ri.body) {
@@ -74,25 +83,6 @@ async function safeReadJsonBodyAsync(response: globalThis.Response) {
   } catch {
     return undefined;
   }
-}
-
-interface FetchMethods {
-  Get<TOkResponse, TErrorResponse>(
-    input: RequestInfo | URL,
-    init?: RequestInit
-  ): Promise<Response<TOkResponse, TErrorResponse>>;
-  Post<TOkResponse, TErrorResponse>(
-    input: RequestInfo | URL,
-    init?: RequestInit
-  ): Promise<Response<TOkResponse, TErrorResponse>>;
-  Put<TOkResponse, TErrorResponse>(
-    input: RequestInfo | URL,
-    init?: RequestInit
-  ): Promise<Response<TOkResponse, TErrorResponse>>;
-  Delete<TOkResponse, TErrorResponse>(
-    input: RequestInfo | URL,
-    init?: RequestInit
-  ): Promise<Response<TOkResponse, TErrorResponse>>;
 }
 
 export interface Response<TOkResponse, TErrorResponse> {

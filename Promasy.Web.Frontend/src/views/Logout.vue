@@ -18,13 +18,15 @@
 
 <script lang="ts" setup>
 import { onMounted } from "vue";
-import { useSessionStore } from '../store/session';
+import { useSessionStore } from '@/store/session';
 import { useI18n } from 'vue-i18n';
+import { Router } from "@/router";
 
 const { t } = useI18n({ useScope: "local" });
 
 onMounted(async () => {
     await (useSessionStore()).logoutAsync();
+    Router.push("/");
 });
 </script>
 

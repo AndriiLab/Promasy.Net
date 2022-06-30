@@ -80,6 +80,13 @@ public class UnitsModule : IModule
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository,  [FromServices] IUnitsRules rules) =>
             {
+                var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
+                if (!isEditable)
+                {
+                    return PromasyResults.ValidationError("You cannot delete this unit",
+                        StatusCodes.Status409Conflict);
+                }
+                
                 var isUsed = await rules.IsUnitUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {

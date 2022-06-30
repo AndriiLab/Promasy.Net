@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Core.UserContext;
+using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
@@ -12,10 +14,12 @@ namespace Promasy.Modules.Units.Repositories;
 internal class UnitsRepository : IUnitsRules, IUnitsRepository
 {
     private readonly IDatabase _database;
+    private readonly IUserContext _userContext;
 
-    public UnitsRepository(IDatabase database)
+    public UnitsRepository(IDatabase database, IUserContext userContext)
     {
         _database = database;
+        _userContext = userContext;
     }
 
     public Task<bool> IsExistAsync(int id, CancellationToken ct)
@@ -31,6 +35,13 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
     public Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
         return _database.Units.Where(u => u.Id != id).AllAsync(u => u.Name != name, ct);
+    }
+
+    public Task<bool> IsEditableAsync(int id, CancellationToken ct)
+    {
+        return _userContext.Roles.Any(r => r != RoleName.User) 
+            ? Task.FromResult(true) 
+            : _database.Units.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.Id, ct);
     }
 
     public Task<bool> IsUnitUsedAsync(int id, CancellationToken ct)

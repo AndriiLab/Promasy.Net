@@ -13,10 +13,12 @@ internal class UpdateUnitRequestValidator : AbstractValidator<UpdateUnitRequest>
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldLarge);
-        
+
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistAsync)
-            .WithMessage("Name must be unique");
+            .WithMessage("Unit not exist")
+            .MustAsync(rules.IsEditableAsync)
+            .WithMessage("You cannot edit this unit");
         
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))

@@ -1,7 +1,6 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
 import jwtDecode from "jwt-decode";
 import { en } from "@/i18n/settings/en";
-import { Router } from "@/router";
 import AuthApi from "@/services/api/auth";
 import LocalStore, { keys } from "@/services/local-store";
 
@@ -27,15 +26,18 @@ export const useSessionStore = defineStore({
       }
       rememberMe ? LocalStore.allow() : LocalStore.disable();
 
-      this.loginWithToken(response.data?.token ?? "")
+      if (response.data?.token) {
+        this.loginWithToken(response.data.token);
+      }
+
     },
     async refreshTokenAsync() {
-        const response = await AuthApi.refreshToken();
-        if(response.success) {
-            this.loginWithToken(response.data!.token);
-            return;
-        }
-        await this.logoutAsync();
+      const response = await AuthApi.refreshToken();
+      if (response.success) {
+        this.loginWithToken(response.data!.token);
+        return;
+      }
+      await this.logoutAsync();
     },
     loginWithToken(token: string) {
       const decodedToken = jwtDecode(token) as Object<string>;
@@ -57,24 +59,21 @@ export const useSessionStore = defineStore({
 
       LocalStore.set(keys.token, token);
       LocalStore.set(keys.language, this.locale);
-
-      Router.push(getUrl(this.lastUrl));
     },
     async logoutAsync() {
-      this.user = undefined;
       LocalStore.remove(keys.token);
       await AuthApi.revokeToken();
-      Router.push("/login");
+      this.user = undefined;
     },
   },
   getters: {
-    getLastUrl() : string {
+    getLastUrl(): string {
       return getUrl(this.lastUrl);
-    }
-  }
+    },
+  },
 });
 
-function getUrl(url: string | undefined){
+function getUrl(url: string | undefined) {
   return url ?? "/";
 }
 

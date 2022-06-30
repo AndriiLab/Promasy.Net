@@ -7,10 +7,10 @@ export default {
     searchText?: string,
   ): Promise<Response<Cpv[], ErrorApiResponse>> {
     return Fetch.Get<Cpv[], ErrorApiResponse>(
-      `/api/cpv${buildQueryParameters([
-        ["parentId", parentId?.toString()],
-        ["term", searchText],
-      ])}`
+      `/api/cpv${ buildQueryParameters([
+        [ "parentId", parentId?.toString() ],
+        [ "term", searchText ],
+      ]) }`,
     );
   },
 };

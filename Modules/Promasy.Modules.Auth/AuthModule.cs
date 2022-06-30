@@ -102,7 +102,7 @@ public class AuthModule : IModule
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces<TokenResponse>();
 
-        endpoints.MapPost($"{RoutePrefix}/revoke", async ([FromBody] TokenRequest? tr,
+        endpoints.MapPost($"{RoutePrefix}/revoke", async ([FromBody] RevokeTokenRequest? tr,
                 ITokenService jwtTokenService, HttpRequest request) =>
             {
                 var token = tr?.Token ?? GetRefreshTokenFromCookie(request);
@@ -116,6 +116,7 @@ public class AuthModule : IModule
                 return Results.NoContent();
             })
             .WithTags(Tag)
+            .RequireAuthorization()
             .WithName("Revoke Token")
             .Produces(StatusCodes.Status204NoContent);
 

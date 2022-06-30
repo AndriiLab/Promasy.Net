@@ -5,6 +5,6 @@ export function buildQueryParameters(params: Nullable<string>[][]) {
     .filter((p) => p.every((s) => s))
     .map((p) => p.map((s) => s as string));
   return filteredParams.length
-    ? `?${new URLSearchParams(filteredParams).toString()}`
+    ? `?${ new URLSearchParams(filteredParams).toString() }`
     : "";
 }
