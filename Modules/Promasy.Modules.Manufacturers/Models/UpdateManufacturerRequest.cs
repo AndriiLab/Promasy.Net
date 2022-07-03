@@ -12,7 +12,7 @@ internal class UpdateManufacturerRequestValidator : AbstractValidator<UpdateManu
     {
         RuleFor(r => r.Name)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldLarge);
+            .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistAsync)

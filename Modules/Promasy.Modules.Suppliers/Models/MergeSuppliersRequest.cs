@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
-using Promasy.Modules.Units.Interfaces;
+using Promasy.Modules.Suppliers.Interfaces;
 
-namespace Promasy.Modules.Units.Models;
+namespace Promasy.Modules.Suppliers.Models;
 
-public record MergeUnitsRequest(int TargetId, int[] SourceIds);
+public record MergeSuppliersRequest(int TargetId, int[] SourceIds);
 
-internal class MergeUnitsRequestValidator : AbstractValidator<MergeUnitsRequest>
+internal class MergeManufacturersRequestValidator : AbstractValidator<MergeSuppliersRequest>
 {
-    public MergeUnitsRequestValidator(IUnitsRules rules)
+    public MergeManufacturersRequestValidator(ISuppliersRules rules)
     {
         RuleFor(_ => _.SourceIds)
             .NotEmpty();
@@ -20,6 +20,6 @@ internal class MergeUnitsRequestValidator : AbstractValidator<MergeUnitsRequest>
 
         RuleFor(r => r.TargetId)
             .MustAsync(rules.IsExistAsync)
-            .WithMessage("Unit not exist");
+            .WithMessage("Supplier not exist");
     }
 }

@@ -1,6 +1,5 @@
 ﻿using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
@@ -44,6 +43,11 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
         return _userContext.Roles.Any(r => r != RoleName.User)
             ? Task.FromResult(true)
             : _database.Units.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.Id, ct);
+    }
+
+    public bool IsMergeable()
+    {
+        return _userContext.IsAdmin();
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)

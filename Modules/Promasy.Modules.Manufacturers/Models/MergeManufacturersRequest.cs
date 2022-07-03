@@ -14,7 +14,9 @@ internal class MergeManufacturersRequestValidator : AbstractValidator<MergeManuf
 
         RuleFor(_ => _)
             .Must((r) => !r.SourceIds.Contains(r.TargetId))
-            .WithMessage("Target must not be included in source list");
+            .WithMessage("Target must not be included in source list")
+            .Must(r => rules.IsMergeable())
+            .WithMessage("You cannot perform this action");
 
         RuleFor(r => r.TargetId)
             .MustAsync(rules.IsExistAsync)

@@ -1,11 +1,11 @@
 using Microsoft.OpenApi.Models;
-using Promasy.Domain.Manufacturers;
 using Promasy.Modules.Auth;
 using Promasy.Modules.Core;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Cpv;
 using Promasy.Modules.Employees;
 using Promasy.Modules.Manufacturers;
+using Promasy.Modules.Suppliers;
 using Promasy.Modules.Units;
 using Promasy.Persistence;
 using Serilog;
@@ -35,6 +35,7 @@ try
     builder.Services.RegisterModule<UnitsModule>(builder.Configuration);
     builder.Services.RegisterModule<EmployeesModule>(builder.Configuration);
     builder.Services.RegisterModule<ManufacturersModule>(builder.Configuration);
+    builder.Services.RegisterModule<SuppliersModule>(builder.Configuration);
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

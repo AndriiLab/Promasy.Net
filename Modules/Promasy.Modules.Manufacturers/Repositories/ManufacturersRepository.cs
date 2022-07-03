@@ -46,9 +46,14 @@ internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepo
             : _database.Manufacturers.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.Id, ct);
     }
 
+    public bool IsMergeable()
+    {
+        return _userContext.IsAdmin();
+    }
+
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)
     {
-        return _database.Orders.AnyAsync(b => b.UnitId == id, ct);
+        return _database.Orders.AnyAsync(b => b.ManufacturerId == id, ct);
     }
 
     public Task<PagedResponse<ManufacturerDto>> GetPagedListAsync(PagedRequest request)
@@ -89,27 +94,26 @@ internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepo
         await _database.SaveChangesAsync();
     }
 
-    public async Task<int> CreateAsync(ManufacturerDto unit)
+    public async Task<int> CreateAsync(ManufacturerDto manufacturer)
     {
-        var entity = new Manufacturer {Name = unit.Name};
+        var entity = new Manufacturer {Name = manufacturer.Name};
         _database.Manufacturers.Add(entity);
         await _database.SaveChangesAsync();
 
         return entity.Id;
     }
 
-    public async Task UpdateAsync(ManufacturerDto unit)
+    public async Task UpdateAsync(ManufacturerDto manufacturer)
     {
-        var entity = await _database.Manufacturers.FirstAsync(u => u.Id == unit.Id);
-        entity.Name = unit.Name;
+        var entity = await _database.Manufacturers.FirstAsync(u => u.Id == manufacturer.Id);
+        entity.Name = manufacturer.Name;
         await _database.SaveChangesAsync();
     }
 
     public async Task MergeAsync(int targetId, int[] sourceIds)
     {
         await _database.Orders
-            .Where(o => o.ManufacturerId != null)
-            .Where(o => sourceIds.Contains(o.ManufacturerId!.Value))
+            .Where(o => sourceIds.Contains(o.ManufacturerId))
             .BatchUpdateAsync(o => new Order {ManufacturerId = targetId});
 
 

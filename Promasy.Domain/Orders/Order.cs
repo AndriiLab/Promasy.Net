@@ -27,14 +27,14 @@ public class Order : Entity
     public int FinanceDepartmentId { get; set; }
     public FinanceDepartment FinanceDepartment { get; set; }
 
-    public int? ManufacturerId { get; set; }
+    public int ManufacturerId { get; set; }
     public Manufacturer Manufacturer { get; set; }
-
-    public int ReasonId { get; set; }
-    public ReasonForSupplierChoice Reason { get; set; }
 
     public int SupplierId { get; set; }
     public Supplier Supplier { get; set; }
+    
+    public int ReasonId { get; set; }
+    public ReasonForSupplierChoice Reason { get; set; }
 
     public virtual ICollection<OrderStatusHistory> Statuses { get; set; }
 }

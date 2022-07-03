@@ -12,7 +12,7 @@ internal class CreateUnitRequestValidator : AbstractValidator<CreateUnitRequest>
     {
         RuleFor(r => r.Name)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldLarge)
+            .MaximumLength(PersistenceConstant.FieldMedium)
             .MustAsync(rules.IsNameUniqueAsync)
             .WithMessage("Name must be unique");
     }

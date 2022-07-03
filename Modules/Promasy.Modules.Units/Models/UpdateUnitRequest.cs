@@ -12,7 +12,7 @@ internal class UpdateUnitRequestValidator : AbstractValidator<UpdateUnitRequest>
     {
         RuleFor(r => r.Name)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldLarge);
+            .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistAsync)
