@@ -9,7 +9,7 @@ export default {
     return Fetch.Get<Cpv[], ErrorApiResponse>(
       `/api/cpv${ buildQueryParameters([
         [ "parentId", parentId?.toString() ],
-        [ "term", searchText ],
+        [ "search", searchText ],
       ]) }`,
     );
   },

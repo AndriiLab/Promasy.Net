@@ -581,6 +581,19 @@ namespace Promasy.Persistence.Migrations
                 schema: "PromasyCore",
                 table: "SubDepartments",
                 column: "DepartmentId");
+
+            migrationBuilder.Sql(@"
+CREATE FUNCTION fn_getemployeeshortname(id integer)
+RETURNS TEXT AS $$
+DECLARE result TEXT;
+BEGIN
+        SELECT concat(""LastName"", ' ', left(""FirstName"", 1), '.', left(""MiddleName"", 1), '.') INTO result
+            FROM    ""PromasyCore"".""Employees""
+            WHERE   ""Id"" = id;
+
+            RETURN result;
+            END
+                $$ LANGUAGE plpgsql;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

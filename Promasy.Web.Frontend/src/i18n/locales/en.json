@@ -2,5 +2,30 @@
   "validations": {
     "required": "The field is required.",
     "minLength": "The field has a value of '{model}', but it must have a min length of {min}."
+  },
+  "cancel": "Cancel",
+  "save": "Save",
+  "yes": "Yes",
+  "no": "No",
+  "createDialog": {
+    "addNew": "New"
+  },
+  "deleteDialog": {
+    "header": "Confirm Delete",
+    "text": "Are you sure you want to delete"
+  },
+  "toast": {
+    "success": "Successful",
+    "error": "Error"
+  },
+  "table": {
+    "columns": {
+      "editor": "Editor",
+      "editDate": "Edit Date"
+    },
+    "header": "Manage {itemName}",
+    "loadError": "Unable to obtain table data",
+    "paginationFooter": "Showing {'{'}first{'}'} to {'{'}last{'}'} of {'{'}totalRecords{'}'} {itemName}",
+    "search": "Search"
   }
 }

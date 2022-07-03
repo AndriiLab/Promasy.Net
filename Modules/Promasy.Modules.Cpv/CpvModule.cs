@@ -26,7 +26,7 @@ public class CpvModule : IModule
     {
         endpoints.MapGet(RoutePrefix, async (GetCpvsRequest request, [FromServices] ICpvsRepository repository) =>
             {
-                var result = await repository.GetCpvsAsync(request.Level, request.ParentId, request.Term);
+                var result = await repository.GetCpvsAsync(request.Level, request.ParentId, request.Search);
                 return Results.Json(result);
             })
             .WithValidator<GetCpvsRequest>()

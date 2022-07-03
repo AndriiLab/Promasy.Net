@@ -14,7 +14,7 @@ internal class CpvsRepository : ICpvsRepository
         _database = database;
     }
 
-    public async Task<List<CpvDto>> GetCpvsAsync(int? level, int? parentId, string? term)
+    public async Task<List<CpvDto>> GetCpvsAsync(int? level, int? parentId, string? search)
     {
         var query = _database.Cpvs
             .AsNoTracking();
@@ -29,11 +29,11 @@ internal class CpvsRepository : ICpvsRepository
             query = query.Where(c => c.ParentId == parentId);
         }
 
-        if (!string.IsNullOrEmpty(term))
+        if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(c => c.Code.StartsWith(term) || 
-                                     c.DescriptionUkrainian.Contains(term) || 
-                                     c.DescriptionEnglish.Contains(term));
+            query = query.Where(c => c.Code.StartsWith(search) || 
+                                     c.DescriptionUkrainian.Contains(search) || 
+                                     c.DescriptionEnglish.Contains(search));
         }
 
         var list = await query.Select(c => new CpvDto(c.Id, c.Code, c.DescriptionEnglish, c.DescriptionUkrainian,

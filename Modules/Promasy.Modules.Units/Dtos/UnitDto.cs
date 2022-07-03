@@ -1,3 +1,3 @@
 ﻿namespace Promasy.Modules.Units.Dtos;
 
-public record UnitDto(int Id, string Name);
+internal record UnitDto(int Id, string Name, int? EditorId = null, string? Editor = null, DateTime? EditedDate = null);

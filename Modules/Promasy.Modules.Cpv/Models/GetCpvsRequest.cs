@@ -8,17 +8,17 @@ public class GetCpvsRequest
 {
     public int? Level { get; set; }
     public int? ParentId { get; set; }
-    public string? Term { get; set; }
+    public string? Search { get; set; }
 
     public GetCpvsRequest()
     {
     }
 
-    public GetCpvsRequest(int? level, int? parentId, string? term)
+    public GetCpvsRequest(int? level, int? parentId, string? search)
     {
         Level = level;
         ParentId = parentId;
-        Term = term;
+        Search = search;
     }
 
     public static ValueTask<GetCpvsRequest?> BindAsync(HttpContext httpContext)
@@ -26,9 +26,9 @@ public class GetCpvsRequest
         var result = new GetCpvsRequest(
             int.TryParse(httpContext.Request.Query["level"], out var level) ? level : null,
             int.TryParse(httpContext.Request.Query["parentId"], out var parentId) ? parentId : null,
-            httpContext.Request.Query["term"]);
+            httpContext.Request.Query["search"]);
 
-        if (result.Level is null && result.ParentId is null && string.IsNullOrEmpty(result.Term))
+        if (result.Level is null && result.ParentId is null && string.IsNullOrEmpty(result.Search))
         {
             result.Level = 1;
         }
@@ -37,11 +37,11 @@ public class GetCpvsRequest
     }
 }
 
-public class GetCpvRequestValidator : AbstractValidator<GetCpvsRequest>
+internal class GetCpvRequestValidator : AbstractValidator<GetCpvsRequest>
 {
     public GetCpvRequestValidator()
     {
-        RuleFor(r => r.Term)
+        RuleFor(r => r.Search)
             .MaximumLength(PersistenceConstant.FieldMedium);
         
         RuleFor(r => r.Level)

@@ -19,5 +19,5 @@ Router.beforeEach(async (to, from) => {
   if (sessionStore.user && to.path === "/login") {
     return "/";
   }
-  sessionStore.lastUrl = from.fullPath;
+  sessionStore.lastUrl = from.fullPath === "/logout" ? "/" : from.fullPath;
 });

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
@@ -39,8 +40,8 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
 
     public Task<bool> IsEditableAsync(int id, CancellationToken ct)
     {
-        return _userContext.Roles.Any(r => r != RoleName.User) 
-            ? Task.FromResult(true) 
+        return _userContext.Roles.Any(r => r != RoleName.User)
+            ? Task.FromResult(true)
             : _database.Units.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.Id, ct);
     }
 
@@ -59,7 +60,10 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
         }
 
         return query
-            .PaginateAsync(request, u => new UnitDto(u.Id, u.Name));
+            .PaginateAsync(request,
+                u => new UnitDto(u.Id, u.Name, u.ModifierId ?? u.CreatorId,
+                    PromasyDbFunction.GetEmployeeShortName(u.ModifierId ?? u.CreatorId),
+                    u.ModifiedDate ?? u.CreatedDate));
     }
 
     public Task<UnitDto?> GetUnitByIdAsync(int id)
@@ -67,7 +71,8 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
         return _database.Units
             .AsNoTracking()
             .Where(u => u.Id == id)
-            .Select(u => new UnitDto(u.Id, u.Name))
+            .Select(u => new UnitDto(u.Id, u.Name, u.ModifierId ?? u.CreatorId,
+                PromasyDbFunction.GetEmployeeShortName(u.ModifierId ?? u.CreatorId), u.ModifiedDate ?? u.CreatedDate))
             .FirstOrDefaultAsync();
     }
 

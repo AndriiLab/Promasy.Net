@@ -12,7 +12,7 @@ public static class ModuleExtensions
     public static IServiceCollection RegisterModule<TModule>(this IServiceCollection services, IConfiguration configuration) where TModule : class, IModule
     {
         // register assembly validators
-        services.AddValidatorsFromAssembly(typeof(TModule).Assembly);
+        services.AddValidatorsFromAssembly(typeof(TModule).Assembly, includeInternalTypes: true);
 
         // register module services decorated with IService and repositories decorated with IRepository
         services.Scan(scan => scan

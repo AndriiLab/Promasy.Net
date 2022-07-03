@@ -48,7 +48,7 @@ public class UnitsModule : IModule
             .Produces<UnitDto>()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async (CreateUnitRequest request, [FromServices] IUnitsRepository repository) =>
+        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository) =>
             {
                 var id = await repository.CreateUnitAsync(new UnitDto(0, request.Name));
                 var unit = await repository.GetUnitByIdAsync(id);
@@ -90,7 +90,7 @@ public class UnitsModule : IModule
                 var isUsed = await rules.IsUnitUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError("Unit already associated with bid",
+                    return PromasyResults.ValidationError("Unit already associated with order",
                         StatusCodes.Status409Conflict);
                 }
 

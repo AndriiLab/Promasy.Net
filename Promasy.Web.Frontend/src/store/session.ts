@@ -29,7 +29,6 @@ export const useSessionStore = defineStore({
       if (response.data?.token) {
         this.loginWithToken(response.data.token);
       }
-
     },
     async refreshTokenAsync() {
       const response = await AuthApi.refreshToken();

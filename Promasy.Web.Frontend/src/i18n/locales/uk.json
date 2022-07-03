@@ -2,5 +2,30 @@
   "validations": {
     "required": "Поле обов'язкове.",
     "minLength": "Поле містить значення '{model}', проте мінімальне значення {min}."
+  },
+  "cancel": "Відмінити",
+  "save": "Зберегти",
+  "yes": "Так",
+  "no": "Ні",
+  "createDialog": {
+    "addNew": "Створити"
+  },
+  "deleteDialog": {
+    "header": "Підтвердіть видалення",
+    "text": "Ви дійсно бажаєте видалити"
+  },
+  "toast": {
+    "success": "Успішно",
+    "error": "Помилка"
+  },
+  "table": {
+    "columns": {
+      "editor": "Користувач",
+      "editDate": "Дата редагування"
+    },
+    "header": "Керування {itemName}",
+    "loadError": "Не вдалося отримати дані для таблиці",
+    "paginationFooter": "Відображено {'{'}first{'}'} до {'{'}last{'}'} з {'{'}totalRecords{'}'} {itemName}",
+    "search": "Пошук"
   }
 }

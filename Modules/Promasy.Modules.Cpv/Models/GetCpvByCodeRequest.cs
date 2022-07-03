@@ -26,7 +26,7 @@ public class GetCpvByCodeRequest
     }
 }
 
-public class GetCpvByCodeRequestValidator : AbstractValidator<GetCpvByCodeRequest>
+internal class GetCpvByCodeRequestValidator : AbstractValidator<GetCpvByCodeRequest>
 {
     public GetCpvByCodeRequestValidator()
     {

@@ -6,7 +6,7 @@ namespace Promasy.Modules.Employees.Models;
 public record PasswordChangeRequest(string Password);
 
 
-public class PasswordChangeRequestValidator : AbstractValidator<PasswordChangeRequest>
+internal class PasswordChangeRequestValidator : AbstractValidator<PasswordChangeRequest>
 {
     public PasswordChangeRequestValidator()
     {

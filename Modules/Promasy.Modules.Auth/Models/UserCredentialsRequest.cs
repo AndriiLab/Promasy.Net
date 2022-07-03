@@ -5,7 +5,7 @@ namespace Promasy.Modules.Auth.Models;
 
 public record UserCredentialsRequest(string User, string Password);
 
-public class UserCredentialsRequestValidator : AbstractValidator<UserCredentialsRequest>
+internal class UserCredentialsRequestValidator : AbstractValidator<UserCredentialsRequest>
 {
     public UserCredentialsRequestValidator()
     {

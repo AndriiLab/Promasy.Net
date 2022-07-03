@@ -1,4 +1,4 @@
-import { createI18n, useI18n, I18nOptions } from "vue-i18n";
+import { createI18n, I18nOptions } from "vue-i18n";
 import { LanguageSettings } from "./settings/LanguageSettings";
 import { en } from "./settings/en";
 import { uk } from "./settings/uk";
@@ -8,6 +8,7 @@ const langs = [en, uk];
 const options: I18nOptions = {
   legacy: false,
   globalInjection: true,
+  fallbackRoot: true,
   locale: en.key,
   fallbackLocale: uk.key,
   messages: messages,
@@ -19,7 +20,7 @@ function getLocalesObject(
   langs: LanguageSettings[],
   fn: (s: LanguageSettings) => any
 ) {
-  const obj: AnyObject = {};
+  const obj = {} as AnyObject;
   for (const lang of langs) {
     obj[lang.key] = fn(lang);
   }

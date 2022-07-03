@@ -96,3 +96,9 @@ export interface Response<TOkResponse, TErrorResponse> {
 export interface ErrorApiResponse extends Error {
   errors: Object<string[]>;
 }
+
+export interface PagedResponse<T> {
+  page: number;
+  total: number;
+  collection: T[];
+}

@@ -10,6 +10,7 @@ using Promasy.Domain.Finances;
 using Promasy.Domain.Manufacturers;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Organizations;
+using Promasy.Domain.Persistence;
 using Promasy.Domain.Suppliers;
 using Promasy.Domain.Vocabulary;
 
@@ -78,6 +79,7 @@ namespace Promasy.Persistence.Context
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PromasyContext).Assembly);
             modelBuilder.UseIdentityAlwaysColumns();
+            modelBuilder.ConfigureCustomFunctions();
             modelBuilder.HasDefaultSchema("PromasyCore");
         }
 
@@ -90,16 +92,20 @@ namespace Promasy.Persistence.Context
                 {
                     case EntityState.Added:
                         entity.CreatedDate = DateTime.UtcNow;
-                        entity.CreatorId = _userContext?.Id ?? -1;
+                        entity.CreatorId = _userContext?.Id ?? 0;
                         break;
                     case EntityState.Modified:
                         entity.ModifiedDate = DateTime.UtcNow;
                         entity.ModifierId = _userContext?.Id;
                         break;
                     case EntityState.Deleted:
-                        e.State = EntityState.Modified;
-                        entity.ModifiedDate = DateTime.UtcNow;
-                        entity.ModifierId = _userContext?.Id;
+                        if (e.Entity is ISoftDeletable sd)
+                        {
+                            e.State = EntityState.Modified;
+                            entity.ModifiedDate = DateTime.UtcNow;
+                            entity.ModifierId = _userContext?.Id;
+                            sd.Deleted = true;
+                        }
                         break;
                     case EntityState.Detached:
                     case EntityState.Unchanged:

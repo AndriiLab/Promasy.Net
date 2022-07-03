@@ -20,8 +20,8 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { avaliableLanguages } from '../i18n';
-import { useSessionStore } from '../store/session';
+import { avaliableLanguages } from "@/i18n";
+import { useSessionStore } from "@/store/session";
 
 defineProps<{
     labelClasses?: string[],
@@ -52,12 +52,12 @@ watch(language, (l) => sessionStore.setLanguage(l));
 
 <i18n locale="en">
 {
-    "language": "Language",
+    "language": "Language"
 }
 </i18n>
 
 <i18n locale="uk">
 {
-    "language": "Мова",
+    "language": "Мова"
 }
 </i18n>

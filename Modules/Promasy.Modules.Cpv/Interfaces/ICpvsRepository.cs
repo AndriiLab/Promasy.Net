@@ -5,6 +5,6 @@ namespace Promasy.Modules.Cpv.Interfaces;
 
 internal interface ICpvsRepository : IRepository
 {
-    Task<List<CpvDto>> GetCpvsAsync(int? level, int? parentId, string? term);
+    Task<List<CpvDto>> GetCpvsAsync(int? level, int? parentId, string? search);
     Task<CpvDto?> GetCpvByCodeAsync(string code);
 }
