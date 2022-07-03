@@ -7,8 +7,14 @@
   "save": "Save",
   "yes": "Yes",
   "no": "No",
+  "merge": "Merge",
   "createDialog": {
     "addNew": "New"
+  },
+  "mergeDialog": {
+    "header": "Confirm Merge",
+    "text1": "Are you sure you want to merge these items",
+    "text2": "into"
   },
   "deleteDialog": {
     "header": "Confirm Delete",

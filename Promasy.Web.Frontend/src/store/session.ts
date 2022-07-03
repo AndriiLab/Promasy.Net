@@ -69,6 +69,9 @@ export const useSessionStore = defineStore({
     getLastUrl(): string {
       return getUrl(this.lastUrl);
     },
+    isUserAdmin(): boolean {
+      return this.user?.roles.some(r => r === "Адміністратор") ?? false;
+    }
   },
 });
 

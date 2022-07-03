@@ -28,7 +28,7 @@ public class UnitsModule : IModule
     {
         endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromServices] IUnitsRepository repository) =>
             {
-                var list = await repository.GetUnitsAsync(request);
+                var list = await repository.GetPagedListAsync(request);
                 return Results.Json(list);
             })
             .WithValidator<PagedRequest>()
@@ -39,7 +39,7 @@ public class UnitsModule : IModule
 
         endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository) =>
             {
-                var unit = await repository.GetUnitByIdAsync(id);
+                var unit = await repository.GetByIdAsync(id);
                 return unit is not null ? Results.Json(unit) : Results.NotFound();
             })
             .WithTags(Tag)
@@ -50,8 +50,8 @@ public class UnitsModule : IModule
 
         endpoints.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository) =>
             {
-                var id = await repository.CreateUnitAsync(new UnitDto(0, request.Name));
-                var unit = await repository.GetUnitByIdAsync(id);
+                var id = await repository.CreateAsync(new UnitDto(0, request.Name));
+                var unit = await repository.GetByIdAsync(id);
 
                 return Results.Json(unit, statusCode: StatusCodes.Status201Created);
             })
@@ -69,10 +69,11 @@ public class UnitsModule : IModule
                         return PromasyResults.ValidationError("Incorrect Id");
                     }
 
-                    await repository.UpdateUnitAsync(new UnitDto(request.Id, request.Name));
+                    await repository.UpdateAsync(new UnitDto(request.Id, request.Name));
 
                     return Results.Ok(StatusCodes.Status202Accepted);
                 })
+            .WithValidator<UpdateUnitRequest>()
             .WithTags(Tag)
             .WithName("Update Unit")
             .RequireAuthorization()
@@ -87,7 +88,7 @@ public class UnitsModule : IModule
                         StatusCodes.Status409Conflict);
                 }
                 
-                var isUsed = await rules.IsUnitUsedAsync(id, CancellationToken.None);
+                var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
                     return PromasyResults.ValidationError("Unit already associated with order",
@@ -102,6 +103,19 @@ public class UnitsModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+        
+        endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeUnitsRequest request, [FromServices] IUnitsRepository repository) =>
+            {
+                await repository.MergeAsync(request.TargetId, request.SourceIds);
+
+                return Results.Ok();
+            })
+            .WithValidator<MergeUnitsRequest>()
+            .WithTags(Tag)
+            .WithName("Merge Units")
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK);
+
 
         return endpoints;
     }

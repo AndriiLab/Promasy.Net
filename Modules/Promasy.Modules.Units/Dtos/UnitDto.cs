@@ -1,3 +1,6 @@
-﻿namespace Promasy.Modules.Units.Dtos;
+﻿using Promasy.Modules.Core.Dtos;
 
-internal record UnitDto(int Id, string Name, int? EditorId = null, string? Editor = null, DateTime? EditedDate = null);
+namespace Promasy.Modules.Units.Dtos;
+
+internal record UnitDto(int Id, string Name, int EditorId = default, string Editor = "", DateTime EditedDate = default)
+    : EntityDto(Id, EditorId, Editor, EditedDate);

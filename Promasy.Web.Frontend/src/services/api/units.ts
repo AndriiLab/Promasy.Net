@@ -36,6 +36,9 @@ export default {
   delete(id: number) : Promise<Response<string, ErrorApiResponse>> {
     return Fetch.Delete<string, ErrorApiResponse>(`/api/units/${id}`);
   },
+  merge(request: MergeUnitsRequest) : Promise<Response<string, ErrorApiResponse>> {
+    return Fetch.Post<string, ErrorApiResponse>("/api/units/merge", { body: JSON.stringify(request) });
+  },
 };
 
 export interface CreateUnitRequest {
@@ -52,4 +55,9 @@ export interface Unit {
   editorId: number;
   editor: string;
   editedDate: Date;
+}
+
+export interface MergeUnitsRequest {
+  targetId: number,
+  sourceIds: number[]
 }

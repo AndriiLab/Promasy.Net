@@ -1,13 +1,303 @@
 <template>
-	<div class="grid">
-		<div class="col-12">
-			<div class="card">
-				<h5>Empty Page</h5>
-				<p>Use this page to start from scratch and place your custom content.</p>
-			</div>
-		</div>
-	</div>
+  <div class="grid">
+    <div class="col-12">
+      <div class="card">
+
+        <Toolbar class="mb-4">
+          <template v-slot:start>
+            <div class="my-2">
+              <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"
+                      @click="create"/>
+              <Button v-if="isUserAdmin && selectedItems.length > 1" :label="t('merge')" icon="pi pi-angle-double-down"
+                      class="p-button-warning mr-2" @click="merge"/>
+            </div>
+          </template>
+        </Toolbar>
+
+        <DataTable ref="dt" :value="items" :lazy="true" :paginator="true"
+                   :rows="tableData.offset" :totalRecords="tableData.total" :loading="isLoading"
+                   @page="onPageAsync($event)" @sort="onSortAsync($event)"
+                   :selectionMode="isUserAdmin ? 'multiple' : null" v-model:selection="selectedItems" dataKey="id"
+                   paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                   :rowsPerPageOptions="[10,50,100]"
+                   :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('manufacturers') })"
+                   responsiveLayout="scroll">
+          <template #header>
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">{{ t('table.header', {itemName: t('manageManufacturers')}) }}</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                  <i class="pi pi-search"/>
+                  <InputText v-model.trim="tableData.filter" v-debounce:500="useFilterAsync"
+                             :placeholder="t('table.search')"/>
+              </span>
+            </div>
+          </template>
+
+          <Column v-if="isUserAdmin" selectionMode="multiple" headerStyle="width: 3em"></Column>
+          <Column field="name" :header="t('name')" :sortable="true" headerStyle="width:35%; min-width:10rem;">
+            <template #body="slotProps">
+              <span class="p-column-title">{{ t('name') }}</span>
+              {{ slotProps.data.name }}
+            </template>
+          </Column>
+          <Column field="editor" :header="t('table.columns.editor')" headerStyle="width:25%; min-width:10rem;">
+            <template #body="slotProps">
+              <span class="p-column-title">{{ t('table.columns.editor') }}</span>
+              {{ slotProps.data.editor }}
+            </template>
+          </Column>
+          <Column field="editedDate" :header="t('table.columns.editDate')" headerStyle="width:25%; min-width:10rem;">
+            <template #body="slotProps">
+              <span class="p-column-title">{{ t('table.columns.editDate') }}</span>
+              {{ d(new Date(slotProps.data.editedDate), 'long') }}
+            </template>
+          </Column>
+          <Column headerStyle="min-width:10rem;">
+            <template #body="slotProps">
+              <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+              <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                      @click="confirmDelete(slotProps.data)"/>
+            </template>
+          </Column>
+        </DataTable>
+
+
+        <Dialog v-model:visible="itemDialog" :style="{width: '450px'}" :header="t('manufacturerDetails')" :modal="true"
+                class="p-fluid">
+          <div class="field">
+            <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{
+                err
+              }}
+            </Message>
+            <ErrorWrap :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
+              <label for="name">{{ t('name') }}</label>
+              <InputText id="name" v-model.trim="item.name" required="true" autofocus/>
+            </ErrorWrap>
+          </div>
+
+          <template #footer>
+            <Button :label="t('cancel')" icon="pi pi-times" class="p-button-text" @click="closeItemDialog"/>
+            <Button :label="t('save')" icon="pi pi-check" class="p-button-text" @click="saveAsync"/>
+          </template>
+        </Dialog>
+
+        <Dialog v-model:visible="deleteItemDialog" :style="{width: '450px'}" :header="t('deleteDialog.header')"
+                :modal="true">
+          <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{
+              err
+            }}
+          </Message>
+          <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
+            <span v-if="item">{{ t('deleteDialog.text') }} <b>{{ item.name }}</b>?</span>
+          </div>
+          <template #footer>
+            <Button :label="t('no')" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
+            <Button :label="t('yes')" icon="pi pi-check" class="p-button-text" @click="deleteItemAsync"/>
+          </template>
+        </Dialog>
+
+        <Dialog v-model:visible="mergeDialog" :style="{width: '450px'}" :header="t('mergeDialog.header')"
+                :modal="true">
+          <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{err}}</Message>
+          <div class="flex flex-column">
+            <i class="flex align-items-center justify-content-center pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
+            <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text1') }}:</div>
+            <ul>
+              <li v-for="item in selectedItems"><b>{{ item.name }}</b></li>
+            </ul>
+            <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text2') }}</div>
+            <div class="flex align-items-center justify-content-center">
+              <Dropdown v-model="item" :options="selectedItems" optionLabel="name"></Dropdown><span>?</span>
+            </div>
+          </div>
+          <template #footer>
+            <Button :label="t('no')" icon="pi pi-times" class="p-button-text" @click="closeMergeDialog"/>
+            <Button :label="t('yes')" icon="pi pi-check" class="p-button-text" @click="mergeAsync"/>
+          </template>
+        </Dialog>
+
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
+import { useSessionStore } from "@/store/session";
+import { capitalize } from "@/utils/string-utils";
+import { ref, reactive, onMounted, computed } from "vue";
+import ManufacturersApi, { Manufacturer } from "@/services/api/manufacturers";
+import { useToast } from "primevue/usetoast";
+import { useI18n } from "vue-i18n";
+import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
+import ErrorWrap from "../components/ErrorWrap.vue";
+import useVuelidate from "@vuelidate/core";
+import { required, maxLength } from "@/i18n/validators";
+
+const { d, t } = useI18n();
+const { isUserAdmin } = useSessionStore();
+const toast = useToast();
+const items = ref([] as Manufacturer[]);
+const selectedItems = ref([] as Manufacturer[]);
+const externalErrors = ref({} as Object<string[]>);
+const item = ref({} as Manufacturer);
+const itemDialog = ref(false);
+const deleteItemDialog = ref(false);
+const mergeDialog = ref(false);
+const isLoading = ref(false);
+const tableData: TablePagingData = reactive({
+  page: 1,
+  offset: 10,
+  filter: undefined,
+  orderBy: undefined,
+  descending: undefined,
+  total: 0,
+});
+
+const rules = computed(() => {
+  return {
+    name: { required, maxLength: maxLength(300) },
+  };
+});
+const v$ = useVuelidate(rules, item, { $lazy: true });
+
+
+onMounted(async () => {
+  await getDataAsync();
+});
+
+async function useFilterAsync() {
+  await getDataAsync();
+}
+
+async function getDataAsync() {
+  isLoading.value = true;
+  const response = await ManufacturersApi.getList(tableData.page, tableData.offset, tableData.filter, tableData.orderBy, tableData.descending);
+  if (response.success) {
+    items.value = response.data?.collection ?? [] as Manufacturer[];
+    tableData.page = response.data?.page ?? tableData.page;
+    tableData.total = response.data?.total ?? 0;
+    isLoading.value = false;
+    return;
+  }
+  toast.add({ severity: "error", summary: t("toast.error"), detail: t("table.loadError"), life: 3000 });
+  isLoading.value = false;
+}
+
+async function onPageAsync(event: DataTablePageEvent) {
+  tableData.page = event.page + 1;
+  tableData.offset = event.rows;
+  await getDataAsync();
+}
+
+async function onSortAsync(event: DataTableSortEvent) {
+  tableData.orderBy = capitalize(event.sortField as string);
+  tableData.descending = event.sortOrder === 1 ? undefined : true;
+  await getDataAsync();
+}
+
+function create() {
+  externalErrors.value = {} as Object<string[]>;
+  item.value = {} as Manufacturer;
+  itemDialog.value = true;
+}
+
+function edit(selectedItem: Manufacturer) {
+  externalErrors.value = {} as Object<string[]>;
+  item.value = { ...selectedItem };
+  itemDialog.value = true;
+}
+
+function merge() {
+  externalErrors.value = {} as Object<string[]>;
+  item.value = { ...selectedItems.value[0] };
+  mergeDialog.value = true;
+}
+
+
+function closeItemDialog() {
+  itemDialog.value = false;
+}
+
+function closeMergeDialog() {
+  mergeDialog.value = false;
+}
+
+function closeDeleteItemDialog() {
+  deleteItemDialog.value = false;
+}
+
+function confirmDelete(selectedItem: Manufacturer) {
+  externalErrors.value = {} as Object<string[]>;
+  item.value = selectedItem;
+  deleteItemDialog.value = true;
+}
+
+async function saveAsync() {
+  externalErrors.value = {} as Object<string[]>;
+  const isFormCorrect = await v$.value.$validate();
+  if (!isFormCorrect) {
+    return;
+  }
+  const response = await (item.value.id
+      ? ManufacturersApi.update({ id: item.value.id, name: item.value.name })
+      : ManufacturersApi.create({ name: item.value.name }));
+  if (response.success) {
+    itemDialog.value = false;
+    await getDataAsync();
+    toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
+    return;
+  }
+  if (response.error?.errors) {
+    externalErrors.value = response.error.errors;
+  }
+}
+
+async function deleteItemAsync() {
+  externalErrors.value = {} as Object<string[]>;
+  const response = await ManufacturersApi.delete(item.value.id);
+  if (response.success) {
+    item.value = {} as Manufacturer;
+    deleteItemDialog.value = false;
+    await getDataAsync();
+    toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
+    return;
+  }
+  if (response.error?.errors) {
+    externalErrors.value = response.error.errors;
+  }
+}
+
+async function mergeAsync() {
+  externalErrors.value = {} as Object<string[]>;
+  const response = await ManufacturersApi.merge({sourceIds: selectedItems.value.filter(i => i.id !== item.value.id).map(i => i.id), targetId: item.value.id});
+  if (response.success) {
+    item.value = {} as Manufacturer;
+    mergeDialog.value = false;
+    await getDataAsync();
+    toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
+    return;
+  }
+  if (response.error?.errors) {
+    externalErrors.value = response.error.errors;
+  }
+}
 </script>
+
+<i18n locale="en">
+{
+  "manufacturers": "manufacturers",
+  "manageManufacturers": "manufacturers",
+  "name": "Name",
+  "manufacturerDetails": "Manufacturer Details"
+}
+</i18n>
+
+<i18n locale="uk">
+{
+  "manufacturers": "виробників",
+  "manageManufacturers": "виробниками",
+  "name": "Назва",
+  "manufacturerDetails": "Деталі виробника"
+}
+</i18n>

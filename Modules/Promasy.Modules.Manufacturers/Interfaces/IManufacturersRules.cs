@@ -1,8 +1,8 @@
 ﻿using Promasy.Modules.Core.Modules;
 
-namespace Promasy.Modules.Units.Interfaces;
+namespace Promasy.Modules.Manufacturers.Interfaces;
 
-internal interface IUnitsRules : IRepository
+internal interface IManufacturersRules : IRepository
 {
     Task<bool> IsExistAsync(int id, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, CancellationToken ct);

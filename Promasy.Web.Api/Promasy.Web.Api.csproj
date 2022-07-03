@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Modules\Promasy.Modules.Core\Promasy.Modules.Core.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Cpv\Promasy.Modules.Cpv.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Employees\Promasy.Modules.Employees.csproj" />
+    <ProjectReference Include="..\Modules\Promasy.Modules.Manufacturers\Promasy.Modules.Manufacturers.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Units\Promasy.Modules.Units.csproj" />
     <ProjectReference Include="..\Promasy.Persistence\Promasy.Persistence.csproj" />
   </ItemGroup>
