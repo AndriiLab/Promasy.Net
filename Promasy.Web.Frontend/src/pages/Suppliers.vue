@@ -34,7 +34,7 @@
           </template>
 
           <Column v-if="isUserAdmin" selectionMode="multiple" headerStyle="width: 3em"></Column>
-          <Column field="name" :header="t('name')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="name" :header="t('name')" :sortable="true" headerStyle="width:25%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('name') }}</span>
               {{ slotProps.data.name }}

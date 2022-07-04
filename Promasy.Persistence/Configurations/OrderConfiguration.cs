@@ -14,6 +14,10 @@ namespace Promasy.Persistence.Configurations
 
             builder.Property(b => b.CatNum)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
+                .IsRequired(false);  
+            
+            builder.Property(b => b.Kekv)
+                .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired(false);
 
             builder.HasOne(b => b.Cpv)

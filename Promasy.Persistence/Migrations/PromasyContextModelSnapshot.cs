@@ -86,6 +86,7 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("character varying(300)");
 
                     b.Property<string>("PrimaryPhone")
+                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
@@ -359,10 +360,11 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("FinanceDepartmentId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("Kekv")
-                        .HasColumnType("integer");
+                    b.Property<string>("Kekv")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<int?>("ManufacturerId")
+                    b.Property<int>("ManufacturerId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -528,13 +530,8 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<string>("CityType")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<string>("CorpusNumber")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Country")
                         .IsRequired()
@@ -549,6 +546,10 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("InternalNumber")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -573,8 +574,8 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<string>("StreetType")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -640,10 +641,12 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Edrpou")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
@@ -663,6 +666,7 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("character varying(300)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
@@ -762,8 +766,8 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("DescriptionEnglish")
                         .IsRequired()
@@ -852,7 +856,9 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasOne("Promasy.Domain.Manufacturers.Manufacturer", "Manufacturer")
                         .WithMany()
-                        .HasForeignKey("ManufacturerId");
+                        .HasForeignKey("ManufacturerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Promasy.Domain.Orders.ReasonForSupplierChoice", "Reason")
                         .WithMany()

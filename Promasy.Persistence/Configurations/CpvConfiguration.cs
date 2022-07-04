@@ -12,7 +12,7 @@ namespace Promasy.Persistence.Configurations
             builder.HasKey(b => b.Id);
 
             builder.Property(b => b.Code)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .HasMaxLength(10)
                 .IsRequired();
             
             builder.Property(b => b.DescriptionEnglish)

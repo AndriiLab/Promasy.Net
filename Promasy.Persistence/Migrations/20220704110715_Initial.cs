@@ -20,15 +20,15 @@ namespace Promasy.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    BuildingNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    City = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CityType = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CorpusNumber = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Country = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     PostalCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Region = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    City = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    CityType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Street = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    StreetType = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    StreetType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    BuildingNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    InternalNumber = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -47,7 +47,7 @@ namespace Promasy.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    Code = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     DescriptionEnglish = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     DescriptionUkrainian = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Level = table.Column<int>(type: "integer", nullable: false),
@@ -217,10 +217,10 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    Email = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
-                    Edrpou = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Email = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Edrpou = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     FaxNumber = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     AddressId = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -306,7 +306,7 @@ namespace Promasy.Persistence.Migrations
                     LastName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     UserName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Email = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    PrimaryPhone = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
+                    PrimaryPhone = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     ReservePhone = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     Password = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Salt = table.Column<long>(type: "bigint", nullable: true),
@@ -405,14 +405,14 @@ namespace Promasy.Persistence.Migrations
                     CatNum = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     OnePrice = table.Column<decimal>(type: "numeric", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    Kekv = table.Column<int>(type: "integer", nullable: true),
+                    Kekv = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     ProcurementStartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UnitId = table.Column<int>(type: "integer", nullable: false),
                     CpvId = table.Column<int>(type: "integer", nullable: false),
                     FinanceDepartmentId = table.Column<int>(type: "integer", nullable: false),
-                    ManufacturerId = table.Column<int>(type: "integer", nullable: true),
-                    ReasonId = table.Column<int>(type: "integer", nullable: false),
+                    ManufacturerId = table.Column<int>(type: "integer", nullable: false),
                     SupplierId = table.Column<int>(type: "integer", nullable: false),
+                    ReasonId = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -441,7 +441,8 @@ namespace Promasy.Persistence.Migrations
                         column: x => x.ManufacturerId,
                         principalSchema: "PromasyCore",
                         principalTable: "Manufacturers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Orders_ReasonForSupplierChoice_ReasonId",
                         column: x => x.ReasonId,
@@ -583,17 +584,17 @@ namespace Promasy.Persistence.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.Sql(@"
-CREATE FUNCTION fn_getemployeeshortname(id integer)
+CREATE FUNCTION ""PromasyCore"".fn_getemployeeshortname(id integer)
 RETURNS TEXT AS $$
 DECLARE result TEXT;
 BEGIN
-        SELECT concat(""LastName"", ' ', left(""FirstName"", 1), '.', left(""MiddleName"", 1), '.') INTO result
-            FROM    ""PromasyCore"".""Employees""
-            WHERE   ""Id"" = id;
+    SELECT concat(""LastName"", ' ', left(""FirstName"", 1), '.', left(""MiddleName"", 1), '.') INTO result
+        FROM    ""PromasyCore"".""Employees""
+        WHERE   ""Id"" = id;
 
-            RETURN result;
-            END
-                $$ LANGUAGE plpgsql;");
+        RETURN result;
+END
+    $$ LANGUAGE plpgsql;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

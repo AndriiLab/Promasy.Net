@@ -14,11 +14,11 @@ namespace Promasy.Persistence.Configurations
             
             builder.Property(b => b.Email)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired(false);
+                .IsRequired();
             
             builder.Property(b => b.Edrpou)
                 .HasMaxLength(20)
-                .IsRequired(false);
+                .IsRequired();
             
             builder.Property(b => b.FaxNumber)
                 .HasMaxLength(30)
@@ -26,7 +26,7 @@ namespace Promasy.Persistence.Configurations
             
             builder.Property(b => b.PhoneNumber)
                 .HasMaxLength(30)
-                .IsRequired(false);
+                .IsRequired();
         }
     }
 }

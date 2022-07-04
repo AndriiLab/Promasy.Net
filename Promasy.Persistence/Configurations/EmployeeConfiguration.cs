@@ -31,7 +31,7 @@ namespace Promasy.Persistence.Configurations
             
             builder.Property(b => b.PrimaryPhone)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired(false);
+                .IsRequired();
 
             builder.Property(b => b.ReservePhone)
                 .HasMaxLength(PersistenceConstant.FieldMedium)

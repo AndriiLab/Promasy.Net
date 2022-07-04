@@ -12,10 +12,10 @@ public class Order : Entity
 {
     public int Amount { get; set; }
     public string Description { get; set; }
-    public string CatNum { get; set; }
+    public string? CatNum { get; set; }
     public decimal OnePrice { get; set; }
     public OrderType Type { get; set; }
-    public int? Kekv { get; set; }
+    public string? Kekv { get; set; }
     public DateTime? ProcurementStartDate { get; set; }
 
     public int UnitId { get; set; }
