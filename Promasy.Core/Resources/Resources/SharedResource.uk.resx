@@ -48,4 +48,28 @@
   <data name="Unit already associated with order" xml:space="preserve">
     <value>Розмірність вже асоційована з замовленням</value>
   </data>
+  <data name="Organization already has departments" xml:space="preserve">
+    <value>Організація має відділи</value>
+  </data>
+  <data name="City type does not exist" xml:space="preserve">
+    <value>Обраний тип міста не існує</value>
+  </data>
+  <data name="Street type does not exist" xml:space="preserve">
+    <value>Обраний тип вулиці не існує</value>
+  </data>
+  <data name="Organization does not exist" xml:space="preserve">
+    <value>Організація не існує</value>
+  </data>
+  <data name="Department does not exist" xml:space="preserve">
+    <value>Відділ не існує</value>
+  </data>
+  <data name="Incorrect organization id" xml:space="preserve">
+    <value>Невірно вказано ІД організації</value>
+  </data>
+  <data name="Department has subdepartments" xml:space="preserve">
+    <value>Відділ має підрозділи</value>
+  </data>
+  <data name="Incorrect department id" xml:space="preserve">
+    <value>Невірно вказано ІД відділу</value>
+  </data>
 </root>

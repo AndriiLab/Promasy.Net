@@ -8,33 +8,33 @@ namespace Promasy.Persistence.Configurations
     {
         protected override void Config(EntityTypeBuilder<Address> builder)
         {
-            builder.Property(b => b.BuildingNumber)
-                .HasMaxLength(10)
-                .IsRequired();
-            
-            builder.Property(b => b.City)
-                .HasMaxLength(PersistenceConstant.FieldMini)
-                .IsRequired();
-            
-            builder.Property(b => b.InternalNumber)
-                .HasMaxLength(10)
-                .IsRequired(false);
-            
             builder.Property(b => b.Country)
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
-            
+
             builder.Property(b => b.PostalCode)
                 .HasMaxLength(10)
                 .IsRequired();
-            
+
             builder.Property(b => b.Region)
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
-            
+
+            builder.Property(b => b.City)
+                .HasMaxLength(PersistenceConstant.FieldMini)
+                .IsRequired();
+
             builder.Property(b => b.Street)
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
+
+            builder.Property(b => b.BuildingNumber)
+                .HasMaxLength(10)
+                .IsRequired();
+
+            builder.Property(b => b.InternalNumber)
+                .HasMaxLength(10)
+                .IsRequired(false);
         }
     }
 }

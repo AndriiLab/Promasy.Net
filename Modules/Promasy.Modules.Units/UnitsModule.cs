@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Promasy.Core;
 using Promasy.Core.Resources;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.Policies;
@@ -20,8 +19,8 @@ namespace Promasy.Modules.Units;
 
 public class UnitsModule : IModule
 {
-    public const string Tag = "Unit";
-    public const string RoutePrefix = "/api/units";
+    public string Tag { get; } = "Unit";
+    public string RoutePrefix { get; } = "/api/units";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {

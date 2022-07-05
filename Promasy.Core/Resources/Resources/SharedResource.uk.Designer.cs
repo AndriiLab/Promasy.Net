@@ -39,7 +39,7 @@ namespace Promasy.Core.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Promasy.Core.Resources.SharedResource.uk", typeof(SharedResource_uk).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Promasy.Core.Resources.Resources.SharedResource.uk", typeof(SharedResource_uk).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,6 +61,15 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Обраний тип міста не існує.
+        /// </summary>
+        internal static string City_type_does_not_exist {
+            get {
+                return ResourceManager.GetString("City type does not exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CPV код має бути у форматі 12345678-9 .
         /// </summary>
         internal static string CPV_code_must_be_in_format_12345678_9 {
@@ -70,11 +79,47 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Відділ не існує.
+        /// </summary>
+        internal static string Department_does_not_exist {
+            get {
+                return ResourceManager.GetString("Department does not exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Відділ має підрозділи.
+        /// </summary>
+        internal static string Department_has_subdepartments {
+            get {
+                return ResourceManager.GetString("Department has subdepartments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Невірно вказано ІД відділу.
+        /// </summary>
+        internal static string Incorrect_department_id {
+            get {
+                return ResourceManager.GetString("Incorrect department id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Невірно вказано ІД.
         /// </summary>
         internal static string Incorrect_Id {
             get {
                 return ResourceManager.GetString("Incorrect Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Невірно вказано ІД організації.
+        /// </summary>
+        internal static string Incorrect_organization_id {
+            get {
+                return ResourceManager.GetString("Incorrect organization id", resourceCulture);
             }
         }
         
@@ -111,6 +156,33 @@ namespace Promasy.Core.Resources {
         internal static string Name_must_be_unique {
             get {
                 return ResourceManager.GetString("Name must be unique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Організація має відділи.
+        /// </summary>
+        internal static string Organization_already_has_departments {
+            get {
+                return ResourceManager.GetString("Organization already has departments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Організація не існує.
+        /// </summary>
+        internal static string Organization_does_not_exist {
+            get {
+                return ResourceManager.GetString("Organization does not exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обраний тип вулиці не існує.
+        /// </summary>
+        internal static string Street_type_does_not_exist {
+            get {
+                return ResourceManager.GetString("Street type does not exist", resourceCulture);
             }
         }
         

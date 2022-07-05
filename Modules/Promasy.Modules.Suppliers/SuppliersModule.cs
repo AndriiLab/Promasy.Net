@@ -20,8 +20,8 @@ namespace Promasy.Modules.Suppliers;
 
 public class SuppliersModule : IModule
 {
-    public const string Tag = "Supplier";
-    public const string RoutePrefix = "/api/suppliers";
+    public string Tag { get; } = "Supplier";
+    public string RoutePrefix { get; } = "/api/suppliers";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {

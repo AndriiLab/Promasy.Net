@@ -18,8 +18,8 @@ namespace Promasy.Modules.Employees;
 
 public class EmployeesModule : IModule
 {
-    public const string Tag = "Employee";
-    public const string RoutePrefix = "/api/employees";
+    public string Tag { get; } = "Employee";
+    public string RoutePrefix { get; } = "/api/employees";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {

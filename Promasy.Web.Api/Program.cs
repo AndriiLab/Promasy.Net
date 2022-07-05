@@ -6,6 +6,7 @@ using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Cpv;
 using Promasy.Modules.Employees;
 using Promasy.Modules.Manufacturers;
+using Promasy.Modules.Organizations;
 using Promasy.Modules.Suppliers;
 using Promasy.Modules.Units;
 using Promasy.Persistence;
@@ -37,6 +38,7 @@ try
     builder.Services.RegisterModule<EmployeesModule>(builder.Configuration);
     builder.Services.RegisterModule<ManufacturersModule>(builder.Configuration);
     builder.Services.RegisterModule<SuppliersModule>(builder.Configuration);
+    builder.Services.RegisterModule<OrganizationsModule>(builder.Configuration);
     
     // Localization
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");

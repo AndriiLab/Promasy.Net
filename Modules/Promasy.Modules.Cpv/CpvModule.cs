@@ -14,8 +14,8 @@ namespace Promasy.Modules.Cpv;
 
 public class CpvModule : IModule
 {
-    public const string Tag = "CPV";
-    public const string RoutePrefix = "/api/cpv";
+    public string Tag { get; } = "CPV";
+    public string RoutePrefix { get; } = "/api/cpv";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {

@@ -23,8 +23,8 @@ namespace Promasy.Modules.Auth;
 
 public class AuthModule : IModule
 {
-    public const string Tag = "Auth";
-    public const string RoutePrefix = "/api/auth";
+    public string Tag { get; } = "Auth";
+    public string RoutePrefix { get; } = "/api/auth";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {

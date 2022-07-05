@@ -10,8 +10,8 @@ namespace Promasy.Modules.Core;
 
 public class CoreModule : IModule
 {
-    public const string Tag = "";
-    public const string RoutePrefix = "";
+    public string Tag { get; } = "";
+    public string RoutePrefix { get; } = "";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
