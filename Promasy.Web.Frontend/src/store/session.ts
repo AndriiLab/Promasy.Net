@@ -42,7 +42,7 @@ export const useSessionStore = defineStore({
       const decodedToken = jwtDecode(token) as Object<string>;
       this.user = {
         token: token,
-        roles: decodedToken.roles.split(","),
+        roles: decodedToken.roles.split(",").map(r => parseInt(r)),
         id: parseInt(decodedToken.id),
         firstName: decodedToken.firstName,
         middleName: decodedToken.middleName,
@@ -70,7 +70,7 @@ export const useSessionStore = defineStore({
       return getUrl(this.lastUrl);
     },
     isUserAdmin(): boolean {
-      return this.user?.roles.some(r => r === "Адміністратор") ?? false;
+      return this.user?.roles.some(r => r === 1) ?? false;
     }
   },
 });
@@ -97,7 +97,7 @@ export interface SessionUser {
   lastName: string;
   email: string;
 
-  roles: string[];
+  roles: number[];
 
   organization: string;
   organizationId: number;

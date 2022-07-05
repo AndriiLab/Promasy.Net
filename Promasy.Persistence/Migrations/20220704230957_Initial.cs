@@ -20,15 +20,15 @@ namespace Promasy.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    Country = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Country = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     PostalCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    Region = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    City = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CityType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Street = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    StreetType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Region = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CityType = table.Column<int>(type: "integer", nullable: false),
+                    Street = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    StreetType = table.Column<int>(type: "integer", nullable: false),
                     BuildingNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    InternalNumber = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
+                    InternalNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -162,7 +162,7 @@ namespace Promasy.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<int>(type: "integer", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {

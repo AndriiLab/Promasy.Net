@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Localization;
+using Promasy.Core;
 using Promasy.Core.Persistence;
+using Promasy.Core.Resources;
 using Promasy.Modules.Suppliers.Interfaces;
 
 namespace Promasy.Modules.Suppliers.Models;
@@ -8,13 +11,13 @@ public record CreateSupplierRequest(string Name, string? Comment, string? Phone)
 
 internal class CreateManufacturerRequestValidator : AbstractValidator<CreateSupplierRequest>
 {
-    public CreateManufacturerRequestValidator(ISuppliersRules rules)
+    public CreateManufacturerRequestValidator(ISuppliersRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium)
             .MustAsync(rules.IsNameUniqueAsync)
-            .WithMessage("Name must be unique");
+            .WithMessage(localizer["Name must be unique"]);
         
         RuleFor(r => r.Comment)
             .MaximumLength(PersistenceConstant.FieldLarge);

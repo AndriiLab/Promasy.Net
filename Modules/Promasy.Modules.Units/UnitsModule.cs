@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Promasy.Core;
+using Promasy.Core.Resources;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -16,8 +20,8 @@ namespace Promasy.Modules.Units;
 
 public class UnitsModule : IModule
 {
-    public string Tag { get; } = "Unit";
-    public string RoutePrefix { get; } = "/api/units";
+    public const string Tag = "Unit";
+    public const string RoutePrefix = "/api/units";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
@@ -62,11 +66,12 @@ public class UnitsModule : IModule
             .Produces<UnitDto>(StatusCodes.Status201Created);
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
-                async ([FromBody] UpdateUnitRequest request, [FromRoute] int id, [FromServices] IUnitsRepository repository) =>
+                async ([FromBody] UpdateUnitRequest request, [FromRoute] int id, [FromServices] IUnitsRepository repository,
+            [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError("Incorrect Id");
+                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new UnitDto(request.Id, request.Name));
@@ -79,19 +84,20 @@ public class UnitsModule : IModule
             .RequireAuthorization()
             .Produces<UnitDto>(StatusCodes.Status202Accepted);
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository,  [FromServices] IUnitsRules rules) =>
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository,
+                [FromServices] IUnitsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError("You cannot delete this unit",
+                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
                         StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError("Unit already associated with order",
+                    return PromasyResults.ValidationError(localizer["Unit already associated with order"],
                         StatusCodes.Status409Conflict);
                 }
 
@@ -113,7 +119,7 @@ public class UnitsModule : IModule
             .WithValidator<MergeUnitsRequest>()
             .WithTags(Tag)
             .WithName("Merge Units")
-            .RequireAuthorization()
+            .RequireAuthorization(AdminOnlyPolicy.Name)
             .Produces(StatusCodes.Status200OK);
 
 

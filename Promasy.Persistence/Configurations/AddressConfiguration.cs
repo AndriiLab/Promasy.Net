@@ -13,19 +13,15 @@ namespace Promasy.Persistence.Configurations
                 .IsRequired();
             
             builder.Property(b => b.City)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired();
-            
-            builder.Property(b => b.CityType)
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
             
             builder.Property(b => b.InternalNumber)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .HasMaxLength(10)
                 .IsRequired(false);
             
             builder.Property(b => b.Country)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
             
             builder.Property(b => b.PostalCode)
@@ -33,14 +29,10 @@ namespace Promasy.Persistence.Configurations
                 .IsRequired();
             
             builder.Property(b => b.Region)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
             
             builder.Property(b => b.Street)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired();
-            
-            builder.Property(b => b.StreetType)
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
         }

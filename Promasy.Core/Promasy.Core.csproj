@@ -10,4 +10,19 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.6" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Resources\SharedResource.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SharedResource.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\Resources\SharedResource.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>SharedResource.uk.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

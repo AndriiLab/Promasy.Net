@@ -8,24 +8,29 @@ import { onMounted } from "vue";
 import Toast from "primevue/toast";
 import { initStores } from "./store";
 import { useSessionStore } from "./store/session";
+import { useRolesStore } from "./store/roles";
 import LocalStore, { keys } from "./services/local-store";
 import { useI18n } from "vue-i18n";
 
 initStores();
 
 const sessionStore = useSessionStore();
+const rolesStore = useRolesStore();
+
 initLocale();
-onMounted(() => {
+onMounted(async () => {
   initUser();
+  await rolesStore.setRolesAsync();
 });
 
 function initLocale() {
   const { locale } = useI18n();
   locale.value = sessionStore.locale;
 
-  sessionStore.$subscribe((mutation, state) => {
+  sessionStore.$subscribe(async (mutation, state) => {
     if (state.locale !== locale.value) {
       locale.value = state.locale;
+      await rolesStore.setRolesAsync();
     }
   });
 }

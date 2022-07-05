@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Promasy.Core;
+using Promasy.Core.Resources;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -16,8 +20,9 @@ namespace Promasy.Modules.Manufacturers;
 
 public class ManufacturersModule : IModule
 {
-    public string Tag { get; } = "Manufacturer";
-    public string RoutePrefix { get; } = "/api/manufacturers";
+    public const string Tag = "Manufacturer";
+    public const string RoutePrefix = "/api/manufacturers";
+
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
         return builder;
@@ -78,19 +83,20 @@ public class ManufacturersModule : IModule
             .RequireAuthorization()
             .Produces<ManufacturerDto>(StatusCodes.Status202Accepted);
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IManufacturersRepository repository,  [FromServices] IManufacturersRules rules) =>
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IManufacturersRepository repository,  
+                [FromServices] IManufacturersRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError("You cannot delete this manufacturer",
+                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
                         StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError("Manufacturer already associated with order",
+                    return PromasyResults.ValidationError(localizer["Manufacturer already associated with order"],
                         StatusCodes.Status409Conflict);
                 }
 
@@ -112,7 +118,7 @@ public class ManufacturersModule : IModule
             .WithValidator<MergeManufacturersRequest>()
             .WithTags(Tag)
             .WithName("Merge Manufacturers")
-            .RequireAuthorization()
+            .RequireAuthorization(AdminOnlyPolicy.Name)
             .Produces(StatusCodes.Status200OK);
 
         return endpoints;

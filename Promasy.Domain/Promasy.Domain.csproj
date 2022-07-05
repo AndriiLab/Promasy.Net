@@ -15,4 +15,118 @@
         <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="6.0.6" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Employees\RoleName.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>RoleName.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Employees\RoleName.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>RoleName.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Finances\FinanceFundType.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>FinanceFundType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Finances\FinanceFundType.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>FinanceFundType.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Orders\OrderStatus.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrderStatus.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Orders\OrderStatus.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrderStatus.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Orders\OrderType.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrderType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Orders\OrderType.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrderType.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Organizations\CityType.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CityType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Organizations\CityType.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CityType.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Organizations\StreetType.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>StreetType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Organizations\StreetType.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>StreetType.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\Employees\RoleName.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>RoleName.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Employees\RoleName.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>RoleName.uk.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Finances\FinanceFundType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FinanceFundType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Finances\FinanceFundType.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FinanceFundType.uk.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Orders\OrderStatus.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrderStatus.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Orders\OrderStatus.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrderStatus.uk.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Orders\OrderType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrderType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Orders\OrderType.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrderType.uk.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Organizations\CityType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CityType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Organizations\CityType.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CityType.uk.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Organizations\StreetType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>StreetType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Organizations\StreetType.uk.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>StreetType.uk.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

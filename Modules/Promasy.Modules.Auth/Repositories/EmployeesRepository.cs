@@ -31,7 +31,7 @@ internal class EmployeesRepository : IEmployeesRepository
                 e.SubDepartment.DepartmentId,
                 e.SubDepartment.Name,
                 e.SubDepartmentId,
-                e.Roles.Select(r => r.Name).ToArray()))
+                e.Roles.Select(r => (int)r.Name).ToArray()))
             .FirstOrDefaultAsync();
     }
 }

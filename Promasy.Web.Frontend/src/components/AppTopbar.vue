@@ -24,7 +24,7 @@
 				</button>
 				<OverlayPanel ref="profileMenuPanel">
 					<div class="text-900 font-medium text-xl mb-2">{{ t('welcomeUser', {firstName: user?.firstName}) }}</div>
-					<div class="text-600"><Tag v-for="role in user?.roles" :key="role" :value="role" v-tooltip.left="t('role')"></Tag></div>
+					<div class="text-600"><Tag v-for="role in user?.roles" :key="role" :value="getRoleName(role)" v-tooltip.left="t('role')"></Tag></div>
 					<hr class="my-3 mx-0 border-top-1 border-none surface-border" />
 					<ul class="list-none p-0 m-0 flex-grow-1">
 						<li class="flex align-items-center mb-3">
@@ -60,12 +60,14 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSessionStore } from '@/store/session';
+import { useRolesStore } from '@/store/roles';
 import LanguageSelector from './LanguageSelector.vue';
 
 const { t } = useI18n({ useScope: "local" });
 const profileMenuPanel = ref(null);
 const settingsMenuPanel = ref(null);
 const { user } = useSessionStore();
+const { roles } = useRolesStore();
 
 const emit = defineEmits(['menu-toggle', 'topbar-settings-menu-toggle']);
 function onMenuToggle() {
@@ -78,6 +80,10 @@ function onProfileMenuToggle(event: Event) {
 
 function onSettingsMenuToggle(event: Event) {
 	settingsMenuPanel.value?.toggle(event);
+}
+
+function getRoleName(id: number){
+  return roles.find(r => r.value === id)?.text;
 }
 </script>
 

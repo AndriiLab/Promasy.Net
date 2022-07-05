@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Promasy.Core;
+using Promasy.Core.Resources;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -16,8 +20,8 @@ namespace Promasy.Modules.Suppliers;
 
 public class SuppliersModule : IModule
 {
-     public string Tag { get; } = "Supplier";
-    public string RoutePrefix { get; } = "/api/suppliers";
+    public const string Tag = "Supplier";
+    public const string RoutePrefix = "/api/suppliers";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
@@ -62,11 +66,12 @@ public class SuppliersModule : IModule
             .Produces<SupplierDto>(StatusCodes.Status201Created);
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
-                async ([FromBody] UpdateSupplierRequest request, [FromRoute] int id, [FromServices] ISuppliersRepository repository) =>
+                async ([FromBody] UpdateSupplierRequest request, [FromRoute] int id, [FromServices] ISuppliersRepository repository, 
+        [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError("Incorrect Id");
+                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new SupplierDto(request.Id, request.Name, request.Comment, request.Phone));
@@ -79,19 +84,20 @@ public class SuppliersModule : IModule
             .RequireAuthorization()
             .Produces<SupplierDto>(StatusCodes.Status202Accepted);
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] ISuppliersRepository repository,  [FromServices] ISuppliersRules rules) =>
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] ISuppliersRepository repository,
+                [FromServices] ISuppliersRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError("You cannot delete this supplier",
+                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
                         StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError("Supplier already associated with order",
+                    return PromasyResults.ValidationError(localizer["Supplier already associated with order"],
                         StatusCodes.Status409Conflict);
                 }
 
@@ -113,7 +119,7 @@ public class SuppliersModule : IModule
             .WithValidator<MergeSuppliersRequest>()
             .WithTags(Tag)
             .WithName("Merge Suppliers")
-            .RequireAuthorization()
+            .RequireAuthorization(AdminOnlyPolicy.Name)
             .Produces(StatusCodes.Status200OK);
 
 

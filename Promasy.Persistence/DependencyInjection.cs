@@ -47,7 +47,7 @@ namespace Promasy.Persistence
             EnsureRole(RoleName.User, context);
         }
 
-        private static void EnsureRole(string role, PromasyContext context)
+        private static void EnsureRole(RoleName role, PromasyContext context)
         {
             if (context.Roles.Any(r => r.Name == role))
             {

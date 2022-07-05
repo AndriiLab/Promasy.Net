@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Localization;
 using Microsoft.OpenApi.Models;
 using Promasy.Modules.Auth;
 using Promasy.Modules.Core;
@@ -36,10 +37,15 @@ try
     builder.Services.RegisterModule<EmployeesModule>(builder.Configuration);
     builder.Services.RegisterModule<ManufacturersModule>(builder.Configuration);
     builder.Services.RegisterModule<SuppliersModule>(builder.Configuration);
+    
+    // Localization
+    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddMvcCore();
+    builder.Services.AddMvcCore()
+    .AddDataAnnotationsLocalization();
+    
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(o =>
     {
@@ -69,6 +75,15 @@ try
     });
     
     builder.Services.AddCors();
+    
+    // Supported localization cultures
+    var supportedCultures = new [] { "en", "uk" };
+    builder.Services.Configure<RequestLocalizationOptions>(options =>
+    {
+        options.SetDefaultCulture(supportedCultures[0])
+            .AddSupportedCultures(supportedCultures)
+            .AddSupportedUICultures(supportedCultures);
+    });
 
     var app = builder.Build();
 
@@ -90,6 +105,29 @@ try
     }
 
     app.UseHttpsRedirection();
+    
+    // Configure parse localization from request 
+    app.UseRequestLocalization(new RequestLocalizationOptions()
+        .SetDefaultCulture(supportedCultures[0])
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures)
+        .AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
+        {                    
+            var requestLanguages = context.Request.Headers["Accept-Language"].ToString();
+            var requestLanguage = requestLanguages.Split(',').FirstOrDefault() ?? string.Empty;
+            string selectedLanguage;
+            if (supportedCultures.Contains(requestLanguage))
+            {
+                selectedLanguage = requestLanguage;
+                Log.Information("Request culture: {Culture}", requestLanguage);
+            }
+            else
+            {
+                selectedLanguage = supportedCultures[0];
+                Log.Information("Request culture not defined. Fallback to default culture: {Culture}", requestLanguage);
+            }
+            return Task.FromResult(new ProviderCultureResult(selectedLanguage, selectedLanguage));
+        })));
 
     app.PreparePersistence();
 

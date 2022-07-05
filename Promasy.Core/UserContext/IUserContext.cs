@@ -15,6 +15,5 @@ public interface IUserContext
     string SubDepartment { get; }
     int SubDepartmentId { get; }
     string? IpAddress { get; }
-    IReadOnlyCollection<string> Roles { get; }
-    bool IsAdmin();
+    IReadOnlyCollection<int> Roles { get; }
 }

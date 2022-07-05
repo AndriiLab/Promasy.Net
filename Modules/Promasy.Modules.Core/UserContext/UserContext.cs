@@ -1,5 +1,4 @@
 ﻿using Promasy.Core.UserContext;
-using Promasy.Domain.Employees;
 
 namespace Promasy.Modules.Core.UserContext;
 
@@ -17,12 +16,11 @@ public class UserContext : IUserContext
     public string SubDepartment { get; }
     public string? IpAddress { get; }
     public int SubDepartmentId { get; }
-    public IReadOnlyCollection<string> Roles { get; }
-    public bool IsAdmin() => Roles.Contains(RoleName.Administrator);
+    public IReadOnlyCollection<int> Roles { get; }
 
     public UserContext(int id, string firstName, string middleName, string lastName, string email, string organization,
         int organizationId, string department, int departmentId, string subDepartment, int subDepartmentId, string? ipAddress,
-        IReadOnlyCollection<string> roles)
+        IReadOnlyCollection<int> roles)
     {
         Id = id;
         FirstName = firstName;

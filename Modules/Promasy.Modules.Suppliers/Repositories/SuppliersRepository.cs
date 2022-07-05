@@ -41,14 +41,9 @@ internal class SuppliersRepository : ISuppliersRules, ISuppliersRepository
 
     public Task<bool> IsEditableAsync(int id, CancellationToken ct)
     {
-        return _userContext.Roles.Any(r => r != RoleName.User)
+        return _userContext.Roles.Any(r => r != (int)RoleName.User)
             ? Task.FromResult(true)
             : _database.Suppliers.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.Id, ct);
-    }
-
-    public bool IsMergeable()
-    {
-        return _userContext.IsAdmin();
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)

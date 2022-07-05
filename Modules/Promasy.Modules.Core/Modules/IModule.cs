@@ -6,8 +6,8 @@ namespace Promasy.Modules.Core.Modules;
 
 public interface IModule
 {
-    string Tag { get; }
-    string RoutePrefix { get; }
+    static string Tag { get; }
+    static string RoutePrefix { get; }
     IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration);
     IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
 }

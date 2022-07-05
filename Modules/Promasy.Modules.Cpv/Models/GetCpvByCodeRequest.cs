@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
+using Promasy.Core;
+using Promasy.Core.Resources;
 
 namespace Promasy.Modules.Cpv.Models;
 
@@ -28,11 +31,11 @@ public class GetCpvByCodeRequest
 
 internal class GetCpvByCodeRequestValidator : AbstractValidator<GetCpvByCodeRequest>
 {
-    public GetCpvByCodeRequestValidator()
+    public GetCpvByCodeRequestValidator(IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Code)
             .NotEmpty()
             .Length(10)
-            .WithMessage("CPV code must be in format 12345678-9");
+            .WithMessage(localizer["CPV code must be in format 12345678-9"]);
     }
 }

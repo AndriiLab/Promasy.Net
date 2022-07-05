@@ -32,6 +32,12 @@ public class UserContextResolver : IUserContextResolver
             _logger.LogInformation("User context not initialized");
             return null;
         }
+
+        var roles = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value
+            .Split(",")
+            .Select(r => Convert.ToInt32(r))
+            .ToArray();
+        
         var user = new UserContext(
             Convert.ToInt32(principal.Claims.FirstOrDefault(x => x.Type == nameof(UserContext.Id).ToCamelCase())?.Value),
             principal.Claims.FirstOrDefault(x => x.Type == nameof(UserContext.FirstName).ToCamelCase())?.Value ?? string.Empty, 
@@ -45,7 +51,7 @@ public class UserContextResolver : IUserContextResolver
             principal.Claims.FirstOrDefault(x => x.Type == nameof(UserContext.SubDepartment).ToCamelCase())?.Value ?? string.Empty,
             Convert.ToInt32(principal.Claims.FirstOrDefault(x => x.Type == nameof(UserContext.SubDepartmentId).ToCamelCase())?.Value),
             context!.GetIpAddress(),
-            principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value?.Split(",") ?? Array.Empty<string>());
+            roles ?? Array.Empty<int>());
         
         _logger.LogInformation("User context initialized for {Email}", user.Email);
         return user;

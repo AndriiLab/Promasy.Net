@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="City" xml:space="preserve">
+        <value>місто</value>
+    </data>
+    <data name="Settlement" xml:space="preserve">
+        <value>селище</value>
+    </data>
+    <data name="UrbanVillage" xml:space="preserve">
+        <value>селище міського типу</value>
+    </data>
+    <data name="Village" xml:space="preserve">
+        <value>село</value>
+    </data>
+    <data name="City.Short" xml:space="preserve">
+        <value>м.</value>
+    </data>
+    <data name="Settlement.Short" xml:space="preserve">
+        <value>с-ще</value>
+    </data>
+    <data name="UrbanVillage.Short" xml:space="preserve">
+        <value>смт</value>
+    </data>
+    <data name="Village.Short" xml:space="preserve">
+        <value>с.</value>
+    </data>
+</root>

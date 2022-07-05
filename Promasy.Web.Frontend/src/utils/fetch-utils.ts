@@ -37,8 +37,8 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
   const ri = init ?? ({} as RequestInit);
   ri.method = method;
 
-  const sessionStore = useSessionStore();
-  ri.headers = buildHeaders(ri, sessionStore.user);
+  const { user, refreshTokenAsync } = useSessionStore();
+  ri.headers = buildHeaders(ri, user);
 
   const fetchResponse = await fetch(input, ri);
   const response: Response<TOkResponse, TErrorResponse> = {
@@ -52,8 +52,8 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
     response.data = body as TOkResponse;
   } else if (fetchResponse.status === 401) {
     if (retry) {
-      await sessionStore.refreshTokenAsync();
-      if (sessionStore.user) {
+      await refreshTokenAsync();
+      if (user) {
         return typedFetchAsync<TOkResponse, TErrorResponse>(method, input, init, false);
       }
     }
@@ -66,6 +66,9 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
 
 function buildHeaders(ri: RequestInit, user: SessionUser | undefined): Headers {
   const headers = (ri.headers as Headers) ?? (new Headers());
+  const { locale } = useSessionStore();
+  headers.append("Accept-Language", locale);
+
   const token = user?.token;
   if (token) {
     headers.append("Authorization", `Bearer ${ token }`);
@@ -101,4 +104,9 @@ export interface PagedResponse<T> {
   page: number;
   total: number;
   collection: T[];
+}
+
+export interface SelectItem<T> {
+  value: T;
+  text: string;
 }

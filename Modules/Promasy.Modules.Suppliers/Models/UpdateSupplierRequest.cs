@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Localization;
+using Promasy.Core;
 using Promasy.Core.Persistence;
+using Promasy.Core.Resources;
 using Promasy.Modules.Suppliers.Interfaces;
 
 namespace Promasy.Modules.Suppliers.Models;
@@ -8,7 +11,7 @@ public record UpdateSupplierRequest(int Id, string Name, string? Comment, string
 
 internal class UpdateManufacturerRequestValidator : AbstractValidator<UpdateSupplierRequest>
 {
-    public UpdateManufacturerRequestValidator(ISuppliersRules rules)
+    public UpdateManufacturerRequestValidator(ISuppliersRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
@@ -22,12 +25,12 @@ internal class UpdateManufacturerRequestValidator : AbstractValidator<UpdateSupp
 
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistAsync)
-            .WithMessage("Supplier not exist")
+            .WithMessage(localizer["Item not exist"])
             .MustAsync(rules.IsEditableAsync)
-            .WithMessage("You cannot edit this supplier");
+            .WithMessage(localizer["You cannot perform this action"]);
         
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))
-            .WithMessage("Name must be unique");
+            .WithMessage(localizer["Name must be unique"]);
     }
 }

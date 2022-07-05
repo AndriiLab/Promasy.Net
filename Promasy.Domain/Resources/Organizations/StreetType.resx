@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Street" xml:space="preserve">
+        <value>Street</value>
+    </data>
+    <data name="Avenue" xml:space="preserve">
+        <value>Avenue</value>
+    </data>
+    <data name="Quay" xml:space="preserve">
+        <value>Quay</value>
+    </data>
+    <data name="Boulevard" xml:space="preserve">
+        <value>Boulevard</value>
+    </data>
+    <data name="Valley" xml:space="preserve">
+        <value>Valley</value>
+    </data>
+    <data name="BlindValley" xml:space="preserve">
+        <value>Blind Valley</value>
+    </data>
+    <data name="Descent" xml:space="preserve">
+        <value>Descent</value>
+    </data>
+    <data name="Highway" xml:space="preserve">
+        <value>Highway</value>
+    </data>
+    <data name="Square" xml:space="preserve">
+        <value>Square</value>
+    </data>
+    <data name="Lane" xml:space="preserve">
+        <value>Lane</value>
+    </data>
+    <data name="Line" xml:space="preserve">
+        <value>Line</value>
+    </data>
+    <data name="BackValley" xml:space="preserve">
+        <value>Back Valley</value>
+    </data>
+    <data name="Entry" xml:space="preserve">
+        <value>Entry</value>
+    </data>
+    <data name="Bout" xml:space="preserve">
+        <value>Bout</value>
+    </data>
+    <data name="Passage" xml:space="preserve">
+        <value>Passage</value>
+    </data>
+    <data name="Crossing" xml:space="preserve">
+        <value>Crossing</value>
+    </data>
+    <data name="Glade" xml:space="preserve">
+        <value>Glade</value>
+    </data>
+    <data name="Quarter" xml:space="preserve">
+        <value>Quarter</value>
+    </data>
+    <data name="MicroDistrict" xml:space="preserve">
+        <value>Micro District</value>
+    </data>
+    <data name="Avenue.Short" xml:space="preserve">
+        <value>ave</value>
+    </data>
+    <data name="Boulevard.Short" xml:space="preserve">
+        <value>blvd</value>
+    </data>
+    <data name="Lane.Short" xml:space="preserve">
+        <value>ln</value>
+    </data>
+    <data name="MicroDistrict.Short" xml:space="preserve">
+        <value>Micro District</value>
+    </data>
+    <data name="Street.Short" xml:space="preserve">
+        <value>st</value>
+    </data>
+</root>

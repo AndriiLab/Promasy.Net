@@ -52,6 +52,75 @@ FROM "PromasyCore"."Cpvs" C
 WHERE C."Level" > 1) AS SQ
 WHERE "Level" > 1 AND "Id" = SQ.Id AND SQ.ParentId IS NOT NULL;
 
+
+CREATE OR REPLACE FUNCTION FN_CityTypeConverter(city_eum varchar(255)) RETURNS integer
+AS
+$$
+DECLARE
+    result integer;
+BEGIN
+    CASE city_eum
+        WHEN 'CITY'
+            THEN result = 1;
+        WHEN 'URBAN_VILLAGE'
+            THEN result = 2;
+        WHEN 'SETTLEMENT'
+            THEN result = 3;
+        ELSE result = 4;
+        END CASE;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION FN_StreetTypeConverter(street_eum varchar(255)) RETURNS integer
+AS
+$$
+DECLARE
+    result integer;
+BEGIN
+    CASE street_eum
+        WHEN 'STREET'
+            THEN result = 1;
+        WHEN 'AVENUE'
+            THEN result = 2;
+        WHEN 'QUAY'
+            THEN result = 3;
+        WHEN 'BOULEVARD'
+            THEN result = 4;
+        WHEN 'ALLEY'
+            THEN result = 5;
+        WHEN 'BLIND_ALLEY'
+            THEN result = 6;
+        WHEN 'DESCENT'
+            THEN result = 7;
+        WHEN 'HIGHWAY'
+            THEN result = 8;
+        WHEN 'SQUARE'
+            THEN result = 9;
+        WHEN 'LANE'
+            THEN result = 10;
+        WHEN 'LINE'
+            THEN result = 11;
+        WHEN 'BACK_ALLEY'
+            THEN result = 12;
+        WHEN 'ENTRY'
+            THEN result = 13;
+        WHEN 'ENTRY2'
+            THEN result = 14;
+        WHEN 'PASSAGE'
+            THEN result = 15;
+        WHEN 'CROSSING'
+            THEN result = 16;
+        WHEN 'GLADE'
+            THEN result = 17;
+        WHEN 'SQUARE2'
+            THEN result = 18;
+        ELSE result = 19;
+        END CASE;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
 INSERT INTO "PromasyCore"."Addresses" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "BuildingNumber", "City",
                                        "CityType", "InternalNumber", "Country", "PostalCode", "Region", "Street",
                                        "StreetType", "CreatorId")
@@ -61,13 +130,13 @@ SELECT created_date,
        id,
        building_number,
        city,
-       citytype,
+       FN_CityTypeConverter(citytype),
        NULLIF(corpus_number, ''),
        country,
        postal_code,
        region,
        street,
-       streettype,
+       FN_StreetTypeConverter(streettype),
        0
 FROM promasy.addresses;
 
@@ -148,28 +217,28 @@ AS
 $$
 DECLARE
     result    integer;
-    role_name text;
+    role_name integer;
 BEGIN
     CASE role_eum
         WHEN 'ADMIN'
-            THEN role_name = 'Адміністратор';
+            THEN role_name = 1;
         WHEN 'DIRECTOR'
-            THEN role_name = 'Директор';
+            THEN role_name = 2;
         WHEN 'DEPUTY_DIRECTOR'
-            THEN role_name = 'Заступник директора';
+            THEN role_name = 3;
         WHEN 'HEAD_OF_TENDER_COMMITTEE'
-            THEN role_name = 'Голова тендерного комітету';
+            THEN role_name = 4;
         WHEN 'SECRETARY_OF_TENDER_COMMITTEE'
-            THEN role_name = 'Секретар тендерного комітету';
+            THEN role_name = 5;
         WHEN 'ECONOMIST'
-            THEN role_name = 'Головний економіст';
+            THEN role_name = 6;
         WHEN 'ACCOUNTANT'
-            THEN role_name = 'Головний бухгалтер';
+            THEN role_name = 7;
         WHEN 'HEAD_OF_DEPARTMENT'
-            THEN role_name = 'Керівник підрозділу';
+            THEN role_name = 8;
         WHEN 'PERSONALLY_LIABLE_EMPLOYEE'
-            THEN role_name = 'Матеріально-відповідальна особа';
-        ELSE role_name = 'Користувач';
+            THEN role_name = 9;
+        ELSE role_name = 10;
         END CASE;
 
     SELECT "Id"
@@ -419,6 +488,10 @@ ALTER TABLE "PromasyCore"."Suppliers"
     DROP COLUMN OldId;
 
 DROP FUNCTION FN_RoleConverter;
+
+DROP FUNCTION FN_CityTypeConverter;
+
+DROP FUNCTION FN_StreetTypeConverter;
 
 DROP FUNCTION FN_FundTypeConverter;
 

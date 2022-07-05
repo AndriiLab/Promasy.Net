@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
+using Promasy.Core;
+using Promasy.Core.Resources;
 using Promasy.Modules.Auth.Interfaces;
 using Promasy.Modules.Auth.Models;
 using Promasy.Modules.Auth.Services;
@@ -20,8 +23,8 @@ namespace Promasy.Modules.Auth;
 
 public class AuthModule : IModule
 {
-    public string Tag { get; } = "Auth";
-    public string RoutePrefix { get; } = "/api/auth";
+    public const string Tag = "Auth";
+    public const string RoutePrefix = "/api/auth";
 
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
@@ -31,7 +34,8 @@ public class AuthModule : IModule
         var jwtSettings = jwtSection.Get<TokenSettings>();
         builder.AddAuthorization(options =>
         {
-            options.AddPolicy("Role", policy => policy.Requirements.Add(new RoleAuthorizationRequirement()));
+            options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser().Build();
         });
         builder.AddAuthentication(options =>
             {
@@ -63,12 +67,12 @@ public class AuthModule : IModule
 
         endpoints.MapPost(RoutePrefix,
                 async ([FromBody] UserCredentialsRequest request, IAuthService authService,
-                    ITokenService jwtTokenService, HttpResponse response) =>
+                    ITokenService jwtTokenService, HttpResponse response, IStringLocalizer<SharedResource> localizer) =>
                 {
                     var id = await authService.AuthAsync(request.User, request.Password);
                     if (id is null)
                     {
-                        return PromasyResults.ValidationError("Incorrect username or password");
+                        return PromasyResults.ValidationError(localizer["Incorrect username or password"]);
                     }
                     var tokens = await jwtTokenService.GenerateTokenAsync(id.Value);
                     SetRefreshTokenCookie(response, tokens.RefreshToken, tokens.RefreshExpiryTime);
@@ -139,8 +143,4 @@ public class AuthModule : IModule
     {
         return request.Cookies.TryGetValue(RefreshTokenCookieKey, out var rt) ? rt : null;
     }
-}
-
-public class RoleAuthorizationRequirement : IAuthorizationRequirement
-{
 }
