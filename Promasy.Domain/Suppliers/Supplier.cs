@@ -2,7 +2,7 @@
 
 namespace Promasy.Domain.Suppliers;
 
-public class Supplier : Entity
+public class Supplier : OrganizationEntity
 {
     public string Name { get; set; }
     public string? Comment { get; set; }

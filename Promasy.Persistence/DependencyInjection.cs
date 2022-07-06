@@ -2,9 +2,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Persistence;
 using Promasy.Persistence.Context;
+using Z.EntityFramework.Extensions;
 
 namespace Promasy.Persistence
 {
@@ -13,7 +15,10 @@ namespace Promasy.Persistence
         public static IServiceCollection AddPersistence(this IServiceCollection services, string connectionString)
         {
             services.AddDbContext<PromasyContext>(o =>
-                o.UseNpgsql(connectionString));
+            {
+                o.UseNpgsql(connectionString);
+                o.UseTriggers(c => c.AddAssemblyTriggers());
+            });
             services.AddScoped<IDatabase, PromasyDatabase>();
 
             return services;
@@ -24,6 +29,18 @@ namespace Promasy.Persistence
             using var serviceScope = app.ApplicationServices
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope();
+
+            var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<PromasyContext>>();
+
+            BatchDeleteManager.BatchDeleteBuilder = b =>
+            {
+                b.Executing = d => logger.LogInformation("SQL Batch Delete: {Sql}", d.CommandText);
+            };            
+            BatchUpdateManager.BatchUpdateBuilder = b =>
+            {
+                b.Executing = d => logger.LogInformation("SQL Batch Update: {Sql}", d.CommandText);
+            };
+            
             using var context = serviceScope.ServiceProvider.GetRequiredService<PromasyContext>();
             context.Database.Migrate();
 

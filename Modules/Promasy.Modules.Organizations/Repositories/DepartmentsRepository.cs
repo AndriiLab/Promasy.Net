@@ -22,31 +22,26 @@ internal class DepartmentsRepository : IDepartmentsRules, IDepartmentsRepository
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, int organizationId, CancellationToken ct)
+    public Task<bool> IsExistAsync(int id, CancellationToken ct)
     {
-        return _database.Departments.AnyAsync(d => d.Id == id && d.OrganizationId == organizationId, ct);
+        return _database.Departments.AnyAsync(d => d.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int organizationId, CancellationToken ct)
+    public Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
     {
-        return _database.Departments.Where(d => d.OrganizationId == organizationId).AllAsync(d => d.Name != name, ct);
+        return _database.Departments.AllAsync(d => d.Name != name, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, int organizationId, CancellationToken ct)
+    public Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
-        return _database.Departments.Where(u => u.Id != id && u.OrganizationId == organizationId).AllAsync(u => u.Name != name, ct);
+        return _database.Departments.Where(u => u.Id != id).AllAsync(u => u.Name != name, ct);
     }
 
-    public bool IsEditable(int id, int organizationId)
+    public bool IsEditable(int id)
     {
-        if (_userContext.Roles.Any(r => r == (int) RoleName.Administrator))
+        if (_userContext.Roles.Any(r => r is (int) RoleName.Administrator or (int) RoleName.Director or (int) RoleName.DeputyDirector))
         {
             return true;
-        }
-
-        if (_userContext.Roles.Any(r => r is (int) RoleName.Director or (int) RoleName.DeputyDirector))
-        {
-            return _userContext.OrganizationId == organizationId;
         }
 
         if (_userContext.Roles.Any(r => r == (int) RoleName.HeadOfDepartment))
@@ -62,11 +57,10 @@ internal class DepartmentsRepository : IDepartmentsRules, IDepartmentsRepository
         return _database.SubDepartments.AnyAsync(s => s.DepartmentId == id, ct);
     }
 
-    public Task<PagedResponse<DepartmentDto>> GetPagedListAsync(int organizationId, PagedRequest request)
+    public Task<PagedResponse<DepartmentDto>> GetPagedListAsync(PagedRequest request)
     {
         var query = _database.Departments
-            .AsNoTracking()
-            .Where(d => d.OrganizationId == organizationId);
+            .AsNoTracking();
         if (!string.IsNullOrEmpty(request.Search))
         {
             query = query.Where(u => u.Name.Contains(request.Search));

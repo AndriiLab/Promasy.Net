@@ -1,5 +1,4 @@
-﻿using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
@@ -9,6 +8,7 @@ using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
+using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Units.Repositories;
 
@@ -108,7 +108,7 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
     {
         await _database.Orders
             .Where(o => sourceIds.Contains(o.UnitId))
-            .BatchUpdateAsync(o => new Order {UnitId = targetId});
+            .UpdateAsync(o => new Order {UnitId = targetId});
 
         var unitsToDelete = await _database.Units
             .Where(m => sourceIds.Contains(m.Id))

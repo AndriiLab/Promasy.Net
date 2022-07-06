@@ -17,7 +17,7 @@ public class CoreModule : IModule
     {
         builder.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         builder.AddScoped<IUserContextResolver, UserContextResolver>();
-        builder.AddScoped<IUserContext>(sp => sp.GetRequiredService<IUserContextResolver>().Resolve()!);
+        builder.AddTransient<IUserContext>(sp => sp.GetRequiredService<IUserContextResolver>().Resolve()!);
         
         return builder;
     }

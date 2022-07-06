@@ -1,46 +1,57 @@
-﻿using EFCore.BulkExtensions;
+﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Persistence;
 using Promasy.Modules.Auth.Interfaces;
+using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Auth.Repositories;
 
 internal class RefreshTokenRepository : IRefreshTokenRepository
 {
     private readonly IDatabase _database;
+    private readonly IUserContextResolver _userContextResolver;
     private readonly IUserContext _userContext;
     private readonly ILogger<RefreshTokenRepository> _logger;
 
-    public RefreshTokenRepository(IDatabase database, IUserContext userContext, ILogger<RefreshTokenRepository> logger)
+    public RefreshTokenRepository(IDatabase database, IUserContextResolver userContextResolver, ILogger<RefreshTokenRepository> logger)
     {
         _database = database;
-        _userContext = userContext;
+        _userContext = userContextResolver.Resolve()!;
+        _userContextResolver = userContextResolver;
         _logger = logger;
     }
 
     public async Task CreateAsync(string token, int userId, DateTime expires)
     {
+        var userContext = _userContextResolver.Resolve();
+        if (userContext is null)
+        {
+            throw new NoNullAllowedException("User context must be initialized");
+        }
+
         await CleanupOldTokensAsync();
 
         await _database.RefreshTokens
             .Where(r => r.EmployeeId == userId)
             .Where(r => r.Revoked == null)
             .Where(r => r.Expires > DateTime.UtcNow)
-            .BatchUpdateAsync(r => new RefreshToken
+            .UpdateAsync(r => new RefreshToken
             {
                 Revoked = DateTime.UtcNow,
+                ModifierId = userId,
+                ModifiedDate = DateTime.UtcNow,
                 ReasonRevoked = TokenRevokeReason.Revoked,
-                RevokedByIp = _userContext.IpAddress
+                RevokedByIp = userContext.IpAddress
             });
         
         var rt = new RefreshToken
         {
             Token = token,
             Expires = expires,
-            CreatedByIp = _userContext.IpAddress ?? string.Empty,
+            CreatedByIp = userContext.IpAddress ?? string.Empty,
             EmployeeId = userId
         };
         _database.RefreshTokens.Add(rt);
@@ -55,6 +66,12 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
         if (oldRt is null || oldRt.IsExpired())
         {
             return false;
+        }
+        
+        var userContext = _userContextResolver.Resolve();
+        if (userContext is null)
+        {
+            throw new NoNullAllowedException("User context must be initialized");
         }
         
         if (oldRt.IsRevoked())
@@ -80,7 +97,7 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
             {
                 t.Revoked = DateTime.UtcNow;
                 t.ReasonRevoked = TokenRevokeReason.Compromised;
-                t.RevokedByIp = _userContext.IpAddress;
+                t.RevokedByIp = userContext.IpAddress;
             }
                 
             await _database.SaveChangesAsync();
@@ -92,14 +109,14 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
         {
             Token = newToken,
             Expires = newExpires,
-            CreatedByIp = _userContext.IpAddress ?? string.Empty,
+            CreatedByIp = userContext.IpAddress ?? string.Empty,
             EmployeeId = oldRt.EmployeeId
         };
         _database.RefreshTokens.Add(rt);
         oldRt.ReplacedByTokenId = rt.Id;
         oldRt.Revoked = DateTime.UtcNow;
         oldRt.ReasonRevoked = TokenRevokeReason.Replaced;
-        oldRt.RevokedByIp = _userContext.IpAddress;
+        oldRt.RevokedByIp = userContext.IpAddress;
         await _database.SaveChangesAsync();
 
         return true;
@@ -128,6 +145,6 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
     {
         return _database.RefreshTokens
             .Where(rt => rt.Expires < DateTime.UtcNow.AddDays(-14))
-            .BatchDeleteAsync();
+            .DeleteAsync();
     }
 }

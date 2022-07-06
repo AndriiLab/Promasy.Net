@@ -3,7 +3,7 @@ using Promasy.Core.Persistence;
 
 namespace Promasy.Domain.Employees;
 
-public class RefreshToken : IEntity
+public class RefreshToken : IBaseEntity
 {
     public int Id { get; set; }
     public string Token { get; set; }

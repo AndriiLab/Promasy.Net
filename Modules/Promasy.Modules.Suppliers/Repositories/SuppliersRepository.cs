@@ -1,5 +1,4 @@
-﻿using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
@@ -10,6 +9,7 @@ using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Suppliers.Dtos;
 using Promasy.Modules.Suppliers.Interfaces;
+using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Suppliers.Repositories;
 
@@ -113,7 +113,7 @@ internal class SuppliersRepository : ISuppliersRules, ISuppliersRepository
     {
         await _database.Orders
             .Where(o => sourceIds.Contains(o.SupplierId))
-            .BatchUpdateAsync(o => new Order {SupplierId = targetId});
+            .UpdateAsync(o => new Order {SupplierId = targetId});
 
         var unitsToDelete = await _database.Suppliers
             .Where(m => sourceIds.Contains(m.Id))

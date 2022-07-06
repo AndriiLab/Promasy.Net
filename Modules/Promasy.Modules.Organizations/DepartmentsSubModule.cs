@@ -35,7 +35,7 @@ internal class DepartmentsSubModule : SubModule
     {
         endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository) =>
             {
-                var list = await repository.GetPagedListAsync(organizationId, request);
+                var list = await repository.GetPagedListAsync(request);
                 return Results.Json(list);
             })
             .WithValidator<PagedRequest>()
@@ -101,7 +101,7 @@ internal class DepartmentsSubModule : SubModule
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository,
                 [FromServices] IDepartmentsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = rules.IsEditable(id, organizationId);
+                var isEditable = rules.IsEditable(id);
                 if (!isEditable)
                 {
                     return PromasyResults.ValidationError(localizer["You cannot perform this action"],

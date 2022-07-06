@@ -6,7 +6,7 @@ using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Models;
 
-public record UpdateSubDepartmentRequest(int Id, string Name, int DepartmentId, int OrganizationId);
+public record UpdateSubDepartmentRequest(int Id, string Name, int DepartmentId);
 
 internal class UpdateSubDepartmentRequestValidator : AbstractValidator<UpdateSubDepartmentRequest>
 {
@@ -17,11 +17,11 @@ internal class UpdateSubDepartmentRequestValidator : AbstractValidator<UpdateSub
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r)
-            .Must(r => rules.IsEditable(r.Id, r.DepartmentId, r.OrganizationId))
+            .Must(r => rules.IsEditable(r.Id))
             .WithMessage(localizer["You cannot perform this action"])
-            .MustAsync((r, t) => rules.IsExistAsync(r.Id, r.DepartmentId, r.OrganizationId, t))
+            .MustAsync((r, t) => rules.IsExistAsync(r.Id, r.DepartmentId, t))
             .WithMessage(localizer["Item not exist"])
-            .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, r.DepartmentId, r.OrganizationId, t))
+            .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, r.DepartmentId, t))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

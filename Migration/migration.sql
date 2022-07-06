@@ -46,11 +46,16 @@ FROM promasy.cpv;
 
 UPDATE "PromasyCore"."Cpvs"
 SET "ParentId" = SQ.ParentId
-FROM (SELECT C."Id" AS Id,
-       (SELECT CP."Id" FROM "PromasyCore"."Cpvs" CP WHERE CP."Level" = C."Level" - 1 AND CP."Code" LIKE concat(substr(C."Code", 1, C."Level"), '0%')) AS ParentId
-FROM "PromasyCore"."Cpvs" C
-WHERE C."Level" > 1) AS SQ
-WHERE "Level" > 1 AND "Id" = SQ.Id AND SQ.ParentId IS NOT NULL;
+FROM (SELECT C."Id"                                                              AS Id,
+             (SELECT CP."Id"
+              FROM "PromasyCore"."Cpvs" CP
+              WHERE CP."Level" = C."Level" - 1
+                AND CP."Code" LIKE concat(substr(C."Code", 1, C."Level"), '0%')) AS ParentId
+      FROM "PromasyCore"."Cpvs" C
+      WHERE C."Level" > 1) AS SQ
+WHERE "Level" > 1
+  AND "Id" = SQ.Id
+  AND SQ.ParentId IS NOT NULL;
 
 
 CREATE OR REPLACE FUNCTION FN_CityTypeConverter(city_eum varchar(255)) RETURNS integer
@@ -141,7 +146,7 @@ SELECT created_date,
 FROM promasy.addresses;
 
 INSERT INTO "PromasyCore"."Organizations" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "Email", "Edrpou",
-                                        "FaxNumber", "PhoneNumber", "AddressId", "CreatorId")
+                                           "FaxNumber", "PhoneNumber", "AddressId", "CreatorId")
 SELECT I.created_date,
        I.modified_date,
        I.active = FALSE,
@@ -156,19 +161,28 @@ SELECT I.created_date,
 FROM promasy.institutes I
          JOIN "PromasyCore"."Addresses" AD ON AD.OldId = address_id;
 
-INSERT INTO "PromasyCore"."Departments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "OrganizationId", "CreatorId")
+INSERT INTO "PromasyCore"."Departments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "OrganizationId",
+                                         "CreatorId")
 SELECT D.created_date, D.modified_date, D.active = FALSE, D.id, D.dep_name, I."Id", 0
 FROM promasy.departments D
          JOIN "PromasyCore"."Organizations" I ON I.OldId = D.inst_id;
 
-INSERT INTO "PromasyCore"."SubDepartments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "DepartmentId", "CreatorId")
-SELECT S.created_date, S.modified_date, S.active = FALSE, S.id, S.subdep_name, D."Id", 0
+INSERT INTO "PromasyCore"."SubDepartments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "DepartmentId",
+                                            "CreatorId", "OrganizationId")
+SELECT S.created_date,
+       S.modified_date,
+       S.active = FALSE,
+       S.id,
+       S.subdep_name,
+       D."Id",
+       0,
+       D."OrganizationId"
 FROM promasy.subdepartments S
          JOIN "PromasyCore"."Departments" D ON D.OldId = S.dep_id;
 
 INSERT INTO "PromasyCore"."Employees" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "FirstName", "MiddleName",
                                        "LastName", "PrimaryPhone", "ReservePhone", "SubDepartmentId", "UserName",
-                                       "Email", "CreatorId", "Password", "Salt")
+                                       "Email", "CreatorId", "Password", "Salt", "OrganizationId")
 SELECT E.created_date,
        E.modified_date,
        E.active = FALSE,
@@ -183,31 +197,33 @@ SELECT E.created_date,
        TRIM(E.email),
        0,
        E.password,
-       E.salt
+       E.salt,
+       D."OrganizationId"
 FROM promasy.employees E
-         JOIN "PromasyCore"."SubDepartments" SUB ON SUB.OldId = E.subdep_id;
+         JOIN "PromasyCore"."SubDepartments" SUB ON SUB.OldId = E.subdep_id
+         JOIN "PromasyCore"."Departments" D ON D."Id" = SUB."DepartmentId";
 
 UPDATE "PromasyCore"."Addresses"
 SET "CreatorId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
-WHERE "CreatedDate" IS NOT NULL;
+WHERE "CreatorId" = 0;
 UPDATE "PromasyCore"."Addresses"
 SET "ModifierId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "ModifiedDate" IS NOT NULL;
 UPDATE "PromasyCore"."Organizations"
 SET "CreatorId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
-WHERE "CreatedDate" IS NOT NULL;
+WHERE "CreatorId" = 0;
 UPDATE "PromasyCore"."Organizations"
 SET "ModifierId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "ModifiedDate" IS NOT NULL;
 UPDATE "PromasyCore"."Departments"
 SET "CreatorId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
-WHERE "CreatedDate" IS NOT NULL;
+WHERE "CreatorId" = 0;
 UPDATE "PromasyCore"."Departments"
 SET "ModifierId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "ModifiedDate" IS NOT NULL;
 UPDATE "PromasyCore"."SubDepartments"
 SET "CreatorId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
-WHERE "CreatedDate" IS NOT NULL;
+WHERE "CreatorId" = 0;
 UPDATE "PromasyCore"."SubDepartments"
 SET "ModifierId" = (SELECT "Id" FROM "PromasyCore"."Employees" WHERE OLdId = 1)
 WHERE "ModifiedDate" IS NOT NULL;
@@ -269,21 +285,39 @@ WHERE EO.id = EN.OldId
   AND EO.modified_by IS NOT NULL;
 
 INSERT INTO "PromasyCore"."Units"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
-                                        "ModifierId", oldid)
-SELECT TRIM(A.amount_unit_desc), A.created_date, A.modified_date, A.active = FALSE, CR."Id", ED."Id", A.id
+                                  "ModifierId", oldid, "OrganizationId")
+SELECT TRIM(A.amount_unit_desc),
+       A.created_date,
+       A.modified_date,
+       A.active = FALSE,
+       CR."Id",
+       ED."Id",
+       A.id,
+       D."OrganizationId"
 FROM promasy.amount_units A
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = A.created_by
+         LEFT JOIN "PromasyCore"."SubDepartments" SD on SD."Id" = CR."SubDepartmentId"
+         LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = A.modified_by AND A.modified_by IS NOT NULL;
 
 INSERT INTO "PromasyCore"."Manufacturers"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
-                                      OldId)
-SELECT TRIM(P.brand_name), P.created_date, P.modified_date, P.active = FALSE, CR."Id", ED."Id", P.id
+                                          OldId, "OrganizationId")
+SELECT TRIM(P.brand_name),
+       P.created_date,
+       P.modified_date,
+       P.active = FALSE,
+       CR."Id",
+       ED."Id",
+       P.id,
+       D."OrganizationId"
 FROM promasy.producers P
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = P.created_by
+         LEFT JOIN "PromasyCore"."SubDepartments" SD on SD."Id" = CR."SubDepartmentId"
+         LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = P.modified_by AND P.modified_by IS NOT NULL;
 
 INSERT INTO "PromasyCore"."Suppliers"("Name", "Comment", "Phone", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
-                                      "ModifierId", oldid)
+                                      "ModifierId", oldid, "OrganizationId")
 SELECT TRIM(S.supplier_name),
        TRIM(NULLIF(S.supplier_comments, '')),
        TRANSLATE(TRIM(NULLIF(S.supplier_tel, '')), '- ()', ''),
@@ -292,16 +326,28 @@ SELECT TRIM(S.supplier_name),
        S.active = FALSE,
        CR."Id",
        ED."Id",
-       S.id
+       S.id,
+       D."OrganizationId"
 FROM promasy.suppliers S
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = S.created_by
+         LEFT JOIN "PromasyCore"."SubDepartments" SD on SD."Id" = CR."SubDepartmentId"
+         LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = S.modified_by AND S.modified_by IS NOT NULL;
 
 INSERT INTO "PromasyCore"."ReasonForSupplierChoice"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
-                                               "ModifierId", oldid)
-SELECT TRIM(R.reason_name), R.created_date, R.modified_date, R.active = FALSE, CR."Id", ED."Id", R.id
+                                                    "ModifierId", oldid, "OrganizationId")
+SELECT TRIM(R.reason_name),
+       R.created_date,
+       R.modified_date,
+       R.active = FALSE,
+       CR."Id",
+       ED."Id",
+       R.id,
+       D."OrganizationId"
 FROM promasy.reasons_for_suppl R
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = R.created_by
+         LEFT JOIN "PromasyCore"."SubDepartments" SD on SD."Id" = CR."SubDepartmentId"
+         LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = R.modified_by AND R.modified_by IS NOT NULL;
 
 CREATE OR REPLACE FUNCTION FN_FundTypeConverter(fund_eum varchar(255)) RETURNS integer
@@ -321,7 +367,7 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO "PromasyCore"."FinanceSources"("Name", "Number", "FundType", "Kpkvk", "StartsOn", "DueTo", "TotalEquipment",
                                            "TotalMaterials", "TotalServices", "CreatedDate", "ModifiedDate", "Deleted",
-                                           "CreatorId", "ModifierId", oldid)
+                                           "CreatorId", "ModifierId", oldid, "OrganizationId")
 SELECT TRIM(F.name),
        TRIM(F.number),
        FN_FundTypeConverter(F.fundtype),
@@ -336,9 +382,12 @@ SELECT TRIM(F.name),
        F.active = false,
        CR."Id",
        ED."Id",
-       F.id
+       F.id,
+       D."OrganizationId"
 FROM promasy.finances F
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = F.created_by
+         LEFT JOIN "PromasyCore"."SubDepartments" SD on SD."Id" = CR."SubDepartmentId"
+         LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = F.modified_by AND F.modified_by IS NOT NULL;
 
 INSERT INTO "PromasyCore"."FinanceDepartments"("TotalEquipment", "TotalMaterials", "TotalServices", "FinanceSourceId",
@@ -378,10 +427,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO "PromasyCore"."Orders"("Amount", "Description", "CatNum", "OnePrice", "Type", "Kekv", "ProcurementStartDate",
-                                 "UnitId", "CpvId", "FinanceDepartmentId", "ManufacturerId", "ReasonId",
-                                 "SupplierId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
-                                 oldid)
+INSERT INTO "PromasyCore"."Orders"("Amount", "Description", "CatNum", "OnePrice", "Type", "Kekv",
+                                   "ProcurementStartDate",
+                                   "UnitId", "CpvId", "FinanceDepartmentId", "ManufacturerId", "ReasonId",
+                                   "SupplierId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
+                                   oldid, "OrganizationId")
 SELECT B.amount,
        TRIM(B.bid_desc),
        TRIM(B.cat_num),
@@ -400,7 +450,8 @@ SELECT B.amount,
        B.active = FALSE,
        CR."Id",
        ED."Id",
-       B.id
+       B.id,
+       D."OrganizationId"
 FROM promasy.bids B
          JOIN "PromasyCore"."Units" AU on AU.OldId = B.am_unit_id
          JOIN "PromasyCore"."FinanceDepartments" FD on FD.OldId = B.finance_dep_id
@@ -408,6 +459,8 @@ FROM promasy.bids B
          LEFT JOIN "PromasyCore"."ReasonForSupplierChoice" RS on RS.OldId = B.reason_id
          LEFT JOIN "PromasyCore"."Suppliers" SUP on SUP.OldId = B.supplier_id
          LEFT JOIN "PromasyCore"."Employees" CR ON CR.OldId = B.created_by
+         LEFT JOIN "PromasyCore"."SubDepartments" SD on SD."Id" = CR."SubDepartmentId"
+         LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = B.modified_by AND B.modified_by IS NOT NULL;
 
 CREATE OR REPLACE FUNCTION FN_BidStatusConverter(bid_eum varchar(255)) RETURNS integer
@@ -434,7 +487,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 INSERT INTO "PromasyCore"."OrderStatuses" ("Status", "OrderId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
-                                         "ModifierId", oldid)
+                                           "ModifierId", oldid)
 SELECT FN_BidStatusConverter(BS.status),
        B."Id",
        BS.created_date,

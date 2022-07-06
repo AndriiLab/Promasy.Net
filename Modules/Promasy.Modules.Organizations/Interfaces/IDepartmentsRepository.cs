@@ -7,7 +7,7 @@ namespace Promasy.Modules.Organizations.Interfaces;
 
 internal interface IDepartmentsRepository : IRepository
 {
-    Task<PagedResponse<DepartmentDto>> GetPagedListAsync(int organizationId, PagedRequest request);
+    Task<PagedResponse<DepartmentDto>> GetPagedListAsync(PagedRequest request);
     Task<DepartmentDto?> GetByIdAsync(int id);
     Task DeleteByIdAsync(int id);
     Task<int> CreateAsync(DepartmentDto item);

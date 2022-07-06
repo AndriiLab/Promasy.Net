@@ -6,7 +6,7 @@ public class UserContext : IUserContext
 {
     public int Id { get; }
     public string FirstName { get; }
-    public string MiddleName { get; }
+    public string? MiddleName { get; }
     public string LastName { get; }
     public string Email { get; }
     public string Organization { get; }
@@ -18,7 +18,7 @@ public class UserContext : IUserContext
     public int SubDepartmentId { get; }
     public IReadOnlyCollection<int> Roles { get; }
 
-    public UserContext(int id, string firstName, string middleName, string lastName, string email, string organization,
+    public UserContext(int id, string firstName, string? middleName, string lastName, string email, string organization,
         int organizationId, string department, int departmentId, string subDepartment, int subDepartmentId, string? ipAddress,
         IReadOnlyCollection<int> roles)
     {

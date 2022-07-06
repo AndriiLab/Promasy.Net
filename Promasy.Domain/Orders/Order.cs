@@ -8,7 +8,7 @@ using Promasy.Domain.Vocabulary;
 
 namespace Promasy.Domain.Orders;
 
-public class Order : Entity
+public class Order : OrganizationEntity
 {
     public int Amount { get; set; }
     public string Description { get; set; }

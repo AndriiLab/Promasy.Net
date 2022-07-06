@@ -1,5 +1,4 @@
-﻿using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Manufacturers;
@@ -10,6 +9,7 @@ using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Manufacturers.Dtos;
 using Promasy.Modules.Manufacturers.Interfaces;
+using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Manufacturers.Repositories;
 
@@ -109,7 +109,7 @@ internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepo
     {
         await _database.Orders
             .Where(o => sourceIds.Contains(o.ManufacturerId))
-            .BatchUpdateAsync(o => new Order {ManufacturerId = targetId});
+            .UpdateAsync(o => new Order {ManufacturerId = targetId});
 
 
         var manufacturersToDelete = await _database.Manufacturers

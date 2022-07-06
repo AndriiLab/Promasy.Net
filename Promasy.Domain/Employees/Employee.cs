@@ -4,7 +4,7 @@ using Promasy.Domain.Organizations;
 
 namespace Promasy.Domain.Employees;
 
-public class Employee : Entity
+public class Employee : OrganizationEntity
 {
     public string FirstName { get; set; }
     public string? MiddleName { get; set; }

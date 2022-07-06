@@ -1,16 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Promasy.Core.Persistence;
 using Promasy.Domain.Employees;
 
 namespace Promasy.Persistence.Configurations;
 
-public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+public class RefreshTokenConfiguration : BaseConfiguration<RefreshToken>
 {
-    public void Configure(EntityTypeBuilder<RefreshToken> builder)
+    protected override void Config(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.HasKey(b => b.Id);
-
         builder.Property(b => b.Token)
             .HasMaxLength(PersistenceConstant.FieldMedium)
             .IsRequired();

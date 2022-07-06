@@ -4,7 +4,7 @@ using Promasy.Core.Persistence;
 
 namespace Promasy.Domain.Finances;
 
-public class FinanceSource : Entity
+public class FinanceSource : OrganizationEntity
 {
     public string Name { get; set; }
     public string Number { get; set; }

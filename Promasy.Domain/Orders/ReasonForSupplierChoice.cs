@@ -2,7 +2,7 @@
 
 namespace Promasy.Domain.Orders;
 
-public class ReasonForSupplierChoice : Entity
+public class ReasonForSupplierChoice : OrganizationEntity
 {
     public string Name { get; set; }
 }

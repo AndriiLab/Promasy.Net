@@ -2,7 +2,7 @@
 
 namespace Promasy.Domain.Manufacturers;
 
-public class Manufacturer : Entity
+public class Manufacturer : OrganizationEntity
 {
     public string Name { get; set; }
 }

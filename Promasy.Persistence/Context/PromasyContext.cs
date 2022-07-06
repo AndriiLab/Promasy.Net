@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Promasy.Core.Persistence;
 using Promasy.Core.UserContext;
@@ -13,16 +10,21 @@ using Promasy.Domain.Organizations;
 using Promasy.Domain.Persistence;
 using Promasy.Domain.Suppliers;
 using Promasy.Domain.Vocabulary;
+using Z.EntityFramework.Plus;
 
 namespace Promasy.Persistence.Context
 {
     public class PromasyContext : DbContext
     {
-        private readonly IUserContext? _userContext;
 
         public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext? userContext) : base(options)
         {
-            _userContext = userContext;
+            this.Filter<ISoftDeletable>(q => q.Where(i => !i.Deleted));
+            if (userContext is not null)
+            {
+                this.Filter<Organization>(q => q.Where(o => o.Id == userContext.OrganizationId));
+                this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.OrganizationId));
+            }
         }
 
         public DbSet<Role> Roles { get; set; }
@@ -43,37 +45,6 @@ namespace Promasy.Persistence.Context
         public DbSet<SubDepartment> SubDepartments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
 
-
-        public Task<int> SaveChangesAsync()
-        {
-            return SaveChangesAsync(new CancellationToken());
-        }
-
-        public override int SaveChanges()
-        {
-            UpdateEntities();
-            return base.SaveChanges();
-        }
-
-        public override int SaveChanges(bool acceptAllChangesOnSuccess)
-        {
-            UpdateEntities();
-            return base.SaveChanges(acceptAllChangesOnSuccess);
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
-        {
-            UpdateEntities();
-            return base.SaveChangesAsync(cancellationToken);
-        }
-
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
-                                                   CancellationToken cancellationToken = new())
-        {
-            UpdateEntities();
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -81,38 +52,6 @@ namespace Promasy.Persistence.Context
             modelBuilder.UseIdentityAlwaysColumns();
             modelBuilder.ConfigureCustomFunctions();
             modelBuilder.HasDefaultSchema("PromasyCore");
-        }
-
-        private void UpdateEntities()
-        {
-            foreach (var e in ChangeTracker.Entries().Where(e => e.Entity is IEntity))
-            {
-                var entity = (IEntity) e.Entity;
-                switch (e.State)
-                {
-                    case EntityState.Added:
-                        entity.CreatedDate = DateTime.UtcNow;
-                        entity.CreatorId = _userContext?.Id ?? 0;
-                        break;
-                    case EntityState.Modified:
-                        entity.ModifiedDate = DateTime.UtcNow;
-                        entity.ModifierId = _userContext?.Id;
-                        break;
-                    case EntityState.Deleted:
-                        if (e.Entity is ISoftDeletable sd)
-                        {
-                            e.State = EntityState.Modified;
-                            entity.ModifiedDate = DateTime.UtcNow;
-                            entity.ModifierId = _userContext?.Id;
-                            sd.Deleted = true;
-                        }
-                        break;
-                    case EntityState.Detached:
-                    case EntityState.Unchanged:
-                    default:
-                        break;
-                }
-            }
         }
     }
 }

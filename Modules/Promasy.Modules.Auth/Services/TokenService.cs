@@ -28,17 +28,16 @@ internal class TokenService : ITokenService
         return new UserTokens(token, refreshToken, expires);
     }
 
-    public async Task<UserTokens?> RefreshTokenAsync(string refreshToken)
+    public int? GetEmployeeIdFromRefreshToken(string? refreshToken)
     {
-        var employeeId = TokenHelper.ValidateAndGetUserId(refreshToken, _settings.Secret);
-        if (employeeId is null)
-        {
-            return null;
-        }
-        
-        var employee = await _employeesRepository.GetEmployeeByIdAsync(employeeId.Value);
+        return TokenHelper.ValidateAndGetEmployeeId(refreshToken, _settings.Secret);
+    }
+
+    public async Task<UserTokens?> RefreshTokenAsync(int employeeId, string refreshToken)
+    {
+        var employee = await _employeesRepository.GetEmployeeByIdAsync(employeeId);
         var newToken = TokenHelper.GenerateJwtToken(employee!, _settings.Secret, _settings.JwtValidityMinutes);
-        var newRefreshToken = TokenHelper.GenerateRefreshToken(employeeId.Value, _settings.Secret, _settings.RefreshValidityMinutes);
+        var newRefreshToken = TokenHelper.GenerateRefreshToken(employeeId, _settings.Secret, _settings.RefreshValidityMinutes);
         
         var expires = DateTime.UtcNow.AddMinutes(_settings.RefreshValidityMinutes);
         var isUpdated = await _refreshTokenRepository.UpdateAsync(refreshToken, newRefreshToken, expires);
@@ -46,7 +45,6 @@ internal class TokenService : ITokenService
         return isUpdated
             ? new UserTokens(newToken, newRefreshToken, DateTime.UtcNow.AddMinutes(_settings.RefreshValidityMinutes))
             : null;
-
     }
 
     public Task RevokeTokenAsync(string refreshToken)

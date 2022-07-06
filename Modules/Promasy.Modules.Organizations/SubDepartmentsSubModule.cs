@@ -84,11 +84,6 @@ internal class SubDepartmentsSubModule : SubModule
                     [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository,
             [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
-                    if (organizationId != request.OrganizationId)
-                    {
-                        return PromasyResults.ValidationError(localizer["Incorrect organization id"]);
-                    }
-                
                     if (departmentId != request.DepartmentId)
                     {
                         return PromasyResults.ValidationError(localizer["Incorrect department id"]);
@@ -99,7 +94,7 @@ internal class SubDepartmentsSubModule : SubModule
                         return PromasyResults.ValidationError(localizer["Incorrect Id"]);
                     }
 
-                    await repository.UpdateAsync(new SubDepartmentDto(request.Id, request.Name, request.OrganizationId, request.DepartmentId));
+                    await repository.UpdateAsync(new SubDepartmentDto(request.Id, request.Name, request.DepartmentId));
 
                     return Results.Ok(StatusCodes.Status202Accepted);
                 })
@@ -113,7 +108,7 @@ internal class SubDepartmentsSubModule : SubModule
                 [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository,
                 [FromServices] ISubDepartmentsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = rules.IsEditable(id, departmentId, organizationId);
+                var isEditable = rules.IsEditable(id);
                 if (!isEditable)
                 {
                     return PromasyResults.ValidationError(localizer["You cannot perform this action"],

@@ -5,7 +5,8 @@ namespace Promasy.Modules.Auth.Interfaces;
 internal interface ITokenService : IService
 {
     Task<UserTokens> GenerateTokenAsync(int employeeId);
-    Task<UserTokens?> RefreshTokenAsync(string refreshToken);
+    int? GetEmployeeIdFromRefreshToken(string? refreshToken);
+    Task<UserTokens?> RefreshTokenAsync(int userId, string refreshToken);
     Task RevokeTokenAsync(string refreshToken);
 }
 

@@ -17,11 +17,11 @@ internal class UpdateDepartmentRequestValidator : AbstractValidator<UpdateDepart
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r)
-            .Must(r => rules.IsEditable(r.Id, r.OrganizationId))
+            .Must(r => rules.IsEditable(r.Id))
             .WithMessage(localizer["You cannot perform this action"])
-            .MustAsync((r, t) => rules.IsExistAsync(r.Id, r.OrganizationId, t))
+            .MustAsync((r, t) => rules.IsExistAsync(r.Id, t))
             .WithMessage(localizer["Item not exist"])
-            .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, r.OrganizationId, t))
+            .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

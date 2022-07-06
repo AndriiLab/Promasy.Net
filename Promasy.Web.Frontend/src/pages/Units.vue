@@ -272,6 +272,7 @@ async function mergeAsync() {
   const response = await UnitsApi.merge({sourceIds: selectedItems.value.filter(i => i.id !== item.value.id).map(i => i.id), targetId: item.value.id});
   if (response.success) {
     item.value = {} as Unit;
+    selectedItems.value = [];
     mergeDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });

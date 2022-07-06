@@ -2,7 +2,7 @@ using System;
 
 namespace Promasy.Core.Persistence;
 
-public class Entity : IEntity, ISoftDeletable
+public class Entity : IBaseEntity, ISoftDeletable
 {
     public int Id { get; set; }
     public DateTime CreatedDate { get; set; }

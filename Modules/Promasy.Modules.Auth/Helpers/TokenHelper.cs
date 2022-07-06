@@ -54,7 +54,7 @@ internal static class TokenHelper
         return tokenHandler.WriteToken(token);
     }
     
-    public static int? ValidateAndGetUserId(string token, string secret)
+    public static int? ValidateAndGetEmployeeId(string? token, string secret)
     {
         if (string.IsNullOrEmpty(token))
         {

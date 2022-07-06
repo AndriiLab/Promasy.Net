@@ -80,6 +80,9 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int?>("ModifierId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -274,6 +277,9 @@ namespace Promasy.Persistence.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("StartsOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -318,6 +324,9 @@ namespace Promasy.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -374,6 +383,9 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<decimal>("OnePrice")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("ProcurementStartDate")
                         .HasColumnType("timestamp with time zone");
@@ -471,6 +483,9 @@ namespace Promasy.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("ReasonForSupplierChoice", "PromasyCore");
@@ -503,6 +518,9 @@ namespace Promasy.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -703,6 +721,9 @@ namespace Promasy.Persistence.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
@@ -741,6 +762,9 @@ namespace Promasy.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(300)

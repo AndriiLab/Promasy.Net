@@ -2,7 +2,7 @@ using System;
 
 namespace Promasy.Core.Persistence;
 
-public interface IEntity
+public interface IBaseEntity
 {
     int Id { get; set; }
     DateTime CreatedDate { get; set; }

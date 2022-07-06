@@ -22,37 +22,32 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, int departmentId, int organizationId, CancellationToken ct)
+    public Task<bool> IsExistAsync(int id, int departmentId, CancellationToken ct)
     {
         return _database.SubDepartments
-            .Where(s => s.DepartmentId == departmentId && s.Department.OrganizationId == organizationId)
+            .Where(s => s.DepartmentId == departmentId)
             .AnyAsync(s => s.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int departmentId, int organizationId, CancellationToken ct)
+    public Task<bool> IsNameUniqueAsync(string name, int departmentId, CancellationToken ct)
     {
         return _database.SubDepartments
-            .Where(s => s.DepartmentId == departmentId && s.Department.OrganizationId == organizationId)
+            .Where(s => s.DepartmentId == departmentId)
             .AllAsync(s => s.Name != name, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, int departmentId, int organizationId, CancellationToken ct)
+    public Task<bool> IsNameUniqueAsync(string name, int id, int departmentId, CancellationToken ct)
     {
         return _database.SubDepartments
-            .Where(s => s.DepartmentId == departmentId && s.Department.OrganizationId == organizationId && s.Id != id)
+            .Where(s => s.DepartmentId == departmentId && s.Id != id)
             .AllAsync(s => s.Name != name, ct);
     }
 
-    public bool IsEditable(int id, int departmentId, int organizationId)
+    public bool IsEditable(int id)
     {
-        if (_userContext.Roles.Any(r => r is (int) RoleName.Administrator))
+        if (_userContext.Roles.Any(r => r is (int) RoleName.Administrator or (int) RoleName.Director or (int) RoleName.DeputyDirector))
         {
             return true;
-        }
-
-        if (_userContext.Roles.Any(r => r is (int) RoleName.Director or (int) RoleName.DeputyDirector))
-        {
-            return _userContext.OrganizationId == organizationId;
         }
 
         if (_userContext.Roles.Any(r => r is (int) RoleName.HeadOfDepartment))
@@ -80,7 +75,7 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
 
         return query
             .PaginateAsync(request,
-                s => new SubDepartmentDto(s.Id, s.Name, s.Department.OrganizationId, s.DepartmentId,
+                s => new SubDepartmentDto(s.Id, s.Name, s.DepartmentId,
                     s.ModifierId ?? s.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(s.ModifierId ?? s.CreatorId),
                     s.ModifiedDate ?? s.CreatedDate));
@@ -91,7 +86,7 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
         return _database.SubDepartments
             .AsNoTracking()
             .Where(s => s.Id == id)
-            .Select(s => new SubDepartmentDto(s.Id, s.Name, s.Department.OrganizationId, s.DepartmentId,
+            .Select(s => new SubDepartmentDto(s.Id, s.Name, s.DepartmentId,
                 s.ModifierId ?? s.CreatorId,
                 PromasyDbFunction.GetEmployeeShortName(s.ModifierId ?? s.CreatorId),
                 s.ModifiedDate ?? s.CreatedDate))

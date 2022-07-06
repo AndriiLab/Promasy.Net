@@ -85,7 +85,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,7 +105,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -123,7 +125,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -183,7 +186,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -202,7 +206,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -248,12 +253,12 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    OrganizationId = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -280,7 +285,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -315,7 +321,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -417,7 +424,8 @@ namespace Promasy.Persistence.Migrations
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -16,6 +16,7 @@ using Promasy.Modules.Auth.Models;
 using Promasy.Modules.Auth.Services;
 using Promasy.Modules.Core.Auth;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 
@@ -36,6 +37,7 @@ public class AuthModule : IModule
         {
             options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser().Build();
+            options.AddPolicy(AdminOnlyPolicy.Name, new AdminOnlyPolicy().GetPolicy()); // todo: add by interface
         });
         builder.AddAuthentication(options =>
             {
@@ -84,14 +86,17 @@ public class AuthModule : IModule
             .WithName("Login")
             .Produces<TokenResponse>();
 
-        endpoints.MapGet($"{RoutePrefix}/refresh", async (ITokenService jwtTokenService, HttpRequest request, HttpResponse response) =>
+        endpoints.MapGet($"{RoutePrefix}/refresh", async (ITokenService jwtTokenService, IAuthService authService, HttpRequest request, HttpResponse response) =>
             {
                 var refreshToken = GetRefreshTokenFromCookie(request);
-                if (string.IsNullOrEmpty(refreshToken))
+                var id = jwtTokenService.GetEmployeeIdFromRefreshToken(refreshToken);
+                if (id is null)
                 {
                     return Results.Unauthorized();
                 }
-                var tokens = await jwtTokenService.RefreshTokenAsync(refreshToken);
+
+                await authService.SetUserContextAsync(id.Value);
+                var tokens = await jwtTokenService.RefreshTokenAsync(id.Value, refreshToken!);
                 if (tokens is null)
                 {
                     return Results.Unauthorized();
