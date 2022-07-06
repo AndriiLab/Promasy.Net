@@ -108,7 +108,7 @@
             </ul>
             <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text2') }}</div>
             <div class="flex align-items-center justify-content-center">
-              <Dropdown v-model="item" :options="selectedItems" optionLabel="name"></Dropdown><span>?</span>
+              <Dropdown v-model="item" :options="selectedItems" optionLabel="name"></Dropdown><span class="ml-1">?</span>
             </div>
           </div>
           <template #footer>

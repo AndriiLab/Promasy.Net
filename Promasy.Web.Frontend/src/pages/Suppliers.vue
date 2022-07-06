@@ -124,11 +124,18 @@
             <i class="flex align-items-center justify-content-center pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
             <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text1') }}:</div>
             <ul>
-              <li v-for="item in selectedItems"><b>{{ item.name }}</b></li>
+              <li v-for="item in selectedItems"><b>{{ `${item.id}, ${item.name}, ${item.phone}, ${truncate(item.comment, 50)}` }}</b></li>
             </ul>
             <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text2') }}</div>
             <div class="flex align-items-center justify-content-center">
-              <Dropdown v-model="item" :options="selectedItems" optionLabel="name"></Dropdown><span>?</span>
+              <Dropdown v-model="item" :options="selectedItems">
+                <template #value="slotProps">
+                  <div>{{ `${slotProps.value.id}. ${slotProps.value.name}` }}</div>
+                </template>
+                <template #option="slotProps">
+                  <div>{{ `${slotProps.option.id}. ${slotProps.option.name}` }}</div>
+                </template>
+              </Dropdown><span class="ml-1">?</span>
             </div>
           </div>
           <template #footer>
@@ -144,7 +151,7 @@
 
 <script lang="ts" setup>
 import { useSessionStore } from "@/store/session";
-import { capitalize } from "@/utils/string-utils";
+import { capitalize, truncate } from "@/utils/string-utils";
 import { ref, reactive, onMounted, computed } from "vue";
 import SuppliersApi , { Supplier } from "@/services/api/suppliers";
 import { useToast } from "primevue/usetoast";
