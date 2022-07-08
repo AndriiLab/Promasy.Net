@@ -45,14 +45,14 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
 
     public bool IsEditable(int id)
     {
-        if (_userContext.Roles.Any(r => r is (int) RoleName.Administrator or (int) RoleName.Director or (int) RoleName.DeputyDirector))
+        if (_userContext.HasRoles((int) RoleName.Administrator, (int) RoleName.Director, (int) RoleName.DeputyDirector))
         {
             return true;
         }
 
-        if (_userContext.Roles.Any(r => r is (int) RoleName.HeadOfDepartment))
+        if (_userContext.HasRoles((int) RoleName.HeadOfDepartment))
         {
-            return _userContext.DepartmentId == id;
+            return _userContext.GetDepartmentId() == id;
         }
 
         return false;

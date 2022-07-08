@@ -9,8 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
-using Promasy.Core;
 using Promasy.Core.Resources;
+using Promasy.Core.UserContext;
 using Promasy.Modules.Auth.Interfaces;
 using Promasy.Modules.Auth.Models;
 using Promasy.Modules.Auth.Services;
@@ -33,22 +33,22 @@ public class AuthModule : IModule
         builder.Configure<TokenSettings>(jwtSection);
 
         var jwtSettings = jwtSection.Get<TokenSettings>();
-        builder.AddAuthorization(options =>
+        builder.AddAuthorization(o =>
         {
-            options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+            o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser().Build();
-            options.AddPolicy(AdminOnlyPolicy.Name, new AdminOnlyPolicy().GetPolicy()); // todo: add by interface
+            o.AddPolicy(AdminOnlyPolicy.Name, new AdminOnlyPolicy().GetPolicy()); // todo: add by interface
         });
-        builder.AddAuthentication(options =>
+        builder.AddAuthentication(o =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(options =>
+            .AddJwtBearer(o =>
             {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
+                o.RequireHttpsMetadata = false;
+                o.SaveToken = true;
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
@@ -57,6 +57,9 @@ public class AuthModule : IModule
                     ValidateLifetime = true,
                 };
             });
+        
+        builder.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+        builder.AddTransient<IUserContext, UserContext.UserContext>();
 
         return builder;
     }

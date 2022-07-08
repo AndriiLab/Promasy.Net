@@ -39,8 +39,8 @@ public class OrganizationsRepository : IOrganizationsRules, IOrganizationsReposi
 
     public bool IsEditable(int id)
     {
-        var allowedRoles = new[] {(int)RoleName.Director, (int)RoleName.DeputyDirector};
-        return _userContext.Roles.Any(r => r == (int)RoleName.Administrator || (id == _userContext.OrganizationId && allowedRoles.Contains(r)));
+        return _userContext.HasRoles((int) RoleName.Administrator) ||
+               (_userContext.HasRoles((int)RoleName.Director, (int)RoleName.DeputyDirector) && _userContext.GetOrganizationId() == id);
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)

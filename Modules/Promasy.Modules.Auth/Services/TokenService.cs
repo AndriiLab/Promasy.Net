@@ -19,7 +19,7 @@ internal class TokenService : ITokenService
     
     public async Task<UserTokens> GenerateTokenAsync(int employeeId)
     {
-        var employee = await _employeesRepository.GetEmployeeByIdAsync(employeeId);
+        var employee = await _employeesRepository.GetEmployeeClaimsByIdAsync(employeeId);
         var token = TokenHelper.GenerateJwtToken(employee!, _settings.Secret, _settings.JwtValidityMinutes);
         var refreshToken = TokenHelper.GenerateRefreshToken(employeeId, _settings.Secret, _settings.RefreshValidityMinutes);
         var expires = DateTime.UtcNow.AddMinutes(_settings.RefreshValidityMinutes);
@@ -35,8 +35,12 @@ internal class TokenService : ITokenService
 
     public async Task<UserTokens?> RefreshTokenAsync(int employeeId, string refreshToken)
     {
-        var employee = await _employeesRepository.GetEmployeeByIdAsync(employeeId);
-        var newToken = TokenHelper.GenerateJwtToken(employee!, _settings.Secret, _settings.JwtValidityMinutes);
+        var claims = await _employeesRepository.GetEmployeeClaimsByIdAsync(employeeId);
+        if (claims is null)
+        {
+            return null;
+        }
+        var newToken = TokenHelper.GenerateJwtToken(claims, _settings.Secret, _settings.JwtValidityMinutes);
         var newRefreshToken = TokenHelper.GenerateRefreshToken(employeeId, _settings.Secret, _settings.RefreshValidityMinutes);
         
         var expires = DateTime.UtcNow.AddMinutes(_settings.RefreshValidityMinutes);

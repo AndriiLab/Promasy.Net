@@ -42,18 +42,18 @@ export const useSessionStore = defineStore({
       const decodedToken = jwtDecode(token) as Object<string>;
       this.user = {
         token: token,
-        roles: decodedToken.roles.split(",").map(r => parseInt(r)),
-        id: parseInt(decodedToken.id),
-        firstName: decodedToken.firstName,
-        middleName: decodedToken.middleName,
-        lastName: decodedToken.lastName,
-        email: decodedToken.email,
-        organization: decodedToken.organization,
-        department: decodedToken.department,
-        subDepartment: decodedToken.subDepartment,
-        organizationId: parseInt(decodedToken.organizationId),
-        departmentId: parseInt(decodedToken.departmentId),
-        subDepartmentId: parseInt(decodedToken.subDepartmentId),
+        roles: decodedToken[claims.roles].split(",").map(r => parseInt(r)),
+        id: parseInt(decodedToken[claims.id]),
+        firstName: decodedToken[claims.firstName],
+        middleName: decodedToken[claims.middleName],
+        lastName: decodedToken[claims.lastName],
+        email: decodedToken[claims.email],
+        organization: decodedToken[claims.organization],
+        department: decodedToken[claims.department],
+        subDepartment: decodedToken[claims.subDepartment],
+        organizationId: parseInt(decodedToken[claims.organizationId]),
+        departmentId: parseInt(decodedToken[claims.departmentId]),
+        subDepartmentId: parseInt(decodedToken[claims.subDepartmentId]),
       };
 
       LocalStore.set(keys.token, token);
@@ -107,4 +107,18 @@ export interface SessionUser {
   subDepartmentId: number;
 
   token: string;
+}
+const claims = {
+  id: 'name',
+  firstName: 'given_name',
+  middleName: 'middleName',
+  lastName: 'family_name',
+  email: 'email',
+  organization: 'organization',
+  department: 'department',
+  subDepartment: 'subDepartment',
+  organizationId: 'organizationId',
+  departmentId: 'departmentId',
+  subDepartmentId: 'subDepartmentId',
+  roles: 'role'
 }

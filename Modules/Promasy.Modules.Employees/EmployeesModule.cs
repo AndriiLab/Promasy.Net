@@ -41,7 +41,7 @@ public class EmployeesModule : IModule
                 async ([FromBody] PasswordChangeRequest request, [FromRoute] int id, IUserContext userContext, IAuthService authService, 
                     IStringLocalizer<SharedResource> localizer) =>
                 {
-                    if (!userContext.Roles.Contains((int)RoleName.Administrator) && userContext.Id != id)
+                    if (!userContext.HasRoles((int)RoleName.Administrator) && userContext.GetId() != id)
                     {
                         return PromasyResults.ValidationError(localizer["Unable to modify other user password"]);
                     }

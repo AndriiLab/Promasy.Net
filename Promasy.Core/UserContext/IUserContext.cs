@@ -4,16 +4,17 @@ namespace Promasy.Core.UserContext;
 
 public interface IUserContext
 {
-    int Id { get; }
-    string FirstName { get; }
-    string LastName { get; }
-    string Email { get; }
-    string Organization { get; }
-    int OrganizationId { get; }
-    string Department { get; }
-    int DepartmentId { get; }
-    string SubDepartment { get; }
-    int SubDepartmentId { get; }
-    string? IpAddress { get; }
-    IReadOnlyCollection<int> Roles { get; }
+    bool IsAuthenticated();
+    int GetId();
+    string GetFirstName();
+    string GetLastName();
+    string GetEmail();
+    string GetOrganization();
+    int GetOrganizationId();
+    string GetDepartment();
+    int GetDepartmentId();
+    string GetSubDepartment();
+    int GetSubDepartmentId();
+    string? GetIpAddress();
+    bool HasRoles(params int[] roles);
 }

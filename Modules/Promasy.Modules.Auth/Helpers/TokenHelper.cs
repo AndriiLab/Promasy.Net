@@ -2,34 +2,18 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Promasy.Core.Extensions;
-using Promasy.Modules.Auth.Dtos;
 
 namespace Promasy.Modules.Auth.Helpers;
 
 internal static class TokenHelper
 {
-    public static string GenerateJwtToken(EmployeeDto employee, string secret, int validityMinutes)
+    public static string GenerateJwtToken(IEnumerable<Claim> claims, string secret, int validityMinutes)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(secret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(nameof(employee.Id).ToCamelCase(), employee.Id.ToString()),
-                new Claim(nameof(employee.FirstName).ToCamelCase(), employee.FirstName),
-                new Claim(nameof(employee.MiddleName).ToCamelCase(), employee.MiddleName),
-                new Claim(nameof(employee.LastName).ToCamelCase(), employee.LastName),
-                new Claim(nameof(employee.Email).ToCamelCase(), employee.Email),
-                new Claim(nameof(employee.Organization).ToCamelCase(), employee.Organization),
-                new Claim(nameof(employee.OrganizationId).ToCamelCase(), employee.OrganizationId.ToString()),
-                new Claim(nameof(employee.Department).ToCamelCase(), employee.Department),
-                new Claim(nameof(employee.DepartmentId).ToCamelCase(), employee.DepartmentId.ToString()),
-                new Claim(nameof(employee.SubDepartment).ToCamelCase(), employee.SubDepartment),
-                new Claim(nameof(employee.SubDepartmentId).ToCamelCase(), employee.SubDepartmentId.ToString()),
-                new Claim(nameof(employee.Roles).ToCamelCase(), string.Join(',', employee.Roles)),
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(validityMinutes),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };

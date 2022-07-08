@@ -27,12 +27,12 @@ public class EntityTrigger : IBeforeSaveTrigger<IBaseEntity>
         {
             case ChangeType.Added:
                 entry.Entity.CreatedDate = DateTime.UtcNow;
-                entry.Entity.CreatorId = _userContext.Id;
+                entry.Entity.CreatorId = _userContext.GetId();
                 break;
             case ChangeType.Modified:
             case ChangeType.Deleted:
                 entry.Entity.ModifiedDate = DateTime.UtcNow;
-                entry.Entity.ModifierId = _userContext.Id;
+                entry.Entity.ModifierId = _userContext.GetId();
                 break;
             default:
                 break;

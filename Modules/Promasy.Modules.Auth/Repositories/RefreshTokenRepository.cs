@@ -12,22 +12,19 @@ namespace Promasy.Modules.Auth.Repositories;
 internal class RefreshTokenRepository : IRefreshTokenRepository
 {
     private readonly IDatabase _database;
-    private readonly IUserContextResolver _userContextResolver;
     private readonly IUserContext _userContext;
     private readonly ILogger<RefreshTokenRepository> _logger;
 
-    public RefreshTokenRepository(IDatabase database, IUserContextResolver userContextResolver, ILogger<RefreshTokenRepository> logger)
+    public RefreshTokenRepository(IDatabase database, IUserContext userContext, ILogger<RefreshTokenRepository> logger)
     {
         _database = database;
-        _userContext = userContextResolver.Resolve()!;
-        _userContextResolver = userContextResolver;
+        _userContext = userContext;
         _logger = logger;
     }
 
     public async Task CreateAsync(string token, int userId, DateTime expires)
     {
-        var userContext = _userContextResolver.Resolve();
-        if (userContext is null)
+        if (!_userContext.IsAuthenticated())
         {
             throw new NoNullAllowedException("User context must be initialized");
         }
@@ -44,14 +41,14 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
                 ModifierId = userId,
                 ModifiedDate = DateTime.UtcNow,
                 ReasonRevoked = TokenRevokeReason.Revoked,
-                RevokedByIp = userContext.IpAddress
+                RevokedByIp = _userContext.GetIpAddress()
             });
         
         var rt = new RefreshToken
         {
             Token = token,
             Expires = expires,
-            CreatedByIp = userContext.IpAddress ?? string.Empty,
+            CreatedByIp = _userContext.GetIpAddress() ?? string.Empty,
             EmployeeId = userId
         };
         _database.RefreshTokens.Add(rt);
@@ -68,8 +65,7 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
             return false;
         }
         
-        var userContext = _userContextResolver.Resolve();
-        if (userContext is null)
+        if (!_userContext.IsAuthenticated())
         {
             throw new NoNullAllowedException("User context must be initialized");
         }
@@ -97,7 +93,7 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
             {
                 t.Revoked = DateTime.UtcNow;
                 t.ReasonRevoked = TokenRevokeReason.Compromised;
-                t.RevokedByIp = userContext.IpAddress;
+                t.RevokedByIp = _userContext.GetIpAddress();
             }
                 
             await _database.SaveChangesAsync();
@@ -109,14 +105,14 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
         {
             Token = newToken,
             Expires = newExpires,
-            CreatedByIp = userContext.IpAddress ?? string.Empty,
+            CreatedByIp = _userContext.GetIpAddress() ?? string.Empty,
             EmployeeId = oldRt.EmployeeId
         };
         _database.RefreshTokens.Add(rt);
         oldRt.ReplacedByTokenId = rt.Id;
         oldRt.Revoked = DateTime.UtcNow;
         oldRt.ReasonRevoked = TokenRevokeReason.Replaced;
-        oldRt.RevokedByIp = userContext.IpAddress;
+        oldRt.RevokedByIp = _userContext.GetIpAddress();
         await _database.SaveChangesAsync();
 
         return true;
@@ -136,7 +132,7 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
         
         rt.Revoked = DateTime.UtcNow;
         rt.ReasonRevoked = TokenRevokeReason.Revoked;
-        rt.RevokedByIp = _userContext.IpAddress;
+        rt.RevokedByIp = _userContext.GetIpAddress();
         await _database.SaveChangesAsync();
     }
 

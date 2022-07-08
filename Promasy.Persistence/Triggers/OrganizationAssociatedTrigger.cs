@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
 using Promasy.Core.Persistence;
@@ -24,7 +23,7 @@ public class OrganizationAssociatedTrigger : IBeforeSaveTrigger<IOrganizationAss
         if (context.ChangeType == ChangeType.Added)
         {
             var entry = _context.Entry(context.Entity);
-            entry.Entity.OrganizationId = _userContext.OrganizationId;
+            entry.Entity.OrganizationId = _userContext.GetOrganizationId();
         }
         
         return Task.CompletedTask;

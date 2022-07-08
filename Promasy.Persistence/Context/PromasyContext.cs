@@ -17,13 +17,13 @@ namespace Promasy.Persistence.Context
     public class PromasyContext : DbContext
     {
 
-        public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext? userContext) : base(options)
+        public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext userContext) : base(options)
         {
             this.Filter<ISoftDeletable>(q => q.Where(i => !i.Deleted));
-            if (userContext is not null)
+            if (userContext.IsAuthenticated())
             {
-                this.Filter<Organization>(q => q.Where(o => o.Id == userContext.OrganizationId));
-                this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.OrganizationId));
+                this.Filter<Organization>(q => q.Where(o => o.Id == userContext.GetOrganizationId()));
+                this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.GetOrganizationId()));
             }
         }
 
