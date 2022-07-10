@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { routes, publicPages } from "@/routes";
+import { routes, publicPages, errorPages } from "@/routes";
 import { useSessionStore } from "@/store/session";
 
 export const Router = createRouter({
@@ -7,7 +7,7 @@ export const Router = createRouter({
   routes,
 });
 
-Router.beforeEach(async (to, from) => {
+Router.beforeEach((to, from) => {
   const authRequired = !publicPages.includes(to.path);
   const sessionStore = useSessionStore();
 
@@ -19,5 +19,7 @@ Router.beforeEach(async (to, from) => {
   if (sessionStore.user && to.path === "/login") {
     return "/";
   }
-  sessionStore.lastUrl = from.fullPath === "/logout" ? "/" : from.fullPath;
+  if (!errorPages.includes(to.path)) {
+    sessionStore.lastUrl = from.fullPath === "/logout" ? "/" : from.fullPath;
+  }
 });

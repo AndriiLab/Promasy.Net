@@ -32,6 +32,7 @@ import Toast from "primevue/toast";
 import Toolbar from "primevue/toolbar";
 import Menu from "primevue/menu";
 import Dialog from "primevue/dialog";
+import Chip from "primevue/chip";
 import ToastService from "primevue/toastservice";
 import { vue3Debounce } from "vue-debounce";
 
@@ -68,5 +69,6 @@ app.component("Toast", Toast);
 app.component("Toolbar", Toolbar);
 app.component("Menu", Menu);
 app.component("Dialog", Dialog);
+app.component("Chip", Chip);
 
 app.mount("#app");

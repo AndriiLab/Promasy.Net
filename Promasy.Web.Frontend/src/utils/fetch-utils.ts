@@ -1,5 +1,5 @@
-import { Router } from "@/router";
 import { useSessionStore, SessionUser } from "@/store/session";
+import { useRouter } from "vue-router";
 
 export const Fetch = {
   Get: function <TOkResponse, TErrorResponse>(
@@ -57,7 +57,7 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
         return typedFetchAsync<TOkResponse, TErrorResponse>(method, input, init, false);
       }
     }
-    Router.push("/");
+    await (useRouter()).push("/");
   } else {
     response.error = body as TErrorResponse;
   }

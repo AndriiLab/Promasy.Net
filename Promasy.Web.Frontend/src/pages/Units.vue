@@ -43,7 +43,7 @@
           <Column field="editor" :header="t('table.columns.editor')" headerStyle="width:25%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('table.columns.editor') }}</span>
-              {{ slotProps.data.editor }}
+              <Chip :label="slotProps.data.editor" icon="pi pi-user" />
             </template>
           </Column>
           <Column field="editedDate" :header="t('table.columns.editDate')" headerStyle="width:25%; min-width:10rem;">

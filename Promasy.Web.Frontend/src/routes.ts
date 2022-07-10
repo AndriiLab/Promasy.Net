@@ -39,17 +39,17 @@ export const routes = [
         component: () => import("./pages/CpvOrders.vue"),
       },
       {
-        path: "/orgaizations",
-        component: () => import("./pages/Organizations.vue"),
+        path: "/organizations/:organizationId(\\d+)",
+        component: () => import("./pages/Organization.vue"),
       },
       {
         path: "/departments",
         component: () => import("./pages/Departments.vue"),
       },
       {
-        path: "/subdepartments",
+        path: "/sub-departments",
         component: () => import("./pages/SubDepartments.vue"),
-      },     
+      },
       {
         path: "/employees",
         component: () => import("./pages/Employees.vue"),
@@ -60,7 +60,7 @@ export const routes = [
       },
       {
         path: "/me",
-        redirect: () => `/employees/${useSessionStore().user?.id}`
+        redirect: () => `/employees/${ useSessionStore().user?.id }`,
       },
     ],
   },
@@ -86,4 +86,5 @@ export const routes = [
   },
 ];
 
-export const publicPages = ["/login"];
+export const publicPages = [ "/login" ];
+export const errorPages = [ "/404", "/403", "/error" ];

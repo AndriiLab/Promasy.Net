@@ -127,6 +127,7 @@ public class OrganizationsRepository : IOrganizationsRules, IOrganizationsReposi
         entity.Edrpou = organization.Edrpou;
         entity.PhoneNumber = organization.PhoneNumber;
         entity.FaxNumber = organization.FaxNumber;
+        entity.ModifiedDate = DateTime.UtcNow;
         entity.Address.Country = organization.Country;
         entity.Address.PostalCode = organization.PostalCode;
         entity.Address.Region = organization.Region;
@@ -136,6 +137,7 @@ public class OrganizationsRepository : IOrganizationsRules, IOrganizationsReposi
         entity.Address.StreetType = (StreetType) organization.StreetType;
         entity.Address.BuildingNumber = organization.BuildingNumber;
         entity.Address.InternalNumber = organization.InternalNumber;
+        entity.Address.ModifiedDate = DateTime.UtcNow;
 
         await _database.SaveChangesAsync();
     }

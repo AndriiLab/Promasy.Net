@@ -101,7 +101,11 @@ internal class DepartmentsRepository : IDepartmentsRules, IDepartmentsRepository
         var entity = new Department
         {
             Name = item.Name,
-            OrganizationId = item.OrganizationId
+            OrganizationId = item.OrganizationId,
+            SubDepartments = new List<SubDepartment>
+            {
+                new() { Name = SubDepartmentName.Default }
+            }
         };
         _database.Departments.Add(entity);
         await _database.SaveChangesAsync();

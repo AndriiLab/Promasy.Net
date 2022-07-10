@@ -58,12 +58,13 @@ import { useI18n } from "vue-i18n";
 import { useSessionStore } from "@/store/session";
 import useVuelidate from "@vuelidate/core";
 import { required } from "@/i18n/validators";
-import ErrorWrap from "../components/ErrorWrap.vue";
+import { useRouter } from "vue-router";
+import ErrorWrap from "@/components/ErrorWrap.vue";
 import { ErrorApiResponse } from "@/utils/fetch-utils";
 import LanguageSelector from "@/components/LanguageSelector.vue";
-import LocalStore, { keys } from "../services/local-store";
-import { Router } from "@/router";
+import LocalStore, { keys } from "@/services/local-store";
 
+const Router = useRouter();
 const { t } = useI18n({ useScope: "local" });
 const sessionStore = useSessionStore();
 const model = reactive({
@@ -85,11 +86,11 @@ async function submitLogin() {
   if (!isFormCorrect) return;
   try {
     await sessionStore.loginAsync(model.username, model.password, model.rememberMe);
-    Router.push(sessionStore.getLastUrl);
+    await Router.push(sessionStore.getLastUrl);
   } catch (err: any) {
     const apiErr = err as ErrorApiResponse;
     externalErrors.value = {} as Object<string[]>;
-    if(apiErr?.errors) {
+    if (apiErr?.errors) {
       externalErrors.value = apiErr?.errors;
     }
   }
