@@ -5,10 +5,10 @@ export default {
     return Fetch.Get<Organization, ErrorApiResponse>(`/api/organizations/${ id }`);
   },
   getCityTypes(): Promise<Response<SelectItem<number>[], ErrorApiResponse>> {
-    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/organizations/city-types");
+    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/organizations/all-city-types");
   },
   getStreetTypes(): Promise<Response<SelectItem<number>[], ErrorApiResponse>> {
-    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/organizations/street-types");
+    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/organizations/all-street-types");
   },
   update(request: UpdateOrganizationRequest): Promise<Response<string, ErrorApiResponse>> {
     return Fetch.Put<string, ErrorApiResponse>(`/api/organizations/${ request.id }`, { body: JSON.stringify(request) });

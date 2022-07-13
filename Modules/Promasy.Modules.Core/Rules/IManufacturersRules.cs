@@ -1,12 +1,12 @@
 ﻿using Promasy.Modules.Core.Modules;
 
-namespace Promasy.Modules.Organizations.Interfaces;
+namespace Promasy.Modules.Core.Rules;
 
-internal interface IDepartmentsRules : IRepository
+public interface IManufacturersRules : IRules
 {
     Task<bool> IsExistAsync(int id, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct);
-    bool IsEditable(int id);
+    Task<bool> IsEditableAsync(int id, CancellationToken ct);
     Task<bool> IsUsedAsync(int id, CancellationToken ct);
 }

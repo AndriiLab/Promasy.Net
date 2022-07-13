@@ -1,5 +1,5 @@
 import { useSessionStore, SessionUser } from "@/store/session";
-import { useRouter } from "vue-router";
+import { Router } from "@/router";
 
 export const Fetch = {
   Get: function <TOkResponse, TErrorResponse>(
@@ -51,13 +51,13 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
   if (fetchResponse.ok) {
     response.data = body as TOkResponse;
   } else if (fetchResponse.status === 401) {
-    if (retry) {
+    if (retry && input !== "/api/auth/refresh") {
       await refreshTokenAsync();
       if (user) {
         return typedFetchAsync<TOkResponse, TErrorResponse>(method, input, init, false);
       }
     }
-    await (useRouter()).push("/");
+    await Router.push("/logout");
   } else {
     response.error = body as TErrorResponse;
   }

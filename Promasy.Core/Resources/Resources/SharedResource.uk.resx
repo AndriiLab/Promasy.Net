@@ -72,4 +72,25 @@
   <data name="Incorrect department id" xml:space="preserve">
     <value>Невірно вказано ІД відділу</value>
   </data>
+  <data name="Email must be unique" xml:space="preserve">
+    <value>Електронна пошта вже була використана</value>
+  </data>
+  <data name="Phone must be unique" xml:space="preserve">
+    <value>Телефон вже використовується</value>
+  </data>
+  <data name="Reserve phone must be unique" xml:space="preserve">
+    <value>Резервний телефон вже використовується</value>
+  </data>
+  <data name="User name must be unique" xml:space="preserve">
+    <value>Ім'я користувача вже використовується</value>
+  </data>
+  <data name="Sub-department not exist" xml:space="preserve">
+    <value>Підрозділ не існує</value>
+  </data>
+  <data name="Employee must have one role" xml:space="preserve">
+    <value>Робітник повинен мати одну роль</value>
+  </data>
+  <data name="You can assign only User role to the employee" xml:space="preserve">
+    <value>Ви можете призначити лише роль Користувач для співробітника</value>
+  </data>
 </root>

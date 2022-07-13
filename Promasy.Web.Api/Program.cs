@@ -51,6 +51,11 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(o =>
     {
+        o.SwaggerDoc("V1", new OpenApiInfo {
+            Version = "V1",
+            Title = "WebAPI",
+            Description = "Promasy WebAPI"
+        });
         o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
         {
             Name = "Authorization",
@@ -103,7 +108,9 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(o => {
+            o.SwaggerEndpoint("/swagger/V1/swagger.json", "Promasy WebAPI");
+        });
     }
 
     app.UseHttpsRedirection();

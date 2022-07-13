@@ -6,5 +6,5 @@ public interface IAuthService : IService
 {
     Task<int?> AuthAsync(string userName, string password);
     Task SetUserContextAsync(int id);
-    Task ChangePasswordAsync(int userId, string newPassword);
+    Task SetEmployeePasswordAsync(int id, string password);
 }

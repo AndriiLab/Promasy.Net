@@ -11,10 +11,11 @@
             </div>
           </template>
           <template v-slot:end>
-            <label for="departmentId" class="mr-2">{{ t('department') }}</label>
-            <Dropdown id="departmentId" v-model="departmentId" :options="departments" optionLabel="text"
-                      :filter="true" v-on:before-show="getDepartmentsAsync"
-                      optionValue="value" :loading="isLoading"></Dropdown>
+            <DepartmentSelector v-model="departmentId"
+                                :default-options="globalDepartments"
+                                :include-empty="false"
+                                :label-classes="['mr-2']"
+                                v-on:update:selectedObject="onSelectedGlobalDepartment"></DepartmentSelector>
           </template>
         </Toolbar>
 
@@ -73,10 +74,12 @@
               }}
             </Message>
             <div>
-              <label for="departmentId" class="mr-2">{{ t('department') }}</label>
-              <Dropdown id="departmentId" v-model="departmentId" :options="departments" optionLabel="text"
-                        :filter="true" v-on:before-show="getDepartmentsAsync"
-                        optionValue="value" :loading="isLoading" :disabled="item.id > 0"></Dropdown>
+              <DepartmentSelector v-model="departmentId"
+                                  :default-options="dialogDepartments"
+                                  :include-empty="false"
+                                  :label-classes="['mr-2']"
+                                  :disabled="item.id > 0"
+                                  v-on:update:selectedObject="onSelectedDialogDepartment"></DepartmentSelector>
             </div>
             <ErrorWrap :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
               <label for="name">{{ t('name') }}</label>
@@ -115,21 +118,21 @@
 import { SelectItem } from "@/utils/fetch-utils";
 import { capitalize } from "@/utils/string-utils";
 import { useSessionStore } from "@/store/session";
-import { VirtualScrollerProps } from "primevue/virtualscroller";
 import { ref, reactive, onMounted, computed, watch } from "vue";
 import SubDepartmentsApi, { SubDepartment } from "@/services/api/sub-departments";
-import DepartmentsApi from "@/services/api/departments";
 import { useToast } from "primevue/usetoast";
 import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@/i18n/validators";
+import DepartmentSelector from "@/components/DepartmentSelector.vue";
 
 const { d, t } = useI18n();
 const { user } = useSessionStore();
 const organizationId = user!.organizationId;
-const departments = ref([ { text: user!.department, value: user!.departmentId } as SelectItem<number> ]);
+const globalDepartments = ref([ { text: user!.department, value: user!.departmentId } as SelectItem<number> ]);
+const dialogDepartments = ref([ { text: user!.department, value: user!.departmentId } as SelectItem<number> ]);
 const departmentId = ref(user!.departmentId);
 const toast = useToast();
 const items = ref([] as SubDepartment[]);
@@ -166,6 +169,14 @@ watch(departmentId, async (newId, oldId) => {
   }
 });
 
+function onSelectedGlobalDepartment(item: SelectItem<number>) {
+  dialogDepartments.value = [ item ];
+}
+
+function onSelectedDialogDepartment(item: SelectItem<number>) {
+  globalDepartments.value = [ item ];
+}
+
 async function useFilterAsync() {
   await getDataAsync();
 }
@@ -181,18 +192,6 @@ async function getDataAsync() {
     return;
   }
   toast.add({ severity: "error", summary: t("toast.error"), detail: t("table.loadError"), life: 3000 });
-  isLoading.value = false;
-}
-
-async function getDepartmentsAsync() {
-  isLoading.value = true;
-  const response = await DepartmentsApi.getList(organizationId, 1, 1000, undefined, "Name", undefined);
-
-  if (response) {
-    departments.value = response.data!.collection.map(d => {
-      return { value: d.id, text: d.name } as SelectItem<number>;
-    });
-  }
   isLoading.value = false;
 }
 
@@ -281,7 +280,6 @@ async function deleteItemAsync() {
 
 <i18n locale="en">
 {
-  "department": "Department",
   "subdepartments": "sub-departments",
   "manageSubdepartments": "sub-departments",
   "name": "Name",
@@ -291,7 +289,6 @@ async function deleteItemAsync() {
 
 <i18n locale="uk">
 {
-  "department": "Відділ",
   "subdepartments": "підрозділів",
   "manageSubdepartments": "підрозділами",
   "name": "Назва",

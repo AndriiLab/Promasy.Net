@@ -14,7 +14,10 @@ export const useRolesStore = defineStore({
         this.roles = response.data!;
       }
     },
-  }
+    getRoleName(id: number) {
+      return this.roles.find(r => r.value === id)?.text;
+    },
+  },
 });
 
 // Add HMR support

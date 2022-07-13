@@ -53,10 +53,13 @@ export const routes = [
       {
         path: "/employees",
         component: () => import("./pages/Employees.vue"),
+      },      {
+        path: "/employees/new",
+        component: () => import("./pages/EmployeeView.vue"),
       },
       {
         path: "/employees/:employeeId(\\d+)",
-        component: () => import("./pages/EmployeeEdit.vue"),
+        component: () => import("./pages/EmployeeView.vue"),
       },
       {
         path: "/me",

@@ -15,12 +15,16 @@ public static class ModuleExtensions
         services.AddValidatorsFromAssembly(typeof(TModule).Assembly, includeInternalTypes: true);
 
         // register module services decorated with IService and repositories decorated with IRepository
+        // and rules decorated with IRules
         services.Scan(scan => scan
             .FromAssemblyOf<TModule>()
             .AddClasses(classes => classes.AssignableTo<IService>())
             .AsImplementedInterfaces()
             .WithScopedLifetime()
             .AddClasses(classes => classes.AssignableTo<IRepository>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo<IRules>())
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         

@@ -10,6 +10,7 @@ using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
+using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;

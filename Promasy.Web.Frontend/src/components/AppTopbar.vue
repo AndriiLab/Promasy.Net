@@ -69,7 +69,7 @@ const { t } = useI18n({ useScope: "local" });
 const profileMenuPanel = ref(null);
 const settingsMenuPanel = ref(null);
 const { user } = useSessionStore();
-const { roles } = useRolesStore();
+const { getRoleName } = useRolesStore();
 
 const emit = defineEmits([ "menu-toggle", "topbar-settings-menu-toggle" ]);
 
@@ -83,10 +83,6 @@ function onProfileMenuToggle(event: Event) {
 
 function onSettingsMenuToggle(event: Event) {
   settingsMenuPanel.value?.toggle(event);
-}
-
-function getRoleName(id: number) {
-  return roles.find(r => r.value === id)?.text;
 }
 </script>
 

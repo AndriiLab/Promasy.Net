@@ -6,6 +6,7 @@ using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
+using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Organizations.Dtos;
 using Promasy.Modules.Organizations.Interfaces;
 
@@ -22,11 +23,9 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, int departmentId, CancellationToken ct)
+    public Task<bool> IsExistAsync(int id, CancellationToken ct)
     {
-        return _database.SubDepartments
-            .Where(s => s.DepartmentId == departmentId)
-            .AnyAsync(s => s.Id == id, ct);
+        return _database.SubDepartments.AnyAsync(s => s.Id == id, ct);
     }
 
     public Task<bool> IsNameUniqueAsync(string name, int departmentId, CancellationToken ct)

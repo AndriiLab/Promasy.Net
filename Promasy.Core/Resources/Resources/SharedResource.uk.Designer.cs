@@ -97,6 +97,24 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Електронна пошта вже була використана.
+        /// </summary>
+        internal static string Email_must_be_unique {
+            get {
+                return ResourceManager.GetString("Email must be unique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Робітник повинен мати одну роль.
+        /// </summary>
+        internal static string Employee_must_have_one_role {
+            get {
+                return ResourceManager.GetString("Employee must have one role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Невірно вказано ІД відділу.
         /// </summary>
         internal static string Incorrect_department_id {
@@ -178,11 +196,38 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Телефон вже використовується.
+        /// </summary>
+        internal static string Phone_must_be_unique {
+            get {
+                return ResourceManager.GetString("Phone must be unique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Резервний телефон вже використовується.
+        /// </summary>
+        internal static string Reserve_phone_must_be_unique {
+            get {
+                return ResourceManager.GetString("Reserve phone must be unique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Обраний тип вулиці не існує.
         /// </summary>
         internal static string Street_type_does_not_exist {
             get {
                 return ResourceManager.GetString("Street type does not exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Підрозділ не існує.
+        /// </summary>
+        internal static string Sub_department_not_exist {
+            get {
+                return ResourceManager.GetString("Sub-department not exist", resourceCulture);
             }
         }
         
@@ -219,6 +264,24 @@ namespace Promasy.Core.Resources {
         internal static string Unit_already_associated_with_order {
             get {
                 return ResourceManager.GetString("Unit already associated with order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ім&apos;я користувача вже використовується.
+        /// </summary>
+        internal static string User_name_must_be_unique {
+            get {
+                return ResourceManager.GetString("User name must be unique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ви можете призначити лише роль Користувач для співробітника.
+        /// </summary>
+        internal static string You_can_assign_only_User_role_to_the_employee {
+            get {
+                return ResourceManager.GetString("You can assign only User role to the employee", resourceCulture);
             }
         }
         

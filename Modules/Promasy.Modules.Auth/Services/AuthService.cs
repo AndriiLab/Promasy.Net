@@ -1,6 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Promasy.Domain.Persistence;
@@ -28,7 +26,7 @@ internal class AuthService : IAuthService
     {
         var userData = await _database.Employees
             .AsNoTracking()
-            .Where(e => e.UserName == userName)
+            .Where(e => e.UserName == userName.ToLower())
             .Select(e => new
             {
                 e.Id,
@@ -52,7 +50,7 @@ internal class AuthService : IAuthService
         // migrate to new password validation scheme
         if (userData.PasswordSalt is not null)
         {
-            await ChangePasswordAsync(userData.Id, password);
+            await SetEmployeePasswordAsync(userData.Id, password);
         }
 
         return userData.Id;
@@ -72,10 +70,10 @@ internal class AuthService : IAuthService
         }
     }
 
-    public async Task ChangePasswordAsync(int userId, string newPassword)
+    public async Task SetEmployeePasswordAsync(int id, string password)
     {
-        var hash = PasswordHelper.Hash(newPassword);
-        var user = await _database.Employees.FirstOrDefaultAsync(e => e.Id == userId);
+        var hash = PasswordHelper.Hash(password);
+        var user = await _database.Employees.FirstOrDefaultAsync(e => e.Id == id);
         if (user is null)
         {
             return;

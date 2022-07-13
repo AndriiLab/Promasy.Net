@@ -12,6 +12,7 @@ internal class PasswordChangeRequestValidator : AbstractValidator<PasswordChange
     {
         RuleFor(m => m.Password)
             .NotEmpty()
+            .MinimumLength(8)
             .MaximumLength(PersistenceConstant.FieldMedium);
     }
 }

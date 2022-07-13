@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Organizations;
 using Promasy.Modules.Core.Modules;
-using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -37,7 +36,7 @@ public class OrganizationsModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet($"{RoutePrefix}/city-types", ([FromServices] IStringLocalizer<CityType> localizer) =>
+        endpoints.MapGet($"{RoutePrefix}/all-city-types", ([FromServices] IStringLocalizer<CityType> localizer) =>
             {
                 return Results.Json(Enum.GetValues<CityType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
@@ -46,7 +45,7 @@ public class OrganizationsModule : IModule
             .WithName("Get available city types")
             .Produces<SelectItem<int>[]>();
         
-        endpoints.MapGet($"{RoutePrefix}/street-types", ([FromServices] IStringLocalizer<StreetType> localizer) =>
+        endpoints.MapGet($"{RoutePrefix}/all-street-types", ([FromServices] IStringLocalizer<StreetType> localizer) =>
             {
                 return Results.Json(Enum.GetValues<StreetType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
