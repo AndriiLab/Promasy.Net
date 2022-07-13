@@ -45,7 +45,7 @@
           <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
           <div class="flex justify-content-between">
             <router-link to="/me">
-              <Button :label="t('userProfile')" icon="pi pi-user" class="p-button-info p-button-sm"></Button>
+              <Button :label="t('userProfile')" icon="pi pi-user" class="p-button-info p-button-sm" @click="() => profileMenuPanel.toggle(false)"></Button>
             </router-link>
             <router-link to="/logout">
               <Button :label="t('logout')" icon="pi pi-sign-out" class="p-button-danger p-button-sm"></Button>

@@ -20,32 +20,28 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRe
     {
         RuleFor(r => r.FirstName)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.MiddleName)
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.LastName)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.Email)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium)
+            .MaximumLength(PersistenceConstant.FieldMini)
             .EmailAddress();
 
         RuleFor(r => r.PrimaryPhone)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(30);
 
         When(r => !string.IsNullOrEmpty(r.ReservePhone), () =>
         {
             RuleFor(r => r.ReservePhone)
-                .MaximumLength(PersistenceConstant.FieldMedium);
-
-            RuleFor(r => r)
-                .MustAsync((r, t) => employeesRules.IsPhoneUniqueAsync(r.ReservePhone, r.Id, t))
-                .WithMessage(localizer["Reserve phone must be unique"]);
+                .MaximumLength(30);
         });
 
         RuleFor(r => r.SubDepartmentId)

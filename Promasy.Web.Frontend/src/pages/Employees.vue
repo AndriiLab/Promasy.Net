@@ -12,17 +12,19 @@
             </div>
           </template>
           <template v-slot:end>
-            <DepartmentSelector :default-options="[{ value: user.departmentId, text: user.department }]"
+            <label for="department" class="mr-2">{{ t('department') }}</label>
+            <DepartmentSelector id="department"
+                                :default-options="[{ value: user.departmentId, text: user.department }]"
                                 v-model="departmentId"
                                 :include-empty="true"
-                                :label-classes="['mr-2']"
-                                :selector-classes="['mr-4', 'w-23rem']">
+                                class="mr-4 w-23rem">
             </DepartmentSelector>
-            <SubDepartmentSelector :department-id="departmentId"
+            <label for="subDepartment" class="mr-2">{{ t('subDepartment') }}</label>
+            <SubDepartmentSelector id="subDepartment"
+                                   :department-id="departmentId"
                                    :default-options="[{ value: user.subDepartmentId, text: user.subDepartment }]"
                                    v-model="subDepartmentId"
-                                   :label-classes="['mr-2']"
-                                   :selector-classes="['w-20rem']">
+                                   class="w-20rem">
             </SubDepartmentSelector>
           </template>
         </Toolbar>
@@ -159,8 +161,8 @@ onMounted(async () => {
 watch(departmentId, async () => await debouncedGetDataAsync());
 watch(subDepartmentId, async () => await debouncedGetDataAsync());
 
-const debouncedGetDataAsync = 
-  debounce(async () => await getDataAsync(), 400);
+const debouncedGetDataAsync =
+    debounce(async () => await getDataAsync(), 400);
 
 async function getDataAsync() {
   isLoading.value = true;

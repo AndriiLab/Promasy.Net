@@ -25,7 +25,7 @@ internal class CreateSubDepartmentRequestValidator : AbstractValidator<CreateSub
         RuleFor(_ => _)
             .MustAsync((r, t) => departmentsRules.IsExistAsync(r.DepartmentId, t))
             .WithMessage(localizer["Department does not exist"])
-            .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.DepartmentId, r.OrganizationId, t))
+            .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.DepartmentId, t))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

@@ -19,40 +19,38 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
     {
         RuleFor(r => r.FirstName)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.MiddleName)
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.LastName)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.Email)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium)
+            .MaximumLength(PersistenceConstant.FieldMini)
             .EmailAddress()
             .MustAsync(employeesRules.IsEmailUniqueAsync)
             .WithMessage(localizer["Email must be unique"]);
 
         RuleFor(r => r.PrimaryPhone)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium)
+            .MaximumLength(30)
             .MustAsync(employeesRules.IsPhoneUniqueAsync)
             .WithMessage(localizer["Phone must be unique"]);
 
         RuleFor(r => r.UserName)
             .NotEmpty()
-            .MaximumLength(PersistenceConstant.FieldMedium)
+            .MaximumLength(PersistenceConstant.FieldMini)
             .MustAsync(employeesRules.IsUserNameUniqueAsync)
             .WithMessage(localizer["User name must be unique"]);
 
         When(r => !string.IsNullOrEmpty(r.ReservePhone), () =>
         {
             RuleFor(r => r.ReservePhone)
-                .MaximumLength(PersistenceConstant.FieldMedium)
-                .MustAsync(employeesRules.IsPhoneUniqueAsync)
-                .WithMessage(localizer["Reserve phone must be unique"]);
+                .MaximumLength(30);
         });
 
         RuleFor(r => r.SubDepartmentId)
@@ -62,7 +60,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
         RuleFor(m => m.Password)
             .NotEmpty()
             .MinimumLength(8)
-            .MaximumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMini);
 
         RuleFor(r => r.Roles)
             .Must(r => r.Length == 1)

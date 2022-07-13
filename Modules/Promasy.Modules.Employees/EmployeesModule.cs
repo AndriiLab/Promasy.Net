@@ -34,7 +34,8 @@ public class EmployeesModule : IModule
         endpoints.MapGet($"{RoutePrefix}/all-roles", ([FromServices] IStringLocalizer<RoleName> localizer) =>
             {
                 return Results.Json(Enum.GetValues<RoleName>()
-                    .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
+                    .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()]))
+                    .OrderBy(r => r.Value));
             })
             .WithTags(Tag)
             .WithName("Get available roles")

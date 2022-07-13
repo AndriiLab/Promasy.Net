@@ -23,12 +23,10 @@
 
             <ErrorWrap :errors="v$.password.$errors" :class="['mb-3']" :externalErrors="externalErrors['Password']">
               <label for="password" class="block text-900 font-medium text-xl mb-2">{{ t('password') }}</label>
-              <Password id="password" v-model="model.password" :placeholder="t('password')" :toggleMask="true"
-                        autocomplete="password" class="w-full" inputClass="w-full"
-                        inputStyle="padding:1rem" :feedback="true"
-                        :promptLabel="t('enterPassword')" :weakLabel="t('weakPassword')"
-                        :mediumLabel="t('mediumPassword')" :goodLabel="t('goodPassword')"
-                        :strongLabel="t('strongPassword')"></Password>
+              <PasswordInput id="password" v-model="model.password" :placeholder="t('password')"
+                             class="w-full" :inputClass="['w-full']"
+                             autocomplete="password"
+                             :input-style="'padding:1rem'"></PasswordInput>
             </ErrorWrap>
 
             <div class="flex align-items-center justify-content-between mb-5">
@@ -63,6 +61,7 @@ import ErrorWrap from "@/components/ErrorWrap.vue";
 import { ErrorApiResponse } from "@/utils/fetch-utils";
 import LanguageSelector from "@/components/LanguageSelector.vue";
 import LocalStore, { keys } from "@/services/local-store";
+import PasswordInput from "@/components/PasswordInput.vue";
 
 const Router = useRouter();
 const { t } = useI18n({ useScope: "local" });
@@ -97,19 +96,6 @@ async function submitLogin() {
 }
 </script>
 
-
-<style scoped>
-.pi-eye {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-
-.pi-eye-slash {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-</style>
-
 <i18n locale="en">
 {
   "welcome": "Welcome to Promasy",
@@ -118,12 +104,7 @@ async function submitLogin() {
   "password": "Password",
   "signIn": "Sign In",
   "rememberMe": "Remember me",
-  "forgotPassword": "Forgot password?",
-  "enterPassword": "Enter a password",
-  "weakPassword": "Weak",
-  "mediumPassword": "Medium",
-  "goodPassword": "Good",
-  "strongPassword": "Strong"
+  "forgotPassword": "Forgot password?"
 }
 </i18n>
 
@@ -135,11 +116,6 @@ async function submitLogin() {
   "password": "Пароль",
   "signIn": "Вхід",
   "rememberMe": "Запам'ятати мене",
-  "forgotPassword": "Забули пароль?",
-  "enterPassword": "Введіть пароль",
-  "weakPassword": "Слабкий",
-  "mediumPassword": "Середній",
-  "goodPassword": "Хороший",
-  "strongPassword": "Сильний"
+  "forgotPassword": "Забули пароль?"
 }
 </i18n>

@@ -3,117 +3,92 @@
   <div v-else class="grid">
     <div class="col-12">
       <div class="card">
-        <h4>{{ t('organization') }}</h4>
-        <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{ err }}</Message>
-
-        <ErrorWrap class="field grid" :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
-          <label for="name" class="col-12 mb-2 md:col-2 md:mb-0">{{ t('name') }}</label>
-          <div class="col-12 md:col-10">
+        <div class="p-fluid formgrid grid">
+          <div class="field col-12">
+            <h4>{{ t('organization') }}</h4>
+          </div>
+          <div class="field col-12">
+            <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{ err }}</Message>
+          </div>
+          <ErrorWrap class="field col-12" :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
+            <label for="name">{{ t('name') }}</label>
             <Textarea v-model.trim="model.name" :autoResize="true" class="w-full"/>
+          </ErrorWrap>
+          
+          <div class="field col-12">
+            <h5>{{ t('contacts') }}</h5>
           </div>
-        </ErrorWrap>
-
-        <h5>{{ t('contacts') }}</h5>
-        <div class="flex justify-content-between flex-wrap">
-          <ErrorWrap :errors="v$.phoneNumber.$errors" class="field grid"
+          <ErrorWrap :errors="v$.phoneNumber.$errors" class="field col-12 md:col-4"
                      :external-errors="externalErrors['PhoneNumber']">
-            <label for="phoneNumber" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('phoneNumber') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="phoneNumber" type="text" v-model.trim="model.phoneNumber"/>
-            </div>
+            <label for="phoneNumber" >{{ t('phoneNumber') }}</label>
+            <InputText id="phoneNumber" type="text" v-model.trim="model.phoneNumber"/>
           </ErrorWrap>
 
-          <ErrorWrap :errors="v$.faxNumber.$errors" class="field grid"
+          <ErrorWrap :errors="v$.faxNumber.$errors" class="field col-12 md:col-4"
                      :external-errors="externalErrors['FaxNumber']">
-            <label for="faxNumber" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('faxNumber') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="faxNumber" type="text" v-model.trim="model.faxNumber"/>
-            </div>
+            <label for="faxNumber">{{ t('faxNumber') }}</label>
+            <InputText id="faxNumber" type="text" v-model.trim="model.faxNumber"/>
           </ErrorWrap>
-        </div>
 
-        <div class="flex justify-content-between flex-wrap">
-          <ErrorWrap :errors="v$.email.$errors" class="field grid" :external-errors="externalErrors['Email']">
-            <label for="email" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('email') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="email" type="text" v-model.trim="model.email"/>
-            </div>
+          <ErrorWrap :errors="v$.email.$errors" class="field col-12 md:col-4" :external-errors="externalErrors['Email']">
+            <label for="email">{{ t('email') }}</label>
+            <InputText id="email" type="text" v-model.trim="model.email"/>
           </ErrorWrap>
-        </div>
-
-        <h5>{{ t('registrationData') }}</h5>
-        <div class="flex justify-content-between flex-wrap">
-          <ErrorWrap :errors="v$.edrpou.$errors" class="field grid" :external-errors="externalErrors['Edrpou']">
-            <label for="edrpou" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('edrpou') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="edrpou" type="number" min="0" v-model.trim="model.edrpou"/>
-            </div>
-          </ErrorWrap>
-        </div>
-
-        <h5>{{ t('address') }}</h5>
-        <div class="flex justify-content-between flex-wrap">
-          <ErrorWrap :errors="v$.postalCode.$errors" class="field grid" :external-errors="externalErrors['PostalCode']">
-            <label for="postalCode" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('postalCode') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="postalCode" type="number" min="0" v-model.trim="model.postalCode"/>
-            </div>
-          </ErrorWrap>
-          <ErrorWrap :errors="v$.country.$errors" class="field grid" :external-errors="externalErrors['Country']">
-            <label for="country" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('country') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="country" type="text" v-model.trim="model.country"/>
-            </div>
-          </ErrorWrap>
-        </div>
-        <div class="flex justify-content-between flex-wrap">
-          <ErrorWrap :errors="v$.region.$errors" class="field grid" :external-errors="externalErrors['Region']">
-            <label for="region" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('region') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="region" type="text" v-model.trim="model.region"/>
-            </div>
-          </ErrorWrap>
-        </div>
-
-        <div class="flex justify-content-between flex-wrap">
-          <div class="field grid">
-            <ErrorWrap class="col-12 mb-2 md:col-4 md:mb-0" :errors="v$.cityType.$errors"
-                       :external-errors="externalErrors['CityType']">
-              <Dropdown id="cityType" v-model="model.cityType" :options="cityTypes" optionLabel="text"
-                        optionValue="value" style="width: 145px;"/>
-            </ErrorWrap>
-            <ErrorWrap class="col-12 md:col-8" :errors="v$.city.$errors" :external-errors="externalErrors['City']">
-              <InputText id="city" type="text" v-model.trim="model.city"/>
-            </ErrorWrap>
+          
+          <div class="field col-12">
+            <h5>{{ t('registrationData') }}</h5>
           </div>
+          <ErrorWrap :errors="v$.edrpou.$errors" class="field col-12 md:col-4" :external-errors="externalErrors['Edrpou']">
+            <label for="edrpou">{{ t('edrpou') }}</label>
+            <InputText id="edrpou" type="number" min="0" v-model.trim="model.edrpou"/>
+          </ErrorWrap>
 
-          <div class="field grid" style="margin-right: 10px;">
-            <ErrorWrap class="col-12 mb-2 md:col-4 md:mb-0" :errors="v$.streetType.$errors"
-                       :external-errors="externalErrors['StreetType']">
-              <Dropdown id="streetType" v-model="model.streetType" :options="streetTypes" optionLabel="text"
-                        optionValue="value" :filter="true" style="width: 145px;"/>
-            </ErrorWrap>
-            <ErrorWrap class="col-12 md:col-8" :errors="v$.street.$errors" :external-errors="externalErrors['Street']">
-              <InputText id="street" type="text" v-model.trim="model.street"/>
-            </ErrorWrap>
+          <div class="field col-12">
+            <h5>{{ t('address') }}</h5>
           </div>
-        </div>
+          <ErrorWrap :errors="v$.postalCode.$errors" class="field col-12 md:col-4" :external-errors="externalErrors['PostalCode']">
+            <label for="postalCode">{{ t('postalCode') }}</label>
+            <InputText id="postalCode" type="number" min="0" v-model.trim="model.postalCode"/>
+          </ErrorWrap>
+          <ErrorWrap :errors="v$.country.$errors" class="field col-12 md:col-4" :external-errors="externalErrors['Country']">
+            <label for="country">{{ t('country') }}</label>
+            <InputText id="country" type="text" v-model.trim="model.country"/>
+          </ErrorWrap>
+          <ErrorWrap :errors="v$.region.$errors" class="field col-12 md:col-4" :external-errors="externalErrors['Region']">
+            <label for="region" >{{ t('region') }}</label>
+            <InputText id="region" type="text" v-model.trim="model.region"/>
+          </ErrorWrap>
 
-        <div class="flex justify-content-between flex-wrap">
-          <ErrorWrap :errors="v$.buildingNumber.$errors" class="field grid"
+          <ErrorWrap class="field col-12 md:col-4" :errors="v$.cityType.$errors"
+                     :external-errors="externalErrors['CityType']">
+            <label for="cityType" >{{ t('cityType') }}</label>
+            <Dropdown id="cityType" v-model="model.cityType" :options="cityTypes" optionLabel="text"
+                      optionValue="value"/>
+          </ErrorWrap>
+          <ErrorWrap class="field col-12 md:col-4" :errors="v$.city.$errors" :external-errors="externalErrors['City']">
+            <label for="city" >{{ t('city') }}</label>
+            <InputText id="city" type="text" v-model.trim="model.city"/>
+          </ErrorWrap>
+          <div class="field col-12 md:col-4"></div>
+          <ErrorWrap class="field col-12 md:col-4" :errors="v$.streetType.$errors"
+                     :external-errors="externalErrors['StreetType']">
+            <label for="streetType" >{{ t('streetType') }}</label>
+            <Dropdown id="streetType" v-model="model.streetType" :options="streetTypes" optionLabel="text"
+                      optionValue="value" :filter="true"/>
+          </ErrorWrap>
+          <ErrorWrap class="field col-12 md:col-4" :errors="v$.street.$errors" :external-errors="externalErrors['Street']">
+            <label for="street" >{{ t('street') }}</label>
+            <InputText id="street" type="text" v-model.trim="model.street"/>
+          </ErrorWrap>
+          <ErrorWrap :errors="v$.buildingNumber.$errors" class="field col-12 md:col-2"
                      :external-errors="externalErrors['BuildingNumber']">
-            <label for="buildingNumber" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('buildingNumber') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="buildingNumber" type="text" v-model.trim="model.buildingNumber"/>
-            </div>
+            <label for="buildingNumber">{{ t('buildingNumber') }}</label>
+            <InputText id="buildingNumber" type="text" v-model.trim="model.buildingNumber"/>
           </ErrorWrap>
-
-          <ErrorWrap :errors="v$.internalNumber.$errors" class="field grid"
+          <ErrorWrap :errors="v$.internalNumber.$errors" class="field col-12 md:col-2"
                      :external-errors="externalErrors['InternalNumber']">
-            <label for="internalNumber" class="col-12 mb-2 md:col-4 md:mb-0">{{ t('internalNumber') }}</label>
-            <div class="col-12 md:col-8">
-              <InputText id="internalNumber" type="text" v-model.trim="model.internalNumber"/>
-            </div>
+            <label for="internalNumber">{{ t('internalNumber') }}</label>
+            <InputText id="internalNumber" type="text" v-model.trim="model.internalNumber"/>
           </ErrorWrap>
         </div>
 
@@ -215,16 +190,6 @@ async function saveAsync() {
 }
 </script>
 
-<style lang="css">
-.flex .grid label {
-  width: 175px;
-}
-
-.flex .grid input {
-  width: 350px;
-}
-</style>
-
 <i18n locale="en">
 {
   "organization": "Organization",
@@ -241,7 +206,11 @@ async function saveAsync() {
   "region": "Region",
   "buildingNumber": "Building Number",
   "internalNumber": "Internal Building Number",
-  "lastEdit": "Edited"
+  "lastEdit": "Edited",
+  "cityType": "Type of city",
+  "city": "Name of City",
+  "streetType": "Type of Street",
+  "street": "Name of Street"
 }
 </i18n>
 
@@ -261,6 +230,10 @@ async function saveAsync() {
   "region": "Область",
   "buildingNumber": "Номер будинку",
   "internalNumber": "Корпус",
-  "lastEdit": "Редаговано"
+  "lastEdit": "Редаговано",
+  "cityType": "Тип населенного пункту",
+  "city": "Назва населенного пункту",
+  "streetType": "Тип вулиці",
+  "street": "Назва вулиці"
 }
 </i18n>

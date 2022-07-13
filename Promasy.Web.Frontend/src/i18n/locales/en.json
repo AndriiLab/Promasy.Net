@@ -1,9 +1,11 @@
 {
   "validations": {
     "required": "The field is required.",
+    "requiredIf": "The field is required.",
     "minLength": "The field has a value of '{model}', but it must have a min length of {min}.",
     "email": "Value is not a valid email address.",
-    "numeric": "Value must be numeric."
+    "numeric": "Value must be numeric.",
+    "sameAs": "The value must be equal to the {otherName} value."
   },
   "cancel": "Cancel",
   "save": "Save",

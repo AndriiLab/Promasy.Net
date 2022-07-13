@@ -87,6 +87,10 @@ export const routes = [
     path: "/error",
     component: () => import("./views/Error.vue"),
   },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/404",
+  },
 ];
 
 export const publicPages = [ "/login" ];

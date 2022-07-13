@@ -1,11 +1,8 @@
 ﻿<template>
-  <div>
-    <label for="department" :class="labelClasses">{{ t('department') }}</label>
-    <Dropdown id="department" :class="selectorClasses" :options="options" optionLabel="text"
-              :filter="true" v-on:before-show="getListAsync"
-              v-model="value"
-              optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Dropdown>
-  </div>
+  <Dropdown :options="options" optionLabel="text"
+            :filter="true" v-on:before-show="getListAsync"
+            v-model="value"
+            optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Dropdown>
 </template>
 
 <script lang="ts" setup>
@@ -19,9 +16,8 @@ const props = defineProps<{
   modelValue: number,
   defaultOptions: SelectItem<number>[]
   includeEmpty: boolean,
+  emptyText?: string,
   disabled?: boolean,
-  labelClasses?: string[],
-  selectorClasses?: string[],
 }>();
 
 const emit = defineEmits([ "loading", "update:modelValue", "update:selectedObject" ]);
@@ -67,20 +63,18 @@ async function getListAsync() {
 }
 
 function getDefaultItem(): SelectItem<number> {
-  return { value: 0, text: t("all") };
+  return { value: 0, text: props.emptyText ?? t("all") };
 }
 </script>
 
 <i18n locale="en">
 {
-  "department": "Department",
   "all": "-all departments-"
 }
 </i18n>
 
 <i18n locale="uk">
 {
-  "department": "Відділ",
   "all": "-всі відділи-"
 }
 </i18n>

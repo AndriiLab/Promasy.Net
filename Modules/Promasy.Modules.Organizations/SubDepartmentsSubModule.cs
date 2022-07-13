@@ -69,7 +69,7 @@ internal class SubDepartmentsSubModule : SubModule
                     return PromasyResults.ValidationError(localizer["Incorrect department id"]);
                 }
                 
-                var id = await repository.CreateAsync(new SubDepartmentDto(0, request.Name, request.OrganizationId, request.DepartmentId));
+                var id = await repository.CreateAsync(new SubDepartmentDto(0, request.Name, request.DepartmentId));
                 var unit = await repository.GetByIdAsync(id);
 
                 return Results.Json(unit, statusCode: StatusCodes.Status201Created);

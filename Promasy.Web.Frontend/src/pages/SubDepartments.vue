@@ -11,10 +11,11 @@
             </div>
           </template>
           <template v-slot:end>
-            <DepartmentSelector v-model="departmentId"
+            <label for="department" class="mr-2">{{ t('department') }}</label>
+            <DepartmentSelector id="department"
+                                v-model="departmentId"
                                 :default-options="globalDepartments"
                                 :include-empty="false"
-                                :label-classes="['mr-2']"
                                 v-on:update:selectedObject="onSelectedGlobalDepartment"></DepartmentSelector>
           </template>
         </Toolbar>
@@ -280,6 +281,7 @@ async function deleteItemAsync() {
 
 <i18n locale="en">
 {
+  "department": "Department",
   "subdepartments": "sub-departments",
   "manageSubdepartments": "sub-departments",
   "name": "Name",
@@ -289,6 +291,7 @@ async function deleteItemAsync() {
 
 <i18n locale="uk">
 {
+  "department": "Відділ",
   "subdepartments": "підрозділів",
   "manageSubdepartments": "підрозділами",
   "name": "Назва",

@@ -1,11 +1,8 @@
 ﻿<template>
-  <div>
-    <label for="sub-department" :class="labelClasses">{{ t('subDepartment') }}</label>
-    <Dropdown id="sub-department" :class="selectorClasses" :options="options" optionLabel="text"
-              :filter="true" v-on:before-show="getListAsync"
-              v-model="value"
-              optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Dropdown>
-  </div>
+  <Dropdown  :options="options" optionLabel="text"
+            :filter="true" v-on:before-show="getListAsync"
+            v-model="value"
+            optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Dropdown>
 </template>
 
 <script lang="ts" setup>
@@ -18,10 +15,9 @@ import { useI18n } from "vue-i18n";
 const props = defineProps<{
   departmentId: number,
   modelValue: number,
+  emptyText?: string,
   defaultOptions: SelectItem<number>[]
   disabled?: boolean,
-  labelClasses?: string[],
-  selectorClasses?: string[],
 }>();
 
 const emit = defineEmits([ "loading", "update:modelValue", "update:selectedObject" ]);
@@ -72,20 +68,18 @@ async function getListAsync() {
 }
 
 function getDefaultItem(): SelectItem<number> {
-  return { value: 0, text: t("all") };
+  return { value: 0, text: props.emptyText ?? t("all") };
 }
 </script>
 
 <i18n locale="en">
 {
-  "subDepartment": "Sub-department",
   "all": "-all sub-departments-"
 }
 </i18n>
 
 <i18n locale="uk">
 {
-  "subDepartment": "Підрозділ",
   "all": "-всі підрозділи-"
 }
 </i18n>
