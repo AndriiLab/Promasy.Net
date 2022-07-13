@@ -10,24 +10,24 @@
     "@vuelidate/core": "^2.0.0-alpha.42",
     "@vuelidate/validators": "^2.0.0-alpha.30",
     "jwt-decode": "^3.1.2",
-    "pinia": "^2.0.14",
+    "pinia": "^2.0.16",
     "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",
     "primevue": "^3.15.0",
     "vue": "^3.2.37",
     "vue-debounce": "^4.0.0",
     "vue-i18n": "^9.1.10",
-    "vue-router": "^4.0.16"
+    "vue-router": "^4.1.2"
   },
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.4.0",
-    "@types/node": "^16.11.25",
+    "@types/node": "^16.11.43",
     "@vitejs/plugin-vue": "^2.3.3",
     "sass": "^1.53.0",
     "typescript": "^4.7.4",
-    "vite": "^2.9.12",
+    "vite": "^2.9.14",
     "vite-plugin-mkcert": "^1.7.2",
     "vite-svg-loader": "^3.4.0",
-    "vue-tsc": "^0.38.1"
+    "vue-tsc": "^0.38.5"
   }
 }
