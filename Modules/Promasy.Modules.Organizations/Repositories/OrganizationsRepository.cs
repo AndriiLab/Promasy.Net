@@ -28,14 +28,15 @@ public class OrganizationsRepository : IOrganizationsRules, IOrganizationsReposi
         return _database.Organizations.AnyAsync(o => o.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
     {
-        return _database.Organizations.AllAsync(o => o.Name != name, ct);
+        return await _database.Organizations.AnyAsync(o => EF.Functions.ILike(o.Name, name), ct) == false;
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
-        return _database.Organizations.Where(o => o.Id != id).AllAsync(o => o.Name != name, ct);
+        return await _database.Organizations.Where(o => o.Id != id)
+            .AnyAsync(o => EF.Functions.ILike(o.Name, name), ct) == false;
     }
 
     public bool IsEditable(int id)
@@ -55,7 +56,7 @@ public class OrganizationsRepository : IOrganizationsRules, IOrganizationsReposi
             .AsNoTracking();
         if (!string.IsNullOrEmpty(request.Search))
         {
-            query = query.Where(u => u.Name.Contains(request.Search));
+            query = query.Where(u => EF.Functions.ILike(u.Name, $"%{request.Search}%"));
         }
 
         return query

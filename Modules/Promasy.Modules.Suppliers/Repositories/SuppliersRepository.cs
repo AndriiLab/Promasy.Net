@@ -30,14 +30,14 @@ internal class SuppliersRepository : ISuppliersRules, ISuppliersRepository
         return _database.Suppliers.AnyAsync(u => u.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
     {
-        return _database.Suppliers.AllAsync(u => u.Name != name, ct);
+        return await _database.Suppliers.AnyAsync(u => EF.Functions.ILike(u.Name, name), ct) == false;
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
-        return _database.Suppliers.Where(u => u.Id != id).AllAsync(u => u.Name != name, ct);
+        return await _database.Suppliers.Where(u => u.Id != id).AnyAsync(u => EF.Functions.ILike(u.Name, name), ct) == false;
     }
 
     public Task<bool> IsEditableAsync(int id, CancellationToken ct)
@@ -58,8 +58,9 @@ internal class SuppliersRepository : ISuppliersRules, ISuppliersRepository
             .AsNoTracking();
         if (!string.IsNullOrEmpty(request.Search))
         {
-            query = query.Where(u => u.Name.Contains(request.Search) || 
-                                     u.Comment.Contains(request.Search) || 
+            var pattern = $"%{request.Search}%";
+            query = query.Where(u => EF.Functions.ILike(u.Name, pattern) || 
+                                     EF.Functions.ILike(u.Comment, pattern) || 
                                      u.Phone.Contains(request.Search));
         }
 

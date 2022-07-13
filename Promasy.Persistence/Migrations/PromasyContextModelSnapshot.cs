@@ -18,7 +18,7 @@ namespace Promasy.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("PromasyCore")
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityAlwaysColumns(modelBuilder);
@@ -405,6 +405,11 @@ namespace Promasy.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CpvId");
+
+                    b.HasIndex("Description")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "simple");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Description"), "GIN");
 
                     b.HasIndex("FinanceDepartmentId");
 
@@ -808,6 +813,16 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DescriptionEnglish")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DescriptionEnglish"), "GIN");
+
+                    b.HasIndex("DescriptionUkrainian")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "simple");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DescriptionUkrainian"), "GIN");
 
                     b.HasIndex("ParentId");
 

@@ -32,8 +32,8 @@ internal class CpvsRepository : ICpvsRepository
         if (!string.IsNullOrEmpty(search))
         {
             query = query.Where(c => c.Code.StartsWith(search) || 
-                                     c.DescriptionUkrainian.Contains(search) || 
-                                     c.DescriptionEnglish.Contains(search));
+                                     EF.Functions.ToTsVector("simple", c.DescriptionUkrainian).Matches(search) || 
+                                     EF.Functions.ToTsVector("english", c.DescriptionEnglish).Matches(search));
         }
 
         var list = await query.Select(c => new CpvDto(c.Id, c.Code, c.DescriptionEnglish, c.DescriptionUkrainian,

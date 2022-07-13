@@ -20,7 +20,7 @@ namespace Promasy.Persistence.Context
         public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext userContext) : base(options)
         {
             this.Filter<ISoftDeletable>(q => q.Where(i => !i.Deleted));
-            if (userContext.IsAuthenticated())
+            if (userContext?.IsAuthenticated() ?? false)
             {
                 this.Filter<Organization>(q => q.Where(o => o.Id == userContext.GetOrganizationId()));
                 this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.GetOrganizationId()));

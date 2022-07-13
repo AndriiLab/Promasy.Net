@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Promasy.Core.Persistence;
 using Promasy.Domain.Orders;
@@ -14,8 +15,8 @@ namespace Promasy.Persistence.Configurations
 
             builder.Property(b => b.CatNum)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
-                .IsRequired(false);  
-            
+                .IsRequired(false);
+
             builder.Property(b => b.Kekv)
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired(false);
@@ -23,6 +24,10 @@ namespace Promasy.Persistence.Configurations
             builder.HasOne(b => b.Cpv)
                 .WithMany()
                 .HasForeignKey(b => b.CpvId);
+
+            builder.HasIndex(c => c.Description)
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("simple");
         }
     }
 }

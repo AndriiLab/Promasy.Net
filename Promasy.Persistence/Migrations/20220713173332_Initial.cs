@@ -502,6 +502,22 @@ namespace Promasy.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cpvs_DescriptionEnglish",
+                schema: "PromasyCore",
+                table: "Cpvs",
+                column: "DescriptionEnglish")
+                .Annotation("Npgsql:IndexMethod", "GIN")
+                .Annotation("Npgsql:TsVectorConfig", "english");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cpvs_DescriptionUkrainian",
+                schema: "PromasyCore",
+                table: "Cpvs",
+                column: "DescriptionUkrainian")
+                .Annotation("Npgsql:IndexMethod", "GIN")
+                .Annotation("Npgsql:TsVectorConfig", "simple");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cpvs_ParentId",
                 schema: "PromasyCore",
                 table: "Cpvs",
@@ -542,6 +558,14 @@ namespace Promasy.Persistence.Migrations
                 schema: "PromasyCore",
                 table: "Orders",
                 column: "CpvId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_Description",
+                schema: "PromasyCore",
+                table: "Orders",
+                column: "Description")
+                .Annotation("Npgsql:IndexMethod", "GIN")
+                .Annotation("Npgsql:TsVectorConfig", "simple");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_FinanceDepartmentId",

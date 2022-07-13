@@ -28,14 +28,14 @@ internal class DepartmentsRepository : IDepartmentsRules, IDepartmentsRepository
         return _database.Departments.AnyAsync(d => d.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
     {
-        return _database.Departments.AllAsync(d => d.Name != name, ct);
+        return await _database.Departments.AnyAsync(d => EF.Functions.ILike(d.Name, name), ct) == false;
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
-        return _database.Departments.Where(u => u.Id != id).AllAsync(u => u.Name != name, ct);
+        return await _database.Departments.Where(u => u.Id != id).AnyAsync(d => EF.Functions.ILike(d.Name, name), ct) == false;
     }
 
     public bool IsEditable(int id)
@@ -64,7 +64,7 @@ internal class DepartmentsRepository : IDepartmentsRules, IDepartmentsRepository
             .AsNoTracking();
         if (!string.IsNullOrEmpty(request.Search))
         {
-            query = query.Where(u => u.Name.Contains(request.Search));
+            query = query.Where(d => EF.Functions.ILike(d.Name, $"%{request.Search}%"));
         }
 
         return query

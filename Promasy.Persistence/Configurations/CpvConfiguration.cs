@@ -22,6 +22,14 @@ namespace Promasy.Persistence.Configurations
             builder.Property(b => b.DescriptionUkrainian)
                 .HasMaxLength(PersistenceConstant.FieldLarge)
                 .IsRequired();
+            
+            builder.HasIndex(c => c.DescriptionEnglish)
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("english");
+            
+            builder.HasIndex(c => c.DescriptionUkrainian)
+                .HasMethod("GIN")
+                .IsTsVectorExpressionIndex("simple");
         }
     }
 }

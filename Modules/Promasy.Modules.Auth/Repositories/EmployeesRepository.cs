@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Promasy.Domain.Persistence;
+using Promasy.Modules.Auth.Dtos;
+using Promasy.Modules.Auth.Helpers;
 using Promasy.Modules.Auth.Interfaces;
 using Promasy.Modules.Auth.UserContext;
 
@@ -14,7 +16,16 @@ internal class EmployeesRepository : IEmployeesRepository
     {
         _database = database;
     }
-    
+
+    public Task<EmployeePasswordDto?> GetEmployeeDataByUserNameAsync(string userName)
+    {
+        return _database.Employees
+            .AsNoTracking()
+            .Where(e => e.UserName == userName.ToLower())
+            .Select(e => new EmployeePasswordDto(e.Id, e.Password, e.Salt))
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<Claim[]?> GetEmployeeClaimsByIdAsync(int id)
     {
         var employee = await _database.Employees
@@ -56,5 +67,18 @@ internal class EmployeesRepository : IEmployeesRepository
             new Claim(PromasyClaims.SubDepartmentId, employee.SubDepartmentId.ToString()),
             new Claim(ClaimTypes.Role, string.Join(',', employee.Roles)),
         };
+    }
+    
+    public async Task SetEmployeePasswordAsync(int id, string hash)
+    {
+        var user = await _database.Employees.FirstOrDefaultAsync(e => e.Id == id);
+        if (user is null)
+        {
+            return;
+        }
+
+        user.Password = hash;
+        user.Salt = null;
+        await _database.SaveChangesAsync();
     }
 }

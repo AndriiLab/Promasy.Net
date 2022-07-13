@@ -28,18 +28,18 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
         return _database.SubDepartments.AnyAsync(s => s.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int departmentId, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, int departmentId, CancellationToken ct)
     {
-        return _database.SubDepartments
+        return await _database.SubDepartments
             .Where(s => s.DepartmentId == departmentId)
-            .AllAsync(s => s.Name != name, ct);
+            .AnyAsync(d => EF.Functions.ILike(d.Name, name), ct) == false;
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, int departmentId, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, int id, int departmentId, CancellationToken ct)
     {
-        return _database.SubDepartments
+        return await _database.SubDepartments
             .Where(s => s.DepartmentId == departmentId && s.Id != id)
-            .AllAsync(s => s.Name != name, ct);
+            .AnyAsync(d => EF.Functions.ILike(d.Name, name), ct) == false;
     }
 
     public bool IsEditable(int id)
@@ -69,7 +69,7 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
             .Where(d => d.DepartmentId == departmentId);
         if (!string.IsNullOrEmpty(request.Search))
         {
-            query = query.Where(u => u.Name.Contains(request.Search));
+            query = query.Where(u => EF.Functions.ILike(u.Name, $"%{request.Search}%"));
         }
 
         return query

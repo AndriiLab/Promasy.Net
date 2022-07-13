@@ -30,14 +30,15 @@ internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepo
         return _database.Manufacturers.AnyAsync(u => u.Id == id, ct);
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, CancellationToken ct)
     {
-        return _database.Manufacturers.AllAsync(u => u.Name != name, ct);
+        return await _database.Manufacturers.AnyAsync(m => EF.Functions.ILike(m.Name, name), ct) == false;
     }
 
-    public Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
+    public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
-        return _database.Manufacturers.Where(u => u.Id != id).AllAsync(u => u.Name != name, ct);
+        return await _database.Manufacturers.Where(u => u.Id != id)
+            .AnyAsync(m => EF.Functions.ILike(m.Name, name), ct) == false;
     }
 
     public Task<bool> IsEditableAsync(int id, CancellationToken ct)
@@ -58,7 +59,7 @@ internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepo
             .AsNoTracking();
         if (!string.IsNullOrEmpty(request.Search))
         {
-            query = query.Where(u => u.Name.Contains(request.Search));
+            query = query.Where(u => EF.Functions.ILike(u.Name, $"%{request.Search}%"));
         }
 
         return query

@@ -32,14 +32,16 @@ internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
         return _userContext.HasRoles((int) RoleName.Administrator) || _userContext.GetId() == id;
     }
 
-    public Task<bool> IsEmailUniqueAsync(string email, CancellationToken ct)
+    public async Task<bool> IsEmailUniqueAsync(string email, CancellationToken ct)
     {
-        return _database.Employees.AllAsync(e => e.Email != email.ToLower(), ct);
+        return await _database.Employees
+                .AnyAsync(e => EF.Functions.ILike(e.Email, email), ct) == false;;
     }
 
-    public Task<bool> IsEmailUniqueAsync(string email, int id, CancellationToken ct)
+    public async Task<bool> IsEmailUniqueAsync(string email, int id, CancellationToken ct)
     {
-        return _database.Employees.Where(e => e.Id != id).AllAsync(e => e.Email != email.ToLower(), ct);
+        return await _database.Employees.Where(e => e.Id != id)
+            .AnyAsync(e => EF.Functions.ILike(e.Email, email), ct) == false;;
     }
 
     public Task<bool> IsPhoneUniqueAsync(string phone, CancellationToken ct)
@@ -53,15 +55,16 @@ internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
             .AllAsync(e => e.PrimaryPhone != phone && e.ReservePhone != phone, ct);
     }
 
-    public Task<bool> IsUserNameUniqueAsync(string userName, CancellationToken ct)
+    public async Task<bool> IsUserNameUniqueAsync(string userName, CancellationToken ct)
     {
-        return _database.Employees.AllAsync(e => e.UserName != userName.ToLower(), ct);
+        return await _database.Employees
+            .AnyAsync(e => EF.Functions.ILike(e.UserName, userName), ct) == false;
     }
 
-    public Task<bool> IsUserNameUniqueAsync(string userName, int id, CancellationToken ct)
+    public async Task<bool> IsUserNameUniqueAsync(string userName, int id, CancellationToken ct)
     {
-        return _database.Employees.Where(e => e.Id != id)
-            .AllAsync(e => e.UserName != userName.ToLower(), ct);
+        return await _database.Employees.Where(e => e.Id != id)
+            .AnyAsync(e => EF.Functions.ILike(e.UserName, userName), ct) == false;
     }
 
     public bool CanHaveRoles(RoleName[] roles)
@@ -102,11 +105,12 @@ internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
         
         if (!string.IsNullOrEmpty(request.Search))
         {
+            var pattern = $"%{request.Search}%";
             query = query.Where(e =>
-                e.FirstName.Contains(request.Search) ||
-                e.LastName.Contains(request.Search) ||
-                e.MiddleName.Contains(request.Search) ||
-                e.Email.Contains(request.Search) ||
+                EF.Functions.ILike(e.FirstName, pattern) ||
+                EF.Functions.ILike(e.LastName, pattern) ||
+                EF.Functions.ILike(e.MiddleName, pattern) ||
+                EF.Functions.ILike(e.Email, pattern) ||
                 e.PrimaryPhone.Contains(request.Search) ||
                 e.ReservePhone.Contains(request.Search));
         }
