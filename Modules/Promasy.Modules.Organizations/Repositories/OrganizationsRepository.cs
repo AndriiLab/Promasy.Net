@@ -12,7 +12,7 @@ using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Repositories;
 
-public class OrganizationsRepository : IOrganizationsRules, IOrganizationsRepository
+public class OrganizationsRepository : IOrganizationRules, IOrganizationsRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
@@ -23,7 +23,7 @@ public class OrganizationsRepository : IOrganizationsRules, IOrganizationsReposi
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, CancellationToken ct)
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
     {
         return _database.Organizations.AnyAsync(o => o.Id == id, ct);
     }

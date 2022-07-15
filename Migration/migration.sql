@@ -17,7 +17,7 @@ ALTER TABLE "PromasyCore"."Departments"
 ALTER TABLE "PromasyCore"."Employees"
     ADD COLUMN OldId INT;
 
-ALTER TABLE "PromasyCore"."FinanceDepartments"
+ALTER TABLE "PromasyCore"."FinanceSubDepartments"
     ADD COLUMN OldId INT;
 
 ALTER TABLE "PromasyCore"."FinanceSources"
@@ -365,7 +365,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO "PromasyCore"."FinanceSources"("Name", "Number", "FundType", "Kpkvk", "StartsOn", "DueTo", "TotalEquipment",
+INSERT INTO "PromasyCore"."FinanceSources"("Name", "Number", "FundType", "Kpkvk", "Start", "End", "TotalEquipment",
                                            "TotalMaterials", "TotalServices", "CreatedDate", "ModifiedDate", "Deleted",
                                            "CreatorId", "ModifierId", oldid, "OrganizationId")
 SELECT TRIM(F.name),
@@ -390,7 +390,7 @@ FROM promasy.finances F
          LEFT JOIN "PromasyCore"."Departments" D on D."Id" = SD."DepartmentId"
          LEFT JOIN "PromasyCore"."Employees" ED ON ED.OldId = F.modified_by AND F.modified_by IS NOT NULL;
 
-INSERT INTO "PromasyCore"."FinanceDepartments"("TotalEquipment", "TotalMaterials", "TotalServices", "FinanceSourceId",
+INSERT INTO "PromasyCore"."FinanceSubDepartments"("TotalEquipment", "TotalMaterials", "TotalServices", "FinanceSourceId",
                                                "SubDepartmentId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
                                                "ModifierId", oldid)
 SELECT COALESCE(FD.total_eqipment, 0),
@@ -429,7 +429,7 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO "PromasyCore"."Orders"("Amount", "Description", "CatNum", "OnePrice", "Type", "Kekv",
                                    "ProcurementStartDate",
-                                   "UnitId", "CpvId", "FinanceDepartmentId", "ManufacturerId", "ReasonId",
+                                   "UnitId", "CpvId", "FinanceSubDepartmentId", "ManufacturerId", "ReasonId",
                                    "SupplierId", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
                                    oldid, "OrganizationId")
 SELECT B.amount,
@@ -454,7 +454,7 @@ SELECT B.amount,
        D."OrganizationId"
 FROM promasy.bids B
          JOIN "PromasyCore"."Units" AU on AU.OldId = B.am_unit_id
-         JOIN "PromasyCore"."FinanceDepartments" FD on FD.OldId = B.finance_dep_id
+         JOIN "PromasyCore"."FinanceSubDepartments" FD on FD.OldId = B.finance_dep_id
          LEFT JOIN "PromasyCore"."Manufacturers" PR on PR.OldId = B.producer_id
          LEFT JOIN "PromasyCore"."ReasonForSupplierChoice" RS on RS.OldId = B.reason_id
          LEFT JOIN "PromasyCore"."Suppliers" SUP on SUP.OldId = B.supplier_id
@@ -522,7 +522,7 @@ ALTER TABLE "PromasyCore"."Departments"
 ALTER TABLE "PromasyCore"."Employees"
     DROP COLUMN OldId;
 
-ALTER TABLE "PromasyCore"."FinanceDepartments"
+ALTER TABLE "PromasyCore"."FinanceSubDepartments"
     DROP COLUMN OldId;
 
 ALTER TABLE "PromasyCore"."FinanceSources"

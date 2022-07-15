@@ -19,9 +19,9 @@ namespace Promasy.Modules.Organizations;
 
 internal class SubDepartmentsSubModule : SubModule
 {
-    public override string Tag { get; } = "SubDepartment";
+    public override string Tag { get; } = "Sub-department";
     
-    public SubDepartmentsSubModule(string parentRoutePrefix) : base(parentRoutePrefix, "/subdepartments")
+    public SubDepartmentsSubModule(string parentRoutePrefix) : base(parentRoutePrefix, "/sub-departments")
     {
     }
 
@@ -107,7 +107,7 @@ internal class SubDepartmentsSubModule : SubModule
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId,
                 [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository,
-                [FromServices] ISubDepartmentsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+                [FromServices] ISubDepartmentRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = rules.IsEditable(id);
                 if (!isEditable)

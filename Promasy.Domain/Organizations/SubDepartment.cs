@@ -13,7 +13,7 @@ public class SubDepartment : OrganizationEntity
     public virtual Department Department { get; set; }
         
     public virtual ICollection<Employee> Employees { get; set; }
-    public virtual ICollection<FinanceDepartment> FinanceDepartments { get; set; }
+    public virtual ICollection<FinanceSubDepartment> FinanceDepartments { get; set; }
 }
 
 public static class SubDepartmentName

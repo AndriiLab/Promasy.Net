@@ -12,7 +12,7 @@ public record CreateManufacturerRequest(string Name);
 
 internal class CreateManufacturerRequestValidator : AbstractValidator<CreateManufacturerRequest>
 {
-    public CreateManufacturerRequestValidator(IManufacturersRules rules, IStringLocalizer<SharedResource> localizer)
+    public CreateManufacturerRequestValidator(IManufacturerRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()

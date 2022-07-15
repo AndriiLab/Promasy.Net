@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Modules.Suppliers",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Modules.Organizations", "Modules\Promasy.Modules.Organizations\Promasy.Modules.Organizations.csproj", "{47E911B4-9795-4F36-BC0D-F36914F9B2B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promasy.Modules.Finances", "Modules\Promasy.Modules.Finances\Promasy.Modules.Finances.csproj", "{AD20996A-0489-4C55-BC85-8AECEBEC9A51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{47E911B4-9795-4F36-BC0D-F36914F9B2B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47E911B4-9795-4F36-BC0D-F36914F9B2B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47E911B4-9795-4F36-BC0D-F36914F9B2B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD20996A-0489-4C55-BC85-8AECEBEC9A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD20996A-0489-4C55-BC85-8AECEBEC9A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD20996A-0489-4C55-BC85-8AECEBEC9A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD20996A-0489-4C55-BC85-8AECEBEC9A51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1B6EEA8C-A3F0-470C-9E3A-99A0EE941894} = {50F72EBD-85AE-445F-B91C-A1C555E1E2E7}
@@ -96,5 +102,6 @@ Global
 		{62A9299E-CC19-436F-9837-A9B7BF086E2B} = {50F72EBD-85AE-445F-B91C-A1C555E1E2E7}
 		{297FE5D0-9E0C-46F6-A484-ED3BE7599ACA} = {50F72EBD-85AE-445F-B91C-A1C555E1E2E7}
 		{47E911B4-9795-4F36-BC0D-F36914F9B2B7} = {50F72EBD-85AE-445F-B91C-A1C555E1E2E7}
+		{AD20996A-0489-4C55-BC85-8AECEBEC9A51} = {50F72EBD-85AE-445F-B91C-A1C555E1E2E7}
 	EndGlobalSection
 EndGlobal

@@ -12,20 +12,21 @@ public record UpdateUnitRequest(int Id, string Name);
 
 internal class UpdateUnitRequestValidator : AbstractValidator<UpdateUnitRequest>
 {
-    public UpdateUnitRequestValidator(IUnitsRules rules, IStringLocalizer<SharedResource> localizer)
+    public UpdateUnitRequestValidator(IUnitRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r.Id)
-            .MustAsync(rules.IsExistAsync)
+            .MustAsync(rules.IsExistsAsync)
             .WithMessage(localizer["Item not exist"])
             .MustAsync(rules.IsEditableAsync)
             .WithMessage(localizer["You cannot perform this action"]);
         
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))
+            .WithName(nameof(UpdateUnitRequest.Name))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

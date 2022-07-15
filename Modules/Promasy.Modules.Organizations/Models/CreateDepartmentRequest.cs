@@ -11,18 +11,19 @@ public record CreateDepartmentRequest(string Name, int OrganizationId);
 
 internal class CreateDepartmentRequestValidator : AbstractValidator<CreateDepartmentRequest>
 {
-    public CreateDepartmentRequestValidator(IDepartmentsRules rules, IOrganizationsRules organizationsRules, IStringLocalizer<SharedResource> localizer)
+    public CreateDepartmentRequestValidator(IDepartmentRules rules, IOrganizationRules organizationRules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium);
         
         RuleFor(r => r.OrganizationId)
-            .MustAsync(organizationsRules.IsExistAsync)
+            .MustAsync(organizationRules.IsExistsAsync)
             .WithMessage(localizer["Organization does not exist"]);
 
         RuleFor(_ => _)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.OrganizationId, t))
+            .WithName(nameof(CreateDepartmentRequest.Name))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

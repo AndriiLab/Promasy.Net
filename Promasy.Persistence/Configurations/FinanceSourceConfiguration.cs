@@ -12,7 +12,7 @@ namespace Promasy.Persistence.Configurations
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired();
             builder.Property(b => b.Number)
-                .HasMaxLength(PersistenceConstant.FieldMedium)
+                .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired();
             builder.Property(b => b.Kpkvk)
                 .HasMaxLength(10)

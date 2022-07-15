@@ -11,7 +11,7 @@ using Promasy.Modules.Employees.Models;
 
 namespace Promasy.Modules.Employees.Repositories;
 
-internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
+internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
 {
     private readonly IUserContext _userContext;
     private readonly IDatabase _database;
@@ -20,6 +20,11 @@ internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
     {
         _userContext = userContext;
         _database = database;
+    }
+    
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
+    {
+        return _database.Employees.AnyAsync(e => e.Id == id, ct);
     }
 
     public bool CanChangePasswordForEmployee(int id)
@@ -58,12 +63,6 @@ internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
     public async Task<bool> IsUserNameUniqueAsync(string userName, CancellationToken ct)
     {
         return await _database.Employees
-            .AnyAsync(e => EF.Functions.ILike(e.UserName, userName), ct) == false;
-    }
-
-    public async Task<bool> IsUserNameUniqueAsync(string userName, int id, CancellationToken ct)
-    {
-        return await _database.Employees.Where(e => e.Id != id)
             .AnyAsync(e => EF.Functions.ILike(e.UserName, userName), ct) == false;
     }
 
@@ -117,7 +116,7 @@ internal class EmployeesRepository : IEmployeesRules, IEmployeesRepository
 
         return query
             .PaginateAsync(request,
-                e => new EmployeeShortDto(e.Id, PromasyDbFunction.GetEmployeeShortName(e.Id),
+                e => new EmployeeShortDto(e.Id, e.ShortName,
                     e.SubDepartment.Department.Name,
                     e.SubDepartment.Name,
                     e.Roles.Select(r => r.Name).ToArray(), e.ModifierId ?? e.CreatorId,

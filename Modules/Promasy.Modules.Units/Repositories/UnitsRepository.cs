@@ -13,7 +13,7 @@ using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Units.Repositories;
 
-internal class UnitsRepository : IUnitsRules, IUnitsRepository
+internal class UnitsRepository : IUnitRules, IUnitsRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
@@ -24,7 +24,7 @@ internal class UnitsRepository : IUnitsRules, IUnitsRepository
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, CancellationToken ct)
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
     {
         return _database.Units.AnyAsync(u => u.Id == id, ct);
     }

@@ -102,7 +102,7 @@ public class EmployeesModule : IModule
             .Produces<EmployeeDto>(StatusCodes.Status202Accepted);
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IEmployeesRepository repository,
-                [FromServices] IEmployeesRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+                [FromServices] IEmployeeRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = rules.IsEditable(id);
                 if (!isEditable)
@@ -121,7 +121,7 @@ public class EmployeesModule : IModule
             .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
                 
         endpoints.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
-                async ([FromBody] PasswordChangeRequest request, [FromRoute] int id, IEmployeesRules rules, IAuthService authService, 
+                async ([FromBody] PasswordChangeRequest request, [FromRoute] int id, IEmployeeRules rules, IAuthService authService, 
                     IStringLocalizer<SharedResource> localizer) =>
                 {
                     if (!rules.CanChangePasswordForEmployee(id))

@@ -12,7 +12,7 @@ using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Repositories;
 
-internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsRepository
+internal class SubDepartmentsRepository : ISubDepartmentRules, ISubDepartmentsRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
@@ -23,7 +23,7 @@ internal class SubDepartmentsRepository : ISubDepartmentsRules, ISubDepartmentsR
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, CancellationToken ct)
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
     {
         return _database.SubDepartments.AnyAsync(s => s.Id == id, ct);
     }

@@ -12,7 +12,7 @@ using Promasy.Persistence.Context;
 namespace Promasy.Persistence.Migrations
 {
     [DbContext(typeof(PromasyContext))]
-    [Migration("20220713173332_Initial")]
+    [Migration("20220715193944_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -102,6 +104,12 @@ namespace Promasy.Persistence.Migrations
                     b.Property<long?>("Salt")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("text")
+                        .HasComputedColumnSql("CASE WHEN \"MiddleName\" IS NULL THEN \"LastName\" || ' ' || left(\"FirstName\", 1) || '.'\r\n            ELSE \"LastName\" || ' ' || left(\"FirstName\", 1) || '.' || left(\"MiddleName\", 1) || '.' END", true);
+
                     b.Property<int>("SubDepartmentId")
                         .HasColumnType("integer");
 
@@ -131,7 +139,9 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -188,7 +198,73 @@ namespace Promasy.Persistence.Migrations
                     b.ToTable("Roles", "PromasyCore");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Finances.FinanceDepartment", b =>
+            modelBuilder.Entity("Promasy.Domain.Finances.FinanceSource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateOnly>("End")
+                        .HasColumnType("date");
+
+                    b.Property<int>("FundType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Kpkvk")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ModifierId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("Start")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("TotalEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalServices")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FinanceSources", "PromasyCore");
+                });
+
+            modelBuilder.Entity("Promasy.Domain.Finances.FinanceSubDepartment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,71 +308,7 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasIndex("SubDepartmentId");
 
-                    b.ToTable("FinanceDepartments", "PromasyCore");
-                });
-
-            modelBuilder.Entity("Promasy.Domain.Finances.FinanceSource", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("DueTo")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("FundType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Kpkvk")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("ModifierId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("StartsOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("TotalEquipment")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("TotalMaterials")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("TotalServices")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FinanceSources", "PromasyCore");
+                    b.ToTable("FinanceSubDepartments", "PromasyCore");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Manufacturers.Manufacturer", b =>
@@ -308,7 +320,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -354,7 +368,9 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -367,7 +383,7 @@ namespace Promasy.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<int>("FinanceDepartmentId")
+                    b.Property<int>("FinanceSubDepartmentId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Kekv")
@@ -398,6 +414,11 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("SupplierId")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("Total")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("numeric")
+                        .HasComputedColumnSql("CASE WHEN \"Deleted\" = FALSE AND \"OnePrice\" * \"Amount\" > 0 THEN \"OnePrice\" * \"Amount\" ELSE 0 END", true);
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -413,7 +434,7 @@ namespace Promasy.Persistence.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Description"), "GIN");
 
-                    b.HasIndex("FinanceDepartmentId");
+                    b.HasIndex("FinanceSubDepartmentId");
 
                     b.HasIndex("ManufacturerId");
 
@@ -435,7 +456,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -471,7 +494,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -507,7 +532,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -561,7 +588,9 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -611,7 +640,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -652,7 +683,9 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -706,7 +739,9 @@ namespace Promasy.Persistence.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -738,6 +773,133 @@ namespace Promasy.Persistence.Migrations
                     b.ToTable("SubDepartments", "PromasyCore");
                 });
 
+            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSourceWithSpend", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateOnly>("End")
+                        .HasColumnType("date");
+
+                    b.Property<int>("FundType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Kpkvk")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ModifierId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SpentEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SpentMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SpentServices")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateOnly>("Start")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("TotalEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalServices")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToView("\"VW_FinanceSourcesWithSpend\"");
+                });
+
+            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsWithSpend", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("FinanceSourceId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ModifierId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SpentEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SpentMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SpentServices")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("SubDepartmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalServices")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FinanceSourceId");
+
+                    b.HasIndex("SubDepartmentId");
+
+                    b.ToView("\"VW_FinanceSubDepartmentsWithSpend\"");
+                });
+
             modelBuilder.Entity("Promasy.Domain.Suppliers.Supplier", b =>
                 {
                     b.Property<int>("Id")
@@ -751,7 +913,9 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
@@ -857,7 +1021,7 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("SubDepartment");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Finances.FinanceDepartment", b =>
+            modelBuilder.Entity("Promasy.Domain.Finances.FinanceSubDepartment", b =>
                 {
                     b.HasOne("Promasy.Domain.Finances.FinanceSource", "FinanceSource")
                         .WithMany("FinanceDepartments")
@@ -884,9 +1048,9 @@ namespace Promasy.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Promasy.Domain.Finances.FinanceDepartment", "FinanceDepartment")
-                        .WithMany("Bids")
-                        .HasForeignKey("FinanceDepartmentId")
+                    b.HasOne("Promasy.Domain.Finances.FinanceSubDepartment", "FinanceSubDepartment")
+                        .WithMany("Orders")
+                        .HasForeignKey("FinanceSubDepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -916,7 +1080,7 @@ namespace Promasy.Persistence.Migrations
 
                     b.Navigation("Cpv");
 
-                    b.Navigation("FinanceDepartment");
+                    b.Navigation("FinanceSubDepartment");
 
                     b.Navigation("Manufacturer");
 
@@ -971,6 +1135,25 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsWithSpend", b =>
+                {
+                    b.HasOne("Promasy.Domain.Finances.FinanceSource", "FinanceSource")
+                        .WithMany()
+                        .HasForeignKey("FinanceSourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Promasy.Domain.Organizations.SubDepartment", "SubDepartment")
+                        .WithMany()
+                        .HasForeignKey("SubDepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FinanceSource");
+
+                    b.Navigation("SubDepartment");
+                });
+
             modelBuilder.Entity("Promasy.Domain.Vocabulary.Cpv", b =>
                 {
                     b.HasOne("Promasy.Domain.Vocabulary.Cpv", "Parent")
@@ -980,14 +1163,14 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Finances.FinanceDepartment", b =>
-                {
-                    b.Navigation("Bids");
-                });
-
             modelBuilder.Entity("Promasy.Domain.Finances.FinanceSource", b =>
                 {
                     b.Navigation("FinanceDepartments");
+                });
+
+            modelBuilder.Entity("Promasy.Domain.Finances.FinanceSubDepartment", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Orders.Order", b =>

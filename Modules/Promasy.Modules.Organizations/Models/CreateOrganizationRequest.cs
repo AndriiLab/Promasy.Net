@@ -26,7 +26,7 @@ public record CreateOrganizationRequest(
 
 internal class CreateOrganizationRequestValidator : AbstractValidator<CreateOrganizationRequest>
 {
-    public CreateOrganizationRequestValidator(IOrganizationsRules rules, IStringLocalizer<SharedResource> localizer)
+    public CreateOrganizationRequestValidator(IOrganizationRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()

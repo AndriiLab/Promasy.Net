@@ -5,7 +5,7 @@ using Promasy.Domain.Organizations;
 
 namespace Promasy.Domain.Finances;
 
-public class FinanceDepartment : Entity
+public class FinanceSubDepartment : Entity
 {
     public decimal TotalEquipment { get; set; }
     public decimal TotalMaterials { get; set; }
@@ -17,5 +17,5 @@ public class FinanceDepartment : Entity
     public int SubDepartmentId { get; set; }
     public SubDepartment SubDepartment { get; set; }
         
-    public virtual ICollection<Order> Bids { get; set; }
+    public virtual ICollection<Order> Orders { get; set; }
 }

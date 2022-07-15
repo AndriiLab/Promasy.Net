@@ -11,17 +11,18 @@ public record MergeManufacturersRequest(int TargetId, int[] SourceIds);
 
 internal class MergeManufacturersRequestValidator : AbstractValidator<MergeManufacturersRequest>
 {
-    public MergeManufacturersRequestValidator(IManufacturersRules rules, IStringLocalizer<SharedResource> localizer)
+    public MergeManufacturersRequestValidator(IManufacturerRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(_ => _.SourceIds)
             .NotEmpty();
 
         RuleFor(_ => _)
             .Must((r) => !r.SourceIds.Contains(r.TargetId))
-            .WithMessage(localizer["Target must not be included in source list"]);
+            .WithMessage(localizer["Target must not be included in source list"])
+            .WithName(nameof(MergeManufacturersRequest.TargetId));
 
         RuleFor(r => r.TargetId)
-            .MustAsync(rules.IsExistAsync)
+            .MustAsync(rules.IsExistsAsync)
             .WithMessage(localizer["Item not exist"]);
     }
 }

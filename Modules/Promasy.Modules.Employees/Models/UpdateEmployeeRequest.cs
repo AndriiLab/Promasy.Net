@@ -15,7 +15,7 @@ public record UpdateEmployeeRequest(int Id, string FirstName, string? MiddleName
     
 public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRequest>
 {
-    public UpdateEmployeeRequestValidator(IEmployeesRules employeesRules, ISubDepartmentsRules subDepartmentsRules,
+    public UpdateEmployeeRequestValidator(IEmployeeRules employeeRules, ISubDepartmentRules subDepartmentRules,
          IUserContext userContext, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.FirstName)
@@ -45,7 +45,7 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRe
         });
 
         RuleFor(r => r.SubDepartmentId)
-            .MustAsync(subDepartmentsRules.IsExistAsync)
+            .MustAsync(subDepartmentRules.IsExistsAsync)
             .WithMessage(localizer["Sub-department not exist"]);
         
         RuleFor(r => r.Roles)
@@ -53,11 +53,18 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRe
             .WithMessage(localizer["Employee must have one role"]);
 
         RuleFor(r => r)
-            .MustAsync((r,t) => employeesRules.IsEmailUniqueAsync(r.Email, r.Id, t))
+            .MustAsync((r,t) => employeeRules.IsEmailUniqueAsync(r.Email, r.Id, t))
             .WithMessage(localizer["Email must be unique"])
-            .MustAsync((r, t) => employeesRules.IsPhoneUniqueAsync(r.PrimaryPhone, r.Id, t))
+            .WithName(nameof(UpdateEmployeeRequest.Email));
+
+        RuleFor(r => r)
+            .MustAsync((r, t) => employeeRules.IsPhoneUniqueAsync(r.PrimaryPhone, r.Id, t))
             .WithMessage(localizer["Phone must be unique"])
-            .MustAsync((r,t) => employeesRules.CanHaveRolesAsync(r.Roles, r.Id, t))
-            .WithMessage(localizer["You can assign only User role to the employee"]);
+            .WithName(nameof(UpdateEmployeeRequest.PrimaryPhone));
+            
+        RuleFor(r => r)
+            .MustAsync((r,t) => employeeRules.CanHaveRolesAsync(r.Roles, r.Id, t))
+            .WithMessage(localizer["You can assign only User role to the employee"])
+            .WithName(nameof(UpdateEmployeeRequest.Roles));
     }
 }

@@ -8,6 +8,7 @@ using Promasy.Domain.Manufacturers;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Organizations;
 using Promasy.Domain.Persistence;
+using Promasy.Domain.Persistence.Views;
 using Promasy.Domain.Suppliers;
 using Promasy.Domain.Vocabulary;
 using Z.EntityFramework.Plus;
@@ -37,13 +38,16 @@ namespace Promasy.Persistence.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<Cpv> Cpvs { get; set; }
         public DbSet<Department> Departments { get; set; }
-        public DbSet<FinanceDepartment> FinanceDepartments { get; set; }
+        public DbSet<FinanceSubDepartment> FinanceSubDepartments { get; set; }
         public DbSet<FinanceSource> FinanceSources { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<ReasonForSupplierChoice> ReasonForSupplierChoice { get; set; }
         public DbSet<SubDepartment> SubDepartments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
+        
+        public DbSet<FinanceSubDepartmentsWithSpend> FinanceDepartmentsWithSpendView { get; set; }
+        public DbSet<FinanceSourceWithSpend> FinanceSourceWithSpendView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -27,14 +27,14 @@ public record UpdateOrganizationRequest(
 
 internal class UpdateOrganizationRequestValidator : AbstractValidator<UpdateOrganizationRequest>
 {
-    public UpdateOrganizationRequestValidator(IOrganizationsRules rules, IStringLocalizer<SharedResource> localizer)
+    public UpdateOrganizationRequestValidator(IOrganizationRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r.Id)
-            .MustAsync(rules.IsExistAsync)
+            .MustAsync(rules.IsExistsAsync)
             .WithMessage(localizer["Item not exist"])
             .Must(rules.IsEditable)
             .WithMessage(localizer["You cannot perform this action"]);

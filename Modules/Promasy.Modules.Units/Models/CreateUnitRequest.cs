@@ -12,7 +12,7 @@ public record CreateUnitRequest(string Name);
 
 internal class CreateUnitRequestValidator : AbstractValidator<CreateUnitRequest>
 {
-    public CreateUnitRequestValidator(IUnitsRules rules, IStringLocalizer<SharedResource> localizer)
+    public CreateUnitRequestValidator(IUnitRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()

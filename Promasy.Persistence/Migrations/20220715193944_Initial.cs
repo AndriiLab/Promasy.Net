@@ -29,11 +29,11 @@ namespace Promasy.Persistence.Migrations
                     StreetType = table.Column<int>(type: "integer", nullable: false),
                     BuildingNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     InternalNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,20 +72,20 @@ namespace Promasy.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    Number = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    Number = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     FundType = table.Column<int>(type: "integer", nullable: false),
                     Kpkvk = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    StartsOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DueTo = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Start = table.Column<DateOnly>(type: "date", nullable: false),
+                    End = table.Column<DateOnly>(type: "date", nullable: false),
                     TotalEquipment = table.Column<decimal>(type: "numeric", nullable: false),
                     TotalMaterials = table.Column<decimal>(type: "numeric", nullable: false),
                     TotalServices = table.Column<decimal>(type: "numeric", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -101,11 +101,11 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -121,11 +121,11 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -148,7 +148,7 @@ namespace Promasy.Persistence.Migrations
                     ReasonRevoked = table.Column<int>(type: "integer", nullable: true),
                     ReplacedByTokenId = table.Column<int>(type: "integer", nullable: true),
                     EmployeeId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
                     ModifierId = table.Column<int>(type: "integer", nullable: true)
@@ -182,11 +182,11 @@ namespace Promasy.Persistence.Migrations
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Phone = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -202,11 +202,11 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -227,11 +227,11 @@ namespace Promasy.Persistence.Migrations
                     FaxNumber = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
                     PhoneNumber = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     AddressId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,11 +253,11 @@ namespace Promasy.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -281,11 +281,11 @@ namespace Promasy.Persistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     DepartmentId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -310,6 +310,7 @@ namespace Promasy.Persistence.Migrations
                     FirstName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     MiddleName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     LastName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    ShortName = table.Column<string>(type: "text", nullable: false, computedColumnSql: "CASE WHEN \"MiddleName\" IS NULL THEN \"LastName\" || ' ' || left(\"FirstName\", 1) || '.'\r\n            ELSE \"LastName\" || ' ' || left(\"FirstName\", 1) || '.' || left(\"MiddleName\", 1) || '.' END", stored: true),
                     UserName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Email = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     PrimaryPhone = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
@@ -317,11 +318,11 @@ namespace Promasy.Persistence.Migrations
                     Password = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Salt = table.Column<long>(type: "bigint", nullable: true),
                     SubDepartmentId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -337,7 +338,7 @@ namespace Promasy.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FinanceDepartments",
+                name: "FinanceSubDepartments",
                 schema: "PromasyCore",
                 columns: table => new
                 {
@@ -349,23 +350,23 @@ namespace Promasy.Persistence.Migrations
                     FinanceSourceId = table.Column<int>(type: "integer", nullable: false),
                     SubDepartmentId = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FinanceDepartments", x => x.Id);
+                    table.PrimaryKey("PK_FinanceSubDepartments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FinanceDepartments_FinanceSources_FinanceSourceId",
+                        name: "FK_FinanceSubDepartments_FinanceSources_FinanceSourceId",
                         column: x => x.FinanceSourceId,
                         principalSchema: "PromasyCore",
                         principalTable: "FinanceSources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FinanceDepartments_SubDepartments_SubDepartmentId",
+                        name: "FK_FinanceSubDepartments_SubDepartments_SubDepartmentId",
                         column: x => x.SubDepartmentId,
                         principalSchema: "PromasyCore",
                         principalTable: "SubDepartments",
@@ -407,24 +408,25 @@ namespace Promasy.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    Amount = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     CatNum = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     OnePrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    Amount = table.Column<int>(type: "integer", nullable: false),
+                    Total = table.Column<decimal>(type: "numeric", nullable: false, computedColumnSql: "CASE WHEN \"Deleted\" = FALSE AND \"OnePrice\" * \"Amount\" > 0 THEN \"OnePrice\" * \"Amount\" ELSE 0 END", stored: true),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Kekv = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     ProcurementStartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UnitId = table.Column<int>(type: "integer", nullable: false),
                     CpvId = table.Column<int>(type: "integer", nullable: false),
-                    FinanceDepartmentId = table.Column<int>(type: "integer", nullable: false),
+                    FinanceSubDepartmentId = table.Column<int>(type: "integer", nullable: false),
                     ManufacturerId = table.Column<int>(type: "integer", nullable: false),
                     SupplierId = table.Column<int>(type: "integer", nullable: false),
                     ReasonId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -438,10 +440,10 @@ namespace Promasy.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Orders_FinanceDepartments_FinanceDepartmentId",
-                        column: x => x.FinanceDepartmentId,
+                        name: "FK_Orders_FinanceSubDepartments_FinanceSubDepartmentId",
+                        column: x => x.FinanceSubDepartmentId,
                         principalSchema: "PromasyCore",
-                        principalTable: "FinanceDepartments",
+                        principalTable: "FinanceSubDepartments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -483,11 +485,11 @@ namespace Promasy.Persistence.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     OrderId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: true)
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -542,15 +544,15 @@ namespace Promasy.Persistence.Migrations
                 column: "SubDepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FinanceDepartments_FinanceSourceId",
+                name: "IX_FinanceSubDepartments_FinanceSourceId",
                 schema: "PromasyCore",
-                table: "FinanceDepartments",
+                table: "FinanceSubDepartments",
                 column: "FinanceSourceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FinanceDepartments_SubDepartmentId",
+                name: "IX_FinanceSubDepartments_SubDepartmentId",
                 schema: "PromasyCore",
-                table: "FinanceDepartments",
+                table: "FinanceSubDepartments",
                 column: "SubDepartmentId");
 
             migrationBuilder.CreateIndex(
@@ -568,10 +570,10 @@ namespace Promasy.Persistence.Migrations
                 .Annotation("Npgsql:TsVectorConfig", "simple");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_FinanceDepartmentId",
+                name: "IX_Orders_FinanceSubDepartmentId",
                 schema: "PromasyCore",
                 table: "Orders",
-                column: "FinanceDepartmentId");
+                column: "FinanceSubDepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_ManufacturerId",
@@ -616,7 +618,7 @@ namespace Promasy.Persistence.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.Sql(@"
-CREATE FUNCTION ""PromasyCore"".fn_getemployeeshortname(id integer)
+CREATE FUNCTION ""PromasyCore"".""FN_GetEmployeeShortName""(id integer)
 RETURNS TEXT AS $$
 DECLARE result TEXT;
 BEGIN
@@ -627,6 +629,33 @@ BEGIN
         RETURN result;
 END
     $$ LANGUAGE plpgsql;");
+
+            migrationBuilder.Sql(@"
+CREATE VIEW ""PromasyCore"".""VW_FinanceSourcesWithSpend"" AS
+    SELECT FS.*,
+    COALESCE(SUM(OM.""Total""), 0) AS ""SpentMaterials"",
+    COALESCE(SUM(OE.""Total""), 0) AS ""SpentEquipment"",
+    COALESCE(SUM(OS.""Total""), 0) AS ""SpentServices""
+    FROM ""PromasyCore"".""FinanceSources"" FS
+        LEFT JOIN ""PromasyCore"".""FinanceSubDepartments"" FD on FS.""Id"" = FD.""FinanceSourceId"" AND FD.""Deleted"" = false
+        LEFT JOIN ""PromasyCore"".""Orders"" OM ON FD.""Id"" = OM.""FinanceSubDepartmentId"" AND OM.""Deleted"" = false AND OM.""Type"" = 1
+        LEFT JOIN ""PromasyCore"".""Orders"" OE ON FD.""Id"" = OE.""FinanceSubDepartmentId"" AND OE.""Deleted"" = false AND OE.""Type"" = 2
+        LEFT JOIN ""PromasyCore"".""Orders"" OS ON FD.""Id"" = OS.""FinanceSubDepartmentId"" AND OS.""Deleted"" = false AND OS.""Type"" = 3
+    WHERE FS.""Deleted"" = false
+    GROUP BY FS.""Id"";");
+
+            migrationBuilder.Sql(@"
+CREATE VIEW ""PromasyCore"".""VW_FinanceSubDepartmentsWithSpend"" AS
+    SELECT FD.*,
+    COALESCE(SUM(OM.""Total""), 0) AS ""SpentMaterials"",
+    COALESCE(SUM(OE.""Total""), 0) AS ""SpentEquipment"",
+    COALESCE(SUM(OS.""Total""), 0) AS ""SpentServices""
+    FROM ""PromasyCore"".""FinanceSubDepartments"" FD
+        LEFT JOIN ""PromasyCore"".""Orders"" OM ON FD.""Id"" = OM.""FinanceSubDepartmentId"" AND OM.""Deleted"" = false AND OM.""Type"" = 1
+        LEFT JOIN ""PromasyCore"".""Orders"" OE ON FD.""Id"" = OE.""FinanceSubDepartmentId"" AND OE.""Deleted"" = false AND OE.""Type"" = 2
+        LEFT JOIN ""PromasyCore"".""Orders"" OS ON FD.""Id"" = OS.""FinanceSubDepartmentId"" AND OS.""Deleted"" = false AND OS.""Type"" = 3
+    WHERE FD.""Deleted"" = false
+    GROUP BY FD.""Id"";");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -660,7 +689,7 @@ END
                 schema: "PromasyCore");
 
             migrationBuilder.DropTable(
-                name: "FinanceDepartments",
+                name: "FinanceSubDepartments",
                 schema: "PromasyCore");
 
             migrationBuilder.DropTable(

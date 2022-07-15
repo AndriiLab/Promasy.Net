@@ -14,7 +14,7 @@ using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Suppliers.Repositories;
 
-internal class SuppliersRepository : ISuppliersRules, ISuppliersRepository
+internal class SuppliersRepository : ISupplierRules, ISuppliersRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
@@ -25,7 +25,7 @@ internal class SuppliersRepository : ISuppliersRules, ISuppliersRepository
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, CancellationToken ct)
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
     {
         return _database.Suppliers.AnyAsync(u => u.Id == id, ct);
     }

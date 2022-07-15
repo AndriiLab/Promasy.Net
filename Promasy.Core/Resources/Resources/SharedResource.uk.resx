@@ -93,4 +93,19 @@
   <data name="You can assign only User role to the employee" xml:space="preserve">
     <value>Ви можете призначити лише роль Користувач для співробітника</value>
   </data>
+  <data name="Start date cannot be ahead End date" xml:space="preserve">
+    <value>Дата початку не може бути більшою за дату завершення</value>
+  </data>
+  <data name="Number already defined in this year" xml:space="preserve">
+    <value>Такий номер вже вказано в цьому році</value>
+  </data>
+  <data name="Finance source not exists" xml:space="preserve">
+    <value>Тема не існує</value>
+  </data>
+  <data name="Finance source for sub-department already exists" xml:space="preserve">
+    <value>Тема для підрозділу вже була створена</value>
+  </data>
+  <data name="Cannot assign requested amount" xml:space="preserve">
+    <value>Недостатньо коштів для призначення вказаної суми</value>
+  </data>
 </root>

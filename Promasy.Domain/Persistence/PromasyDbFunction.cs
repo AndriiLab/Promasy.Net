@@ -14,7 +14,7 @@ public static class PromasyDbFunction
     {
         modelBuilder.HasDbFunction(
                 typeof(PromasyDbFunction).GetMethod(nameof(GetEmployeeShortName), new[] {typeof(int)}))
-            .HasName("fn_getemployeeshortname");
+            .HasName("FN_GetEmployeeShortName");
     }
 }
 #pragma warning restore CS8604

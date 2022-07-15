@@ -10,10 +10,11 @@ namespace Promasy.Domain.Orders;
 
 public class Order : OrganizationEntity
 {
-    public int Amount { get; set; }
     public string Description { get; set; }
     public string? CatNum { get; set; }
     public decimal OnePrice { get; set; }
+    public int Amount { get; set; }
+    public decimal Total { get; set; }
     public OrderType Type { get; set; }
     public string? Kekv { get; set; }
     public DateTime? ProcurementStartDate { get; set; }
@@ -24,8 +25,8 @@ public class Order : OrganizationEntity
     public int CpvId { get; set; }
     public Cpv Cpv { get; set; }
 
-    public int FinanceDepartmentId { get; set; }
-    public FinanceDepartment FinanceDepartment { get; set; }
+    public int FinanceSubDepartmentId { get; set; }
+    public FinanceSubDepartment FinanceSubDepartment { get; set; }
 
     public int ManufacturerId { get; set; }
     public Manufacturer Manufacturer { get; set; }

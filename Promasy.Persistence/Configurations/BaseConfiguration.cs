@@ -10,6 +10,10 @@ namespace Promasy.Persistence.Configurations
         public void Configure(EntityTypeBuilder<TEntity> builder)
         {
             builder.HasKey(b => b.Id);
+
+            builder.Property(b => b.CreatedDate)
+                .HasDefaultValueSql("now()");
+            
             Config(builder);
         }
 

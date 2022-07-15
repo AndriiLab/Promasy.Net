@@ -14,7 +14,7 @@ public record CreateEmployeeRequest(string FirstName, string? MiddleName, string
 
 public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
 {
-    public CreateEmployeeRequestValidator(IEmployeesRules employeesRules, ISubDepartmentsRules subDepartmentsRules,
+    public CreateEmployeeRequestValidator(IEmployeeRules employeeRules, ISubDepartmentRules subDepartmentRules,
          IUserContext userContext, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.FirstName)
@@ -32,19 +32,19 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMini)
             .EmailAddress()
-            .MustAsync(employeesRules.IsEmailUniqueAsync)
+            .MustAsync(employeeRules.IsEmailUniqueAsync)
             .WithMessage(localizer["Email must be unique"]);
 
         RuleFor(r => r.PrimaryPhone)
             .NotEmpty()
             .MaximumLength(30)
-            .MustAsync(employeesRules.IsPhoneUniqueAsync)
+            .MustAsync(employeeRules.IsPhoneUniqueAsync)
             .WithMessage(localizer["Phone must be unique"]);
 
         RuleFor(r => r.UserName)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMini)
-            .MustAsync(employeesRules.IsUserNameUniqueAsync)
+            .MustAsync(employeeRules.IsUserNameUniqueAsync)
             .WithMessage(localizer["User name must be unique"]);
 
         When(r => !string.IsNullOrEmpty(r.ReservePhone), () =>
@@ -54,7 +54,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
         });
 
         RuleFor(r => r.SubDepartmentId)
-            .MustAsync(subDepartmentsRules.IsExistAsync)
+            .MustAsync(subDepartmentRules.IsExistsAsync)
             .WithMessage(localizer["Sub-department not exist"]);
         
         RuleFor(m => m.Password)
@@ -65,7 +65,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
         RuleFor(r => r.Roles)
             .Must(r => r.Length == 1)
             .WithMessage(localizer["Employee must have one role"])
-            .Must(employeesRules.CanHaveRoles)
+            .Must(employeeRules.CanHaveRoles)
             .WithMessage(localizer["You can assign only User role to the employee"]);
     }
 }

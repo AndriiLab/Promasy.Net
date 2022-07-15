@@ -25,6 +25,10 @@ namespace Promasy.Persistence.Configurations
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired(false);
             
+            builder.Property(b => b.ShortName)
+                .HasComputedColumnSql(@"CASE WHEN ""MiddleName"" IS NULL THEN ""LastName"" || ' ' || left(""FirstName"", 1) || '.'
+            ELSE ""LastName"" || ' ' || left(""FirstName"", 1) || '.' || left(""MiddleName"", 1) || '.' END", stored: true);
+            
             builder.Property(b => b.UserName)
                 .HasMaxLength(PersistenceConstant.FieldMedium)
                 .IsRequired();

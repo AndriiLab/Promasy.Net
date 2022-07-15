@@ -11,7 +11,7 @@ public record UpdateSubDepartmentRequest(int Id, string Name, int DepartmentId);
 
 internal class UpdateSubDepartmentRequestValidator : AbstractValidator<UpdateSubDepartmentRequest>
 {
-    public UpdateSubDepartmentRequestValidator(ISubDepartmentsRules rules, IStringLocalizer<SharedResource> localizer)
+    public UpdateSubDepartmentRequestValidator(ISubDepartmentRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
@@ -20,9 +20,12 @@ internal class UpdateSubDepartmentRequestValidator : AbstractValidator<UpdateSub
         RuleFor(r => r)
             .Must(r => rules.IsEditable(r.Id))
             .WithMessage(localizer["You cannot perform this action"])
-            .MustAsync((r, t) => rules.IsExistAsync(r.Id, t))
-            .WithMessage(localizer["Item not exist"])
+            .MustAsync((r, t) => rules.IsExistsAsync(r.Id, t))
+            .WithMessage(localizer["Item not exist"]);
+            
+        RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, r.DepartmentId, t))
-            .WithMessage(localizer["Name must be unique"]);
+            .WithMessage(localizer["Name must be unique"])
+            .WithName(nameof(UpdateSubDepartmentRequest.Name));
     }
 }

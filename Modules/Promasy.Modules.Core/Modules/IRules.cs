@@ -2,4 +2,5 @@
 
 public interface IRules
 {
+    Task<bool> IsExistsAsync(int id, CancellationToken ct);
 }

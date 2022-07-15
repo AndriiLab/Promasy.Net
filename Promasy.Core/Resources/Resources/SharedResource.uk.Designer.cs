@@ -61,6 +61,15 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Недостатньо коштів для призначення вказаної суми.
+        /// </summary>
+        internal static string Cannot_assign_requested_amount {
+            get {
+                return ResourceManager.GetString("Cannot assign requested amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Обраний тип міста не існує.
         /// </summary>
         internal static string City_type_does_not_exist {
@@ -111,6 +120,24 @@ namespace Promasy.Core.Resources {
         internal static string Employee_must_have_one_role {
             get {
                 return ResourceManager.GetString("Employee must have one role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тема для підрозділу вже була створена.
+        /// </summary>
+        internal static string Finance_source_for_sub_department_already_exists {
+            get {
+                return ResourceManager.GetString("Finance source for sub-department already exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тема не існує.
+        /// </summary>
+        internal static string Finance_source_not_exists {
+            get {
+                return ResourceManager.GetString("Finance source not exists", resourceCulture);
             }
         }
         
@@ -178,6 +205,15 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Такий номер вже вказано в цьому році.
+        /// </summary>
+        internal static string Number_already_defined_in_this_year {
+            get {
+                return ResourceManager.GetString("Number already defined in this year", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Організація має відділи.
         /// </summary>
         internal static string Organization_already_has_departments {
@@ -210,6 +246,15 @@ namespace Promasy.Core.Resources {
         internal static string Reserve_phone_must_be_unique {
             get {
                 return ResourceManager.GetString("Reserve phone must be unique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Дата початку не може бути більшою за дату завершення.
+        /// </summary>
+        internal static string Start_date_cannot_be_ahead_End_date {
+            get {
+                return ResourceManager.GetString("Start date cannot be ahead End date", resourceCulture);
             }
         }
         

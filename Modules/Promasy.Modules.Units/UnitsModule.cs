@@ -82,10 +82,10 @@ public class UnitsModule : IModule
             .WithTags(Tag)
             .WithName("Update Unit")
             .RequireAuthorization()
-            .Produces<UnitDto>(StatusCodes.Status202Accepted);
+            .Produces(StatusCodes.Status202Accepted);
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository,
-                [FromServices] IUnitsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+                [FromServices] IUnitRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)

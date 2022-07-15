@@ -85,7 +85,7 @@ public class ManufacturersModule : IModule
             .Produces<ManufacturerDto>(StatusCodes.Status202Accepted);
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IManufacturersRepository repository,  
-                [FromServices] IManufacturersRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+                [FromServices] IManufacturerRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)

@@ -12,7 +12,7 @@ public record UpdateSupplierRequest(int Id, string Name, string? Comment, string
 
 internal class UpdateManufacturerRequestValidator : AbstractValidator<UpdateSupplierRequest>
 {
-    public UpdateManufacturerRequestValidator(ISuppliersRules rules, IStringLocalizer<SharedResource> localizer)
+    public UpdateManufacturerRequestValidator(ISupplierRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
@@ -25,13 +25,14 @@ internal class UpdateManufacturerRequestValidator : AbstractValidator<UpdateSupp
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r.Id)
-            .MustAsync(rules.IsExistAsync)
+            .MustAsync(rules.IsExistsAsync)
             .WithMessage(localizer["Item not exist"])
             .MustAsync(rules.IsEditableAsync)
             .WithMessage(localizer["You cannot perform this action"]);
         
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))
+            .WithName(nameof(UpdateSupplierRequest.Name))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

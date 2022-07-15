@@ -14,7 +14,7 @@ using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Manufacturers.Repositories;
 
-internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepository
+internal class ManufacturersRepository : IManufacturerRules, IManufacturersRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
@@ -25,7 +25,7 @@ internal class ManufacturersRepository : IManufacturersRules, IManufacturersRepo
         _userContext = userContext;
     }
 
-    public Task<bool> IsExistAsync(int id, CancellationToken ct)
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
     {
         return _database.Manufacturers.AnyAsync(u => u.Id == id, ct);
     }

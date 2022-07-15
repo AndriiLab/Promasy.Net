@@ -11,21 +11,25 @@ public record CreateSubDepartmentRequest(string Name, int DepartmentId, int Orga
 
 internal class CreateSubDepartmentRequestValidator : AbstractValidator<CreateSubDepartmentRequest>
 {
-    public CreateSubDepartmentRequestValidator(ISubDepartmentsRules rules, IOrganizationsRules organizationsRules,
-        IDepartmentsRules departmentsRules, IStringLocalizer<SharedResource> localizer)
+    public CreateSubDepartmentRequestValidator(ISubDepartmentRules rules, IOrganizationRules organizationRules,
+        IDepartmentRules departmentRules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium);
         
         RuleFor(r => r.OrganizationId)
-            .MustAsync(organizationsRules.IsExistAsync)
+            .MustAsync(organizationRules.IsExistsAsync)
             .WithMessage(localizer["Organization does not exist"]);
 
         RuleFor(_ => _)
-            .MustAsync((r, t) => departmentsRules.IsExistAsync(r.DepartmentId, t))
-            .WithMessage(localizer["Department does not exist"])
+            .MustAsync((r, t) => departmentRules.IsExistsAsync(r.DepartmentId, t))
+            .WithName(nameof(CreateSubDepartmentRequest.DepartmentId))
+            .WithMessage(localizer["Department does not exist"]);
+
+        RuleFor(_ => _)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.DepartmentId, t))
+            .WithName(nameof(CreateSubDepartmentRequest.Name))
             .WithMessage(localizer["Name must be unique"]);
     }
 }

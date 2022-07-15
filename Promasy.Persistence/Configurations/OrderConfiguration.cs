@@ -21,6 +21,9 @@ namespace Promasy.Persistence.Configurations
                 .HasMaxLength(PersistenceConstant.FieldMini)
                 .IsRequired(false);
 
+            builder.Property(b => b.Total)
+                .HasComputedColumnSql(@"CASE WHEN ""Deleted"" = FALSE AND ""OnePrice"" * ""Amount"" > 0 THEN ""OnePrice"" * ""Amount"" ELSE 0 END", stored: true);
+
             builder.HasOne(b => b.Cpv)
                 .WithMany()
                 .HasForeignKey(b => b.CpvId);

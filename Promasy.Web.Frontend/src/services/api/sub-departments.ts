@@ -17,7 +17,7 @@ export default {
     descending?: boolean,
   ): Promise<Response<PagedResponse<SubDepartment>, ErrorApiResponse>> {
     return Fetch.Get<PagedResponse<SubDepartment>, ErrorApiResponse>(
-      `/api/organizations/${ organizationId }/departments/${ departmentId }/subdepartments${ buildQueryParameters([
+      `/api/organizations/${ organizationId }/departments/${ departmentId }/sub-departments${ buildQueryParameters([
         [ "offset", offset.toString() ],
         [ "page", page.toString() ],
         [ "search", search ],
@@ -27,16 +27,16 @@ export default {
     );
   },
   getById(id: number, organizationId: number, departmentId: number): Promise<Response<SubDepartment, ErrorApiResponse>> {
-    return Fetch.Get<SubDepartment, ErrorApiResponse>(`/api/organizations/${ organizationId }/departments/${ departmentId }/subdepartments/${ id }`);
+    return Fetch.Get<SubDepartment, ErrorApiResponse>(`/api/organizations/${ organizationId }/departments/${ departmentId }/sub-departments/${ id }`);
   },
   create(request: CreateSubDepartmentRequest): Promise<Response<SubDepartment, ErrorApiResponse>> {
-    return Fetch.Post<SubDepartment, ErrorApiResponse>(`/api/organizations/${ request.organizationId }/departments/${ request.departmentId }/subdepartments`, { body: JSON.stringify(request) });
+    return Fetch.Post<SubDepartment, ErrorApiResponse>(`/api/organizations/${ request.organizationId }/departments/${ request.departmentId }/sub-departments`, { body: JSON.stringify(request) });
   },
   update(request: UpdateSubDepartmentRequest): Promise<Response<string, ErrorApiResponse>> {
-    return Fetch.Put<string, ErrorApiResponse>(`/api/organizations/${ request.organizationId }/departments/${ request.departmentId }/subdepartments/${ request.id }`, { body: JSON.stringify(request) });
+    return Fetch.Put<string, ErrorApiResponse>(`/api/organizations/${ request.organizationId }/departments/${ request.departmentId }/sub-departments/${ request.id }`, { body: JSON.stringify(request) });
   },
   delete(id: number, organizationId: number, departmentId: number): Promise<Response<string, ErrorApiResponse>> {
-    return Fetch.Delete<string, ErrorApiResponse>(`/api/organizations/${ organizationId }/departments/${ departmentId }/subdepartments/${ id }`);
+    return Fetch.Delete<string, ErrorApiResponse>(`/api/organizations/${ organizationId }/departments/${ departmentId }/sub-departments/${ id }`);
   },
 };
 

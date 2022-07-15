@@ -12,20 +12,21 @@ public record UpdateManufacturerRequest(int Id, string Name);
 
 internal class UpdateManufacturerRequestValidator : AbstractValidator<UpdateManufacturerRequest>
 {
-    public UpdateManufacturerRequestValidator(IManufacturersRules rules, IStringLocalizer<SharedResource> localizer)
+    public UpdateManufacturerRequestValidator(IManufacturerRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r.Id)
-            .MustAsync(rules.IsExistAsync)
+            .MustAsync(rules.IsExistsAsync)
             .WithMessage(localizer["Manufacturer not exist"])
             .MustAsync(rules.IsEditableAsync)
             .WithMessage(localizer["You cannot perform this action"]);
         
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))
-            .WithMessage(localizer["Name must be unique"]);
+            .WithMessage(localizer["Name must be unique"])
+            .WithName(nameof(UpdateManufacturerRequest.Name));
     }
 }

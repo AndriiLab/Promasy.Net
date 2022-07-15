@@ -2,11 +2,10 @@
 
 namespace Promasy.Modules.Core.Rules;
 
-public interface IOrganizationsRules : IRules
+public interface IManufacturerRules : IRules
 {
-    Task<bool> IsExistAsync(int id, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct);
-    bool IsEditable(int id);
+    Task<bool> IsEditableAsync(int id, CancellationToken ct);
     Task<bool> IsUsedAsync(int id, CancellationToken ct);
 }

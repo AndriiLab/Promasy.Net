@@ -100,7 +100,7 @@ internal class DepartmentsSubModule : SubModule
             .Produces(StatusCodes.Status202Accepted);
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository,
-                [FromServices] IDepartmentsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+                [FromServices] IDepartmentRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = rules.IsEditable(id);
                 if (!isEditable)

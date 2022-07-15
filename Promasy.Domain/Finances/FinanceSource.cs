@@ -6,17 +6,17 @@ namespace Promasy.Domain.Finances;
 
 public class FinanceSource : OrganizationEntity
 {
-    public string Name { get; set; }
     public string Number { get; set; }
+    public string Name { get; set; }
     public FinanceFundType FundType { get; set; }
     public string Kpkvk { get; set; }
 
-    public DateTime StartsOn { get; set; }
-    public DateTime DueTo { get; set; }
+    public DateOnly Start { get; set; }
+    public DateOnly End { get; set; }
 
     public decimal TotalEquipment { get; set; }
     public decimal TotalMaterials { get; set; }
     public decimal TotalServices { get; set; }
 
-    public ICollection<FinanceDepartment> FinanceDepartments { get; set; }
+    public ICollection<FinanceSubDepartment> FinanceDepartments { get; set; }
 }
