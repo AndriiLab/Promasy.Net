@@ -3,7 +3,6 @@ using Microsoft.Extensions.Localization;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Organizations;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Models;

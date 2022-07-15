@@ -6,13 +6,12 @@ using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Organizations.Dtos;
 using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Repositories;
 
-public class OrganizationsRepository : IOrganizationRules, IOrganizationsRepository
+internal class OrganizationsRepository : IOrganizationRules, IOrganizationsRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;

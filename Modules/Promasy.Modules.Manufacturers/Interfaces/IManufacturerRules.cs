@@ -1,8 +1,9 @@
-﻿using Promasy.Modules.Core.Modules;
+﻿using Promasy.Domain.Manufacturers;
+using Promasy.Modules.Core.Modules;
 
-namespace Promasy.Modules.Core.Rules;
+namespace Promasy.Modules.Manufacturers.Interfaces;
 
-public interface IUnitRules : IRules
+internal interface IManufacturerRules : IRules<Manufacturer>
 {
     Task<bool> IsNameUniqueAsync(string name, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct);

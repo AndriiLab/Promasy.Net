@@ -6,7 +6,6 @@ using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Organizations.Dtos;
 using Promasy.Modules.Organizations.Interfaces;
 

@@ -24,7 +24,7 @@ public static class ModuleExtensions
             .AddClasses(classes => classes.AssignableTo<IRepository>())
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo<IRules>())
+            .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         

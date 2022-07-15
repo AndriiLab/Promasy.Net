@@ -4,7 +4,6 @@ using Promasy.Domain.Employees;
 using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Responses;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
 using Promasy.Modules.Employees.Models;

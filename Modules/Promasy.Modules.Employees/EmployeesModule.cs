@@ -11,7 +11,6 @@ using Promasy.Modules.Core.Auth;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Responses;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;

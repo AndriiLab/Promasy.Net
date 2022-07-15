@@ -1,17 +1,19 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
-using Promasy.Modules.Core.Rules;
+using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Finances.Interfaces;
 
 namespace Promasy.Modules.Finances.Models;
 
 public record UpdateFinanceSubDepartmentRequest(int Id, int FinanceSourceId, int SubDepartmentId,
     decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices);
     
-public class UpdateFinanceSubDepartmentRequestValidator : AbstractValidator<UpdateFinanceSubDepartmentRequest>
+internal class UpdateFinanceSubDepartmentRequestValidator : AbstractValidator<UpdateFinanceSubDepartmentRequest>
 {
     public UpdateFinanceSubDepartmentRequestValidator(IFinanceFinanceSubDepartmentRules rules,
-        IFinanceSourceRules financeSourceRules, ISubDepartmentRules subDepartmentRules, IStringLocalizer<SharedResource> localizer)
+        IFinanceSourceRules financeSourceRules, IRules<SubDepartment> subDepartmentRules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistsAsync)

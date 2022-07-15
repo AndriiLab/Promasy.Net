@@ -1,10 +1,9 @@
-﻿using System.Data;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Finances;
-using Promasy.Modules.Core.Rules;
+using Promasy.Modules.Finances.Interfaces;
 
 namespace Promasy.Modules.Finances.Models;
 
@@ -12,7 +11,7 @@ public record CreateFinanceSourceRequest(string Number, string Name, FinanceFund
     DateOnly Start, DateOnly End, string Kpkvk,
     decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices);
 
-public class CreateFinanceSourceRequestValidator : AbstractValidator<CreateFinanceSourceRequest>
+internal class CreateFinanceSourceRequestValidator : AbstractValidator<CreateFinanceSourceRequest>
 {
     public CreateFinanceSourceRequestValidator(IFinanceSourceRules rules, IStringLocalizer<SharedResource> localizer)
     {

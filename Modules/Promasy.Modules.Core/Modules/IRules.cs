@@ -1,6 +1,8 @@
-﻿namespace Promasy.Modules.Core.Modules;
+﻿using Promasy.Core.Persistence;
 
-public interface IRules
+namespace Promasy.Modules.Core.Modules;
+
+public interface IRules<T> where T : IBaseEntity
 {
     Task<bool> IsExistsAsync(int id, CancellationToken ct);
 }

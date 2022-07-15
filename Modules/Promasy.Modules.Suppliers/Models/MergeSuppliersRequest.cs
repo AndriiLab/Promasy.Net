@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
-using Promasy.Core;
 using Promasy.Core.Resources;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Suppliers.Interfaces;
 
 namespace Promasy.Modules.Suppliers.Models;

@@ -4,7 +4,9 @@ using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
-using Promasy.Modules.Core.Rules;
+using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Employees.Interfaces;
 
 namespace Promasy.Modules.Employees.Models;
 
@@ -13,9 +15,9 @@ public record UpdateEmployeeRequest(int Id, string FirstName, string? MiddleName
     RoleName[] Roles);
     
     
-public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRequest>
+internal class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRequest>
 {
-    public UpdateEmployeeRequestValidator(IEmployeeRules employeeRules, ISubDepartmentRules subDepartmentRules,
+    public UpdateEmployeeRequestValidator(IEmployeeRules employeeRules, IRules<SubDepartment> subDepartmentRules,
          IUserContext userContext, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.FirstName)

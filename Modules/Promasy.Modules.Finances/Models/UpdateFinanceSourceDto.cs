@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Finances;
-using Promasy.Modules.Core.Rules;
+using Promasy.Modules.Finances.Interfaces;
 
 namespace Promasy.Modules.Finances.Models;
 
@@ -11,7 +11,7 @@ public record UpdateFinanceSourceRequest(int Id, string Number, string Name, Fin
     DateOnly Start, DateOnly End, string Kpkvk,
     decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices);
     
-public class UpdateFinanceSourceRequestValidator : AbstractValidator<UpdateFinanceSourceRequest>
+internal class UpdateFinanceSourceRequestValidator : AbstractValidator<UpdateFinanceSourceRequest>
 {
     public UpdateFinanceSourceRequestValidator(IFinanceSourceRules rules, IStringLocalizer<SharedResource> localizer)
     {

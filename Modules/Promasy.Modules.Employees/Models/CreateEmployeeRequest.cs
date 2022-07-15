@@ -4,7 +4,9 @@ using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
-using Promasy.Modules.Core.Rules;
+using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Employees.Interfaces;
 
 namespace Promasy.Modules.Employees.Models;
 
@@ -12,9 +14,9 @@ public record CreateEmployeeRequest(string FirstName, string? MiddleName, string
     string Email, string PrimaryPhone, string? ReservePhone, string UserName, string Password,
     int SubDepartmentId, RoleName[] Roles);
 
-public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
+internal class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
 {
-    public CreateEmployeeRequestValidator(IEmployeeRules employeeRules, ISubDepartmentRules subDepartmentRules,
+    public CreateEmployeeRequestValidator(IEmployeeRules employeeRules, IRules<SubDepartment> subDepartmentRules,
          IUserContext userContext, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.FirstName)

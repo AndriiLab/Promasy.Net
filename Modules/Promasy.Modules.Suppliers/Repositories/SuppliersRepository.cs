@@ -7,7 +7,6 @@ using Promasy.Domain.Suppliers;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Suppliers.Dtos;
 using Promasy.Modules.Suppliers.Interfaces;
 using Z.EntityFramework.Plus;

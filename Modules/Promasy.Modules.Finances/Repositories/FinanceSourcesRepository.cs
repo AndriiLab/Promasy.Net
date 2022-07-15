@@ -5,7 +5,6 @@ using Promasy.Domain.Orders;
 using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Responses;
-using Promasy.Modules.Core.Rules;
 using Promasy.Modules.Finances.Dtos;
 using Promasy.Modules.Finances.Interfaces;
 using Promasy.Modules.Finances.Models;
@@ -13,7 +12,7 @@ using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Finances.Repositories;
 
-public class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRepository
+internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;

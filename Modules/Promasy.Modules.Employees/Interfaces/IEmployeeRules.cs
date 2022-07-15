@@ -1,9 +1,9 @@
 ﻿using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Modules;
 
-namespace Promasy.Modules.Core.Rules;
+namespace Promasy.Modules.Employees.Interfaces;
 
-public interface IEmployeeRules : IRules
+internal interface IEmployeeRules : IRules<Employee>
 {
     bool CanChangePasswordForEmployee(int id);
     bool IsEditable(int id);
