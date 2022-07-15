@@ -56,7 +56,7 @@
           <Column field="roles" :header="t('role')" headerStyle="width:15%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('role') }}</span>
-              <Tag v-for="role in slotProps.data.roles" :key="role" :value="getRoleName(role)"></Tag>
+              <RoleBadge v-for="role in slotProps.data.roles" :key="role" :role="role"></RoleBadge>
             </template>
           </Column>
           <Column field="department" :header="t('department')"
@@ -129,6 +129,7 @@ import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
+import RoleBadge from "@/components/RoleBadge.vue";
 import { debounce } from "vue-debounce";
 
 const { d, t } = useI18n();

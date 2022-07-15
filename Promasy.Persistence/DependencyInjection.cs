@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,11 @@ namespace Promasy.Persistence
 
         private static void EnsureRolesCreated(PromasyContext context)
         {
+            if (context.Roles.Count() == Enum.GetValues<RoleName>().Length)
+            {
+                return;
+            }
+
             EnsureRole(RoleName.Administrator, context);
             EnsureRole(RoleName.Director, context);
             EnsureRole(RoleName.DeputyDirector, context);

@@ -126,7 +126,7 @@
             <ul>
               <li v-for="item in selectedItems"><b>{{ `${item.id}, ${item.name}, ${item.phone}, ${truncate(item.comment, 50)}` }}</b></li>
             </ul>
-            <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text2') }}</div>
+            <div class="flex align-items-center justify-content-center mb-3">{{ t('mergeDialog.text2') }}</div>
             <div class="flex align-items-center justify-content-center">
               <Dropdown v-model="item" :options="selectedItems">
                 <template #value="slotProps">

@@ -28,6 +28,8 @@ export const Fetch = {
   },
 };
 
+const nonRetryUrls = ["/api/auth/refresh", "/api/auth/revoke"];
+
 async function typedFetchAsync<TOkResponse, TErrorResponse>(
   method: string,
   input: RequestInfo | URL,
@@ -51,7 +53,7 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
   if (fetchResponse.ok) {
     response.data = body as TOkResponse;
   } else if (fetchResponse.status === 401) {
-    if (retry && input !== "/api/auth/refresh") {
+    if (retry && nonRetryUrls.every(u => u !== input)) {
       await refreshTokenAsync();
       if (user) {
         return typedFetchAsync<TOkResponse, TErrorResponse>(method, input, init, false);

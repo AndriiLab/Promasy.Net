@@ -25,7 +25,7 @@
         <OverlayPanel ref="profileMenuPanel">
           <div class="text-900 font-medium text-xl mb-2">{{ t('welcomeUser', {firstName: user?.firstName}) }}</div>
           <div class="text-600">
-            <Tag v-for="role in user?.roles" :key="role" :value="getRoleName(role)" v-tooltip.left="t('role')"></Tag>
+            <RoleBadge v-for="role in user?.roles" :key="role" :role="role" v-tooltip.left="t('role')"></RoleBadge>
           </div>
           <hr class="my-3 mx-0 border-top-1 border-none surface-border"/>
           <ul class="list-none p-0 m-0 flex-grow-1">
@@ -62,14 +62,13 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSessionStore } from "@/store/session";
-import { useRolesStore } from "@/store/roles";
 import LanguageSelector from "./LanguageSelector.vue";
+import RoleBadge from "./RoleBadge.vue";
 
 const { t } = useI18n({ useScope: "local" });
 const profileMenuPanel = ref(null);
 const settingsMenuPanel = ref(null);
 const { user } = useSessionStore();
-const { getRoleName } = useRolesStore();
 
 const emit = defineEmits([ "menu-toggle", "topbar-settings-menu-toggle" ]);
 
