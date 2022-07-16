@@ -7,6 +7,7 @@ export default {
   },
   getList(
     financeSourceId: number,
+    extended: boolean,
     page: number,
     offset: number,
     search?: string,
@@ -16,6 +17,7 @@ export default {
     return Fetch.Get<PagedResponse<FinanceSubDepartment>, ErrorApiResponse>(
       `/api/finances/${financeSourceId}/sub-departments${buildQueryParameters([
         ["offset", offset.toString()],
+        ["extended", extended ? "true" : undefined],
         ["page", page.toString()],
         ["search", search],
         ["order", order],
@@ -45,13 +47,10 @@ export interface FinanceSubDepartment {
   departmentId: number;
   department: string;
   totalEquipment: string;
-  spentEquipment: string;
   leftEquipment: string;
   totalMaterials: string;
-  spentMaterials: string;
   leftMaterials: string;
   totalServices: string;
-  spentServices: string;
   leftServices: string;
   editorId: number;
   editor: string;

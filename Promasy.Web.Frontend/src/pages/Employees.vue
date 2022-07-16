@@ -19,7 +19,7 @@
                                 :include-empty="true"
                                 class="mr-4 w-23rem">
             </DepartmentSelector>
-            <label for="subDepartment" class="mr-2">{{ t('subDepartment') }}</label>
+            <label for="subDepartment" class="mr-2">{{ t('sub-department') }}</label>
             <SubDepartmentSelector id="subDepartment"
                                    :department-id="departmentId"
                                    :default-options="subDepartments"
@@ -67,10 +67,10 @@
               {{ slotProps.data.department }}
             </template>
           </Column>
-          <Column field="subDepartment" :header="t('subDepartment')"
+          <Column field="subDepartment" :header="t('sub-department')"
                   headerStyle="width:15%; min-width:10rem;">
             <template #body="slotProps">
-              <span class="p-column-title">{{ t('subDepartment') }}</span>
+              <span class="p-column-title">{{ t('sub-department') }}</span>
               {{ slotProps.data.subDepartment }}
             </template>
           </Column>
@@ -300,8 +300,6 @@ async function deleteItemAsync() {
   "employees": "employees",
   "manageEmployees": "employees",
   "name": "Name",
-  "department": "Department",
-  "subDepartment": "Sub-department",
   "role": "Role"
 }
 </i18n>
@@ -311,8 +309,6 @@ async function deleteItemAsync() {
   "employees": "працівників",
   "manageEmployees": "працівниками",
   "name": "Ім'я",
-  "department": "Відділ",
-  "subDepartment": "Підрозділ",
   "role": "Роль"
 }
 </i18n>

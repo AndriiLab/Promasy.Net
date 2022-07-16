@@ -7,6 +7,7 @@ export default {
   },
   getList(
     year: number,
+    extended: boolean,
     page: number,
     offset: number,
     search?: string,
@@ -16,6 +17,7 @@ export default {
     return Fetch.Get<PagedResponse<FinanceSource>, ErrorApiResponse>(
       `/api/finances${buildQueryParameters([
         ["year", year.toString()],
+        ["extended", extended ? "true" : undefined],
         ["offset", offset.toString()],
         ["page", page.toString()],
         ["search", search],
@@ -47,13 +49,10 @@ export interface FinanceSource {
   end: Date;
   kpkvk: string;
   totalEquipment: string;
-  spentEquipment: string;
   leftEquipment: string;
   totalMaterials: string;
-  spentMaterials: string;
   leftMaterials: string;
   totalServices: string;
-  spentServices: string;
   leftServices: string;
   editorId: number;
   editor: string;

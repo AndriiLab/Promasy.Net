@@ -82,10 +82,14 @@
               <span :class="{ 'p-error': parseInt(slotProps.data.leftServices) < 0 }">{{ uah(slotProps.data.leftServices).format() }}</span>
             </template>
           </Column>
-          <Column headerStyle="min-width:10rem;">
+          <Column headerStyle="min-width:12rem;">
             <template #body="slotProps">
-              <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
-              <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+              <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                           :to="{ name: 'FinanceSubDepartments', params: {financeId: slotProps.data.id}}">
+                <Button v-tooltip.left="t('sub-department', 2)" icon="pi pi-briefcase" class="p-button-rounded p-button-primary mr-2"/>
+              </router-link>
+              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -148,7 +152,7 @@ import { required, maxLength } from "@/i18n/validators";
 import Currency from "currency.js";
 
 const { t } = useI18n();
-var uah = (v : string) => Currency(v, { symbol: "₴ ", separator: " ", decimal: "," });
+const uah = (v : string) => Currency(v, { symbol: "₴ ", separator: " ", decimal: "," });
 const sessionStore = useSessionStore();
 const toast = useToast();
 const items = ref([] as FinanceSource[]);
@@ -195,7 +199,7 @@ async function useFilterAsync() {
 
 async function getDataAsync() {
   isLoading.value = true;
-  const response = await FinanceSourcesApi.getList(sessionStore.year, tableData.page, tableData.offset, tableData.filter, tableData.orderBy, tableData.descending);
+  const response = await FinanceSourcesApi.getList(sessionStore.year, true, tableData.page, tableData.offset, tableData.filter, tableData.orderBy, tableData.descending);
   if (response.success) {
     items.value = response.data?.collection ?? [] as FinanceSource[];
     tableData.page = response.data?.page ?? tableData.page;

@@ -15,7 +15,7 @@ public class FinanceSourceView : OrganizationEntity
     public DateOnly End { get; set; }
 
     public decimal TotalEquipment { get; set; }
-    public decimal SpentEquipment { get; set; }
+    public decimal SpentEquipment { get; set; } // todo: possibly not used
     public decimal LeftEquipment { get; set; }
     public decimal TotalMaterials { get; set; }
     public decimal SpentMaterials { get; set; }

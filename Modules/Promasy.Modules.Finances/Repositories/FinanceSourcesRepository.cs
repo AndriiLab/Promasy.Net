@@ -44,6 +44,34 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
 
     public Task<PagedResponse<FinanceSourceDto>> GetPagedListAsync(FinanceSourcesPagedRequest request)
     {
+        return request.IncludeCalculatedAmounts
+            ? GetPagedListExtendedAsync(request)
+            : GetPagedListShortAsync(request);
+    }
+
+    private Task<PagedResponse<FinanceSourceDto>> GetPagedListShortAsync(FinanceSourcesPagedRequest request)
+    {
+        var query = _database.FinanceSources
+            .AsNoTracking()
+            .Where(f => f.Start.Year == request.Year);
+        if (!string.IsNullOrEmpty(request.Search))
+        {
+            query = query.Where(u => EF.Functions.ILike(u.Name, $"%{request.Search}%") ||
+                                     EF.Functions.ILike(u.Number, $"%{request.Search}%"));
+        }
+
+        return query
+            .PaginateAsync(request,
+                f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
+                    f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
+                    string.Empty, string.Empty, string.Empty, 
+                    f.ModifierId ?? f.CreatorId,
+                    PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
+                    f.ModifiedDate ?? f.CreatedDate));
+    }
+
+    private Task<PagedResponse<FinanceSourceDto>> GetPagedListExtendedAsync(FinanceSourcesPagedRequest request)
+    {
         var query = _database.FinanceSourceWithSpendView
             .AsNoTracking()
             .Where(f => f.Start.Year == request.Year);
@@ -57,7 +85,6 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
             .PaginateAsync(request,
                 f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
                     f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
-                    f.SpentEquipment.ToString("F2"), f.SpentMaterials.ToString("F2"), f.SpentServices.ToString("F2"),
                     f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
                     f.ModifierId ?? f.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
@@ -71,7 +98,6 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
             .Where(f => f.Id == id)
             .Select(f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
                 f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
-                f.SpentEquipment.ToString("F2"), f.SpentMaterials.ToString("F2"), f.SpentServices.ToString("F2"), 
                 f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
                 f.ModifierId ?? f.CreatorId,
                 PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),

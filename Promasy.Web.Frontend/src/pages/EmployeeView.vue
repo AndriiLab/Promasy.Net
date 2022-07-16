@@ -59,7 +59,7 @@
           </ErrorWrap>
           <ErrorWrap class="field col-12 md:col-4" :errors="v$.subDepartmentId.$errors"
                      :external-errors="externalErrors['SubDepartmentId']">
-            <label for="subDepartmentId">{{ t('subDepartment') }}</label>
+            <label for="subDepartmentId">{{ t('sub-department') }}</label>
             <SubDepartmentSelector id="subDepartmentId"
                                    :defaultOptions="subDepartments"
                                    v-model="model.subDepartmentId"
@@ -315,8 +315,6 @@ interface EmployeeModel {
   "passwordRepeat": "Repeat password",
   "loginData": "Login data",
   "organizationRelation": "Relation to organization",
-  "department": "Department",
-  "subDepartment": "Sub-department",
   "role": "Role",
   "lastEdit": "Edited",
   "selectSubDepartment": "Select Sub-department"
@@ -339,8 +337,6 @@ interface EmployeeModel {
   "passwordRepeat": "Підтвердіть пароль",
   "loginData": "Дані входу",
   "organizationRelation": "Належність до організації",
-  "department": "Відділ",
-  "subDepartment": "Підрозділ",
   "role": "Роль",
   "lastEdit": "Редаговано",
   "selectSubDepartment": "Виберіть підрозділ"

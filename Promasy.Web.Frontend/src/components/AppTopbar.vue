@@ -48,7 +48,7 @@
             </li>
             <li class="flex align-items-center mb-3">
               <i class="pi pi-briefcase text-green-500 mr-2"></i>
-              <span v-tooltip.left="t('subDepartment')">{{ user?.subDepartment }}</span>
+              <span v-tooltip.left="t('sub-department')">{{ user?.subDepartment }}</span>
             </li>
           </ul>
           <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
@@ -100,8 +100,6 @@ function onSettingsMenuToggle(event: Event) {
 {
   "welcomeUser": "Welcome, {firstName}",
   "organization": "Organization",
-  "department": "Department",
-  "subDepartment": "Subdepartment",
   "logout": "Logout",
   "role": "Role",
   "profile": "Profile",
@@ -114,8 +112,6 @@ function onSettingsMenuToggle(event: Event) {
 {
   "welcomeUser": "{firstName}, вітаємо",
   "organization": "Організація",
-  "department": "Відділ",
-  "subDepartment": "Підрозділ",
   "logout": "Вийти",
   "role": "Роль",
   "profile": "Профіль користувача",

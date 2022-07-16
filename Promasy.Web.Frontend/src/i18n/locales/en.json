@@ -16,9 +16,10 @@
   "merge": "Merge",
   "language": "Language",
   "queryYear": "Query Year",
-  "departments": "Departments",
-  "sub-departments": "Sub-departments",
-  "employees": "Employees",
+  "department": "Department | Departments",
+  "sub-department": "Sub-department | Sub-departments",
+  "employee": "Employee | Employees",
+  "order": "Order | Orders",
   "createDialog": {
     "addNew": "New"
   },

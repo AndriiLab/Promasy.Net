@@ -60,7 +60,7 @@
           <Column headerStyle="min-width:20rem;">
             <template #body="slotProps">
               <router-link :to="{ name: 'SubDepartmentEmployees', params: { departmentId: slotProps.data.departmentId, subDepartmentId: slotProps.data.id } }">
-                <Button v-tooltip.left="t('employees')" icon="pi pi-users" class="p-button-rounded p-button-primary mr-2"/>
+                <Button v-tooltip.left="t('employee', 2)" icon="pi pi-users" class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
               <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
               <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
@@ -288,8 +288,6 @@ async function deleteItemAsync() {
 
 <i18n locale="en">
 {
-  "department": "Department",
-  "employees": "Employees",
   "subdepartments": "sub-departments",
   "manageSubdepartments": "sub-departments",
   "name": "Name",
@@ -299,8 +297,6 @@ async function deleteItemAsync() {
 
 <i18n locale="uk">
 {
-  "department": "Відділ",
-  "employees": "Працівники",
   "subdepartments": "підрозділів",
   "manageSubdepartments": "підрозділами",
   "name": "Назва",

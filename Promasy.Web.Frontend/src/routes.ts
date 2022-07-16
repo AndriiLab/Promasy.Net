@@ -47,6 +47,11 @@ export const routes = [
         component: () => import("./pages/Orders.vue"),
       },
       {
+        name: "FinanceSubDepartmentsOrders",
+        path: "/finances/:financeId(\\d+)/sub-departments/:subDepartmentId(\\d+)/orders",
+        component: () => import("./pages/Orders.vue"),
+      },
+      {
         name: "OrdersByCpv",
         path: "/cpv-orders",
         component: () => import("./pages/CpvOrders.vue"),

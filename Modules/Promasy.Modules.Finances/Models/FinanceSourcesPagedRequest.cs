@@ -7,11 +7,13 @@ namespace Promasy.Modules.Finances.Models;
 public class FinanceSourcesPagedRequest : PagedRequest
 {
     public int Year { get; set; }
+    public bool IncludeCalculatedAmounts { get; set; }
 
-    public FinanceSourcesPagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending, int year)
+    public FinanceSourcesPagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending, int year, bool includeCalculatedAmounts)
         : base(page, offset, search, orderBy, isDescending)
     {
         Year = year;
+        IncludeCalculatedAmounts = includeCalculatedAmounts;
     }
     
     public static ValueTask<FinanceSourcesPagedRequest?> BindAsync(HttpContext httpContext)
@@ -22,7 +24,8 @@ public class FinanceSourcesPagedRequest : PagedRequest
             httpContext.Request.Query["search"],
             httpContext.Request.Query["order"],
             bool.TryParse(httpContext.Request.Query["desc"], out var desc) && desc,
-            int.TryParse(httpContext.Request.Query["year"], out var y) ? y : DateTime.UtcNow.Year));
+            int.TryParse(httpContext.Request.Query["year"], out var y) ? y : DateTime.UtcNow.Year,
+            bool.TryParse(httpContext.Request.Query["extended"], out var ext) && ext));
     }
 }
 

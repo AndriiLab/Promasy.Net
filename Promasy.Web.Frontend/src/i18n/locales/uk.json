@@ -16,9 +16,10 @@
   "delete": "Видалити",
   "language": "Мова",
   "queryYear": "Рік запитів",
-  "departments": "Відділи",
-  "sub-departments": "Підрозділи",
-  "employees": "Працівники",
+  "department": "Відділ | Відділи",
+  "sub-department": "Підрозділ | Підрозділи",
+  "employee": "Працівник | Працівники",
+  "order": "Замовлення",
   "createDialog": {
     "addNew": "Створити"
   },

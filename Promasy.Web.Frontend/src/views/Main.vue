@@ -47,7 +47,7 @@ const containerClass = computed(() => {
 
 const menu: MenuItem[] = [
   {
-    label: t("orders"),
+    label: t("order", 2),
     items: [
       { label: t("ordersList"), icon: "pi pi-fw pi-shopping-cart", to: { name: "Orders" } },
       { label: t("cpv"), icon: "pi pi-fw pi-book", to: { name: "CpvList" } },
@@ -139,7 +139,6 @@ function onMenuItemClick(event: Event) {
 
 <i18n locale="en">
 {
-  "orders": "Orders",
   "ordersList": "Orders",
   "cpv": "CPV",
   "finances": "Finances",
@@ -161,7 +160,6 @@ function onMenuItemClick(event: Event) {
 
 <i18n locale="uk">
 {
-  "orders": "Замовлення",
   "ordersList": "Замовлення",
   "cpv": "Довідник CPV",
   "finances": "Фінансування",
