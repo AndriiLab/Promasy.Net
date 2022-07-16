@@ -46,8 +46,8 @@ namespace Promasy.Persistence.Context
         public DbSet<SubDepartment> SubDepartments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         
-        public DbSet<FinanceSubDepartmentsWithSpend> FinanceDepartmentsWithSpendView { get; set; }
-        public DbSet<FinanceSourceWithSpend> FinanceSourceWithSpendView { get; set; }
+        public DbSet<FinanceSubDepartmentsView> FinanceDepartmentsWithSpendView { get; set; }
+        public DbSet<FinanceSourceView> FinanceSourceWithSpendView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

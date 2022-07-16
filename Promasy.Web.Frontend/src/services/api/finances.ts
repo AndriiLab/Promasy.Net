@@ -48,10 +48,13 @@ export interface FinanceSource {
   kpkvk: string;
   totalEquipment: string;
   spentEquipment: string;
+  leftEquipment: string;
   totalMaterials: string;
   spentMaterials: string;
+  leftMaterials: string;
   totalServices: string;
   spentServices: string;
+  leftServices: string;
   editorId: number;
   editor: string;
   editedDate: Date;

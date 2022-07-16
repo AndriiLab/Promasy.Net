@@ -48,11 +48,16 @@
               {{ d(new Date(slotProps.data.editedDate), 'long') }}
             </template>
           </Column>
-          <Column headerStyle="min-width:10rem;">
+          <Column headerStyle="min-width:20em;">
             <template #body="slotProps">
-              <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
-              <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                      @click="confirmDelete(slotProps.data)"/>
+              <router-link :to="{ name: 'SubDepartments', params: { departmentId: slotProps.data.id } }">
+                <Button v-tooltip.left="t('sub-departments')" icon="pi pi-briefcase" class="p-button-rounded p-button-primary mr-2"/>
+              </router-link>
+              <router-link :to="{ name: 'DepartmentEmployees', params: { departmentId: slotProps.data.id } }">
+                <Button v-tooltip.left="t('employees')" icon="pi pi-users" class="p-button-rounded p-button-primary mr-2"/>
+              </router-link>
+              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
         </DataTable>

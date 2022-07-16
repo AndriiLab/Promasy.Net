@@ -32,8 +32,8 @@ public interface IDatabase
     DbSet<SubDepartment> SubDepartments { get; }
     DbSet<Supplier> Suppliers { get; }
 
-    DbSet<FinanceSubDepartmentsWithSpend> FinanceSubDepartmentsWithSpendView { get; }
-    DbSet<FinanceSourceWithSpend> FinanceSourceWithSpendView { get; }
+    DbSet<FinanceSubDepartmentsView> FinanceSubDepartmentsWithSpendView { get; }
+    DbSet<FinanceSourceView> FinanceSourceWithSpendView { get; }
 
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct = new());
     Task<int> SaveChangesAsync(CancellationToken ct = new());

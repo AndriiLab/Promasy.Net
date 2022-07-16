@@ -40,8 +40,9 @@
             <Button :label="t('signIn')" class="w-full p-3 text-xl" @click="submitLogin"></Button>
           </form>
 
-          <div class="mt-5">
-            <LanguageSelector :labelClasses="['ml-7']" :selectorClasses="['ml-2']"></LanguageSelector>
+          <div class="mt-5 ml-7">
+            <label for="language" class="mr-3">{{ t('language') }}</label>
+            <LanguageSelector id="language" classes="ml-2"></LanguageSelector>
           </div>
 
         </div>

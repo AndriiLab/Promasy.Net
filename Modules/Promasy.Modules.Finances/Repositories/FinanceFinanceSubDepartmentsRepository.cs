@@ -102,8 +102,10 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return query
             .PaginateAsync(request,
                 f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.SubDepartmentId, f.SubDepartment.Name, f.SubDepartment.DepartmentId, f.SubDepartment.Department.Name,
-                    f.TotalEquipment, f.TotalMaterials, f.TotalServices, f.SpentEquipment, f.SpentMaterials,
-                    f.SpentServices, f.ModifierId ?? f.CreatorId,
+                    f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"), 
+                    f.SpentEquipment.ToString("F2"), f.SpentMaterials.ToString("F2"), f.SpentServices.ToString("F2"),
+                    f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
+                    f.ModifierId ?? f.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                     f.ModifiedDate ?? f.CreatedDate));
     }
@@ -114,8 +116,10 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .Where(fs => fs.FinanceSourceId == financeId && fs.SubDepartmentId == subDepartmentId)
             .Select(f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.SubDepartmentId, f.SubDepartment.Name,
                 f.SubDepartment.DepartmentId, f.SubDepartment.Department.Name,
-                f.TotalEquipment, f.TotalMaterials, f.TotalServices, f.SpentEquipment, f.SpentMaterials,
-                f.SpentServices, f.ModifierId ?? f.CreatorId,
+                f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
+                f.SpentEquipment.ToString("F2"), f.SpentMaterials.ToString("F2"), f.SpentServices.ToString("F2"),
+                f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
+                f.ModifierId ?? f.CreatorId,
                 PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                 f.ModifiedDate ?? f.CreatedDate))
             .FirstOrDefaultAsync();

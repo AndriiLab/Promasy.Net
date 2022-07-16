@@ -182,7 +182,7 @@ onMounted(async () => {
     subDepartments.value = [ { text: model.value.subDepartment, value: model.value.subDepartmentId } ];
     loading.value = false;
   } else {
-    await Router.push("/404");
+    await Router.push({ name: "NotFound" });
   }
 });
 
@@ -240,7 +240,7 @@ async function saveAsync() {
   loading.value = true;
   const response = isCreateMode.value ? await createAsync() : await updateAsync();
   if (response.success) {
-    await Router.push("/employees");
+    await Router.push({ name: "Employees" });
   } else {
     if (response.error?.errors) {
       externalErrors.value = response.error.errors;
@@ -325,9 +325,9 @@ interface EmployeeModel {
 
 <i18n locale="uk">
 {
-  "createEmployee": "Створення нового співробітника",
-  "editEmployee": "Редагування співробітника",
-  "viewEmployee": "Перегляд інформації про співробітника",
+  "createEmployee": "Створення нового працівника",
+  "editEmployee": "Редагування працівника",
+  "viewEmployee": "Перегляд інформації про працівника",
   "firstName": "Ім'я",
   "middleName": "По батькові",
   "lastName": "Прізвище",

@@ -27,7 +27,7 @@ const { t } = useI18n({ useScope: "local" });
 
 onMounted(async () => {
     await (useSessionStore()).logoutAsync();
-    await Router.push("/");
+    await Router.push({ name: "Login" });
 });
 </script>
 

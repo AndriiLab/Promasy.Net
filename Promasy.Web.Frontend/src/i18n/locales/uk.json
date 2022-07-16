@@ -12,6 +12,13 @@
   "yes": "Так",
   "no": "Ні",
   "merge": "Об'єднати",
+  "edit": "Редагувати",
+  "delete": "Видалити",
+  "language": "Мова",
+  "queryYear": "Рік запитів",
+  "departments": "Відділи",
+  "sub-departments": "Підрозділи",
+  "employees": "Працівники",
   "createDialog": {
     "addNew": "Створити"
   },

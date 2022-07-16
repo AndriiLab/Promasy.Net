@@ -45,6 +45,17 @@ public class FinancesModule : IModule
             .WithName("Get available fund types")
             .Produces<SelectItem<int>[]>();
         
+        endpoints.MapGet(RoutePrefix, async (FinanceSourcesPagedRequest request, [FromServices] IFinanceSourcesRepository repository) =>
+            {
+                var list = await repository.GetPagedListAsync(request);
+                return Results.Json(list);
+            })
+            .WithValidator<FinanceSourcesPagedRequest>()
+            .WithTags(Tag)
+            .WithName("Get Finance sources list")
+            .RequireAuthorization()
+            .Produces<PagedResponse<FinanceSubDepartmentDto>>();
+        
         endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IFinanceSourcesRepository repository) =>
             {
                 var fs = await repository.GetByIdAsync(id);

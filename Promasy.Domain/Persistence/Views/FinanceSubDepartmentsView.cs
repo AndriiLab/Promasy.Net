@@ -4,7 +4,7 @@ using Promasy.Domain.Organizations;
 
 namespace Promasy.Domain.Persistence.Views;
 
-public class FinanceSubDepartmentsWithSpend : OrganizationEntity
+public class FinanceSubDepartmentsView : OrganizationEntity
 {
     public int FinanceSourceId { get; set; }
     public FinanceSource FinanceSource { get; set; }
@@ -13,8 +13,11 @@ public class FinanceSubDepartmentsWithSpend : OrganizationEntity
     
     public decimal TotalEquipment { get; set; }
     public decimal SpentEquipment { get; set; }
+    public decimal LeftEquipment { get; set; }
     public decimal TotalMaterials { get; set; }
     public decimal SpentMaterials { get; set; }
+    public decimal LeftMaterials { get; set; }
     public decimal TotalServices { get; set; }
     public decimal SpentServices { get; set; }
+    public decimal LeftServices { get; set; }
 }

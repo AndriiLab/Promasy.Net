@@ -10,11 +10,15 @@ export const useSessionStore = defineStore({
     locale: LocalStore.get(keys.language) ?? en.key,
     user: undefined,
     lastUrl: undefined,
+    year: new Date().getFullYear(),
   }),
   actions: {
     setLanguage(language: string) {
       this.locale = language;
       LocalStore.set(keys.language, this.locale);
+    },
+    setYear(year: number) {
+      this.year = year;
     },
     async loginAsync(username: string, password: string, rememberMe: boolean) {
       const response = await AuthApi.authUser({
@@ -88,6 +92,7 @@ export interface Session {
   locale: string;
   user?: SessionUser;
   lastUrl?: string;
+  year: number;
 }
 
 export interface SessionUser {

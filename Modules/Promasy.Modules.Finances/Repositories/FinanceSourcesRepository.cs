@@ -56,8 +56,10 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
         return query
             .PaginateAsync(request,
                 f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
-                    f.Kpkvk, f.TotalEquipment, f.TotalMaterials, f.TotalServices, f.SpentEquipment, f.SpentMaterials,
-                    f.SpentServices, f.ModifierId ?? f.CreatorId,
+                    f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
+                    f.SpentEquipment.ToString("F2"), f.SpentMaterials.ToString("F2"), f.SpentServices.ToString("F2"),
+                    f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
+                    f.ModifierId ?? f.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                     f.ModifiedDate ?? f.CreatedDate));
     }
@@ -68,8 +70,10 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
             .AsNoTracking()
             .Where(f => f.Id == id)
             .Select(f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
-                f.Kpkvk, f.TotalEquipment, f.TotalMaterials, f.TotalServices, f.SpentEquipment, f.SpentMaterials,
-                f.SpentServices, f.ModifierId ?? f.CreatorId,
+                f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
+                f.SpentEquipment.ToString("F2"), f.SpentMaterials.ToString("F2"), f.SpentServices.ToString("F2"), 
+                f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
+                f.ModifierId ?? f.CreatorId,
                 PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                 f.ModifiedDate ?? f.CreatedDate))
             .FirstOrDefaultAsync();

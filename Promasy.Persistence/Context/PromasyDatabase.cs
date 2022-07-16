@@ -39,8 +39,8 @@ internal class PromasyDatabase : IDatabase
     public DbSet<ReasonForSupplierChoice> ReasonForSupplierChoice => _ctx.ReasonForSupplierChoice;
     public DbSet<SubDepartment> SubDepartments => _ctx.SubDepartments;
     public DbSet<Supplier> Suppliers => _ctx.Suppliers;
-    public DbSet<FinanceSubDepartmentsWithSpend> FinanceSubDepartmentsWithSpendView => _ctx.FinanceDepartmentsWithSpendView;
-    public DbSet<FinanceSourceWithSpend> FinanceSourceWithSpendView => _ctx.FinanceSourceWithSpendView;
+    public DbSet<FinanceSubDepartmentsView> FinanceSubDepartmentsWithSpendView => _ctx.FinanceDepartmentsWithSpendView;
+    public DbSet<FinanceSourceView> FinanceSourceWithSpendView => _ctx.FinanceSourceWithSpendView;
 
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct = new()) =>
         _ctx.Database.BeginTransactionAsync(ct);

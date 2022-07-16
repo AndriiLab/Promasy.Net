@@ -30,6 +30,9 @@ const isLoading = ref(false);
 
 onMounted(() => {
   options.value.push(...props.defaultOptions);
+  if(props.includeEmpty) {
+    options.value.push(getDefaultItem());
+  }
 });
 
 watch(() => props.defaultOptions, (o) => options.value.push(...o));

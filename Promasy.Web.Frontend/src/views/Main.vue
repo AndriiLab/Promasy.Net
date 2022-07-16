@@ -49,35 +49,34 @@ const menu: MenuItem[] = [
   {
     label: t("orders"),
     items: [
-      { label: t("ordersList"), icon: "pi pi-fw pi-shopping-cart", to: "/orders" },
-      { label: t("cpv"), icon: "pi pi-fw pi-book", to: "/cpv" },
-      { label: t("units"), icon: "pi pi-fw pi-arrows-h", to: "/units" },
-      { label: t("manufacturers"), icon: "pi pi-fw pi-box", to: "/manufacturers" },
-      { label: t("suppliers"), icon: "pi pi-fw pi-car", to: "/suppliers" },
+      { label: t("ordersList"), icon: "pi pi-fw pi-shopping-cart", to: { name: "Orders" } },
+      { label: t("cpv"), icon: "pi pi-fw pi-book", to: { name: "CpvList" } },
+      { label: t("units"), icon: "pi pi-fw pi-arrows-h", to: { name: "Units" } },
+      { label: t("manufacturers"), icon: "pi pi-fw pi-box", to: { name: "Manufacturers" } },
+      { label: t("suppliers"), icon: "pi pi-fw pi-car", to: { name: "Suppliers" }},
     ],
   },
   {
     label: t("finances"),
     items: [
-      { label: t("financesList"), icon: "pi pi-fw pi-wallet", to: "/finances" },
-      { label: t("cpvOrders"), icon: "pi pi-fw pi-chart-line", to: "/cpv-orders" },
+      { label: t("financesList"), icon: "pi pi-fw pi-wallet", to: { name: "Finances" } },
+      { label: t("cpvOrders"), icon: "pi pi-fw pi-chart-line", to: { name: "OrdersByCpv" } },
     ],
   },
   {
     label: t("organization"),
     items: [
-      { label: t("thisOrganization"), icon: "pi pi-fw pi-building", to: `/organizations/${ user?.organizationId }` },
-      { label: t("departments"), icon: "pi pi-fw pi-sitemap", to: "/departments" },
-      { label: t("subdepartments"), icon: "pi pi-fw pi-briefcase", to: "/sub-departments" },
-      { label: t("employees"), icon: "pi pi-fw pi-users", to: "/employees" },
+      { label: t("thisOrganization"), icon: "pi pi-fw pi-building", to: { name: "Organization", params: { organizationId: user?.organizationId }}},
+      { label: t("departments"), icon: "pi pi-fw pi-sitemap", to: { name: "Departments" } },
+      { label: t("employees"), icon: "pi pi-fw pi-users", to: { name: "Employees" } },
     ],
   },
   {
     label: t("user"),
     visible: () => !isDesktop(),
     items: [
-      { label: t("userProfile"), icon: "pi pi-fw pi-user", to: "/me" },
-      { label: t("logout"), icon: "pi pi-fw pi-sign-out", to: "/logout" },
+      { label: t("userProfile"), icon: "pi pi-fw pi-user", to: { name: "EmployeeMe" } },
+      { label: t("logout"), icon: "pi pi-fw pi-sign-out", to: { name: "Logout" } },
     ],
   },
   {
@@ -175,7 +174,7 @@ function onMenuItemClick(event: Event) {
   "thisOrganization": "Організація",
   "departments": "Відділи",
   "subdepartments": "Підрозділи",
-  "employees": "Робітники",
+  "employees": "Працівники",
   "user": "Користувач",
   "userProfile": "Мій профіль",
   "logout": "Вийти"

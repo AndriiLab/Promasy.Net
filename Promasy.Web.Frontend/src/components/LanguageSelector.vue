@@ -1,7 +1,5 @@
 <template>
-  <label for="language" :class="labelClasses">{{ t('language') }}</label>
-  <Dropdown id="language" v-model="language" :options="avaliableLanguages" optionLabel="name" optionValue="value"
-            :class="selectorClasses">
+  <Dropdown v-model="language" :options="avaliableLanguages" optionLabel="name" optionValue="value">
     <template #value="slotProps">
       <div class="flex align-items-center">
         <span :class="'mr-2 flag flag-' + getFlag(slotProps.value)" style="width:18px; height: 12px"/>
@@ -19,16 +17,9 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
 import { avaliableLanguages } from "@/i18n";
 import { useSessionStore } from "@/store/session";
 
-defineProps<{
-  labelClasses?: string[],
-  selectorClasses?: string[],
-}>();
-
-const { t } = useI18n({ useScope: "local" });
 const sessionStore = useSessionStore();
 const language = ref(sessionStore.locale);
 
@@ -49,15 +40,3 @@ function getNameByKey(key: string, items: SelectObject<string>[]): string | unde
 
 watch(language, (l) => sessionStore.setLanguage(l));
 </script>
-
-<i18n locale="en">
-{
-  "language": "Language"
-}
-</i18n>
-
-<i18n locale="uk">
-{
-  "language": "Мова"
-}
-</i18n>

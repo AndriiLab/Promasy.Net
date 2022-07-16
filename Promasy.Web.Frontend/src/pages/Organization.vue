@@ -161,7 +161,7 @@ onMounted(async () => {
     model.value = response.data!;
     loading.value = false;
   } else {
-    await Router.push("/404");
+    await Router.push({ name: "NotFound" });
   }
 });
 

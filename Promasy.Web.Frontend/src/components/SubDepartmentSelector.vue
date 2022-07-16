@@ -15,6 +15,7 @@ import { useI18n } from "vue-i18n";
 const props = defineProps<{
   departmentId: number,
   modelValue: number,
+  includeEmpty: boolean,
   emptyText?: string,
   defaultOptions: SelectItem<number>[]
   disabled?: boolean,
@@ -30,13 +31,18 @@ const isLoading = ref(false);
 
 onMounted(() => {
   options.value.push(...props.defaultOptions);
+  if(props.includeEmpty) {
+    options.value.push(getDefaultItem());
+  }
 });
 
 watch(() => props.defaultOptions, (o) => options.value.push(...o));
 watch(() => props.departmentId, (id, oldId) => {
   if (id !== oldId) {
     options.value = [];
-    options.value.push(getDefaultItem());
+    if(props.includeEmpty) {
+      options.value.push(getDefaultItem());
+    }
     value.value = 0;
   }
 });

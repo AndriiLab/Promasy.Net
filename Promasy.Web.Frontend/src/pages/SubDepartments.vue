@@ -14,9 +14,9 @@
             <label for="department" class="mr-2">{{ t('department') }}</label>
             <DepartmentSelector id="department"
                                 v-model="departmentId"
-                                :default-options="globalDepartments"
-                                :include-empty="false"
-                                v-on:update:selectedObject="onSelectedGlobalDepartment"></DepartmentSelector>
+                                :default-options="departments"
+                                :include-empty="false">
+            </DepartmentSelector>
           </template>
         </Toolbar>
 
@@ -57,10 +57,13 @@
               {{ d(new Date(slotProps.data.editedDate), 'long') }}
             </template>
           </Column>
-          <Column headerStyle="min-width:10rem;">
+          <Column headerStyle="min-width:20rem;">
             <template #body="slotProps">
-              <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
-              <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+              <router-link :to="{ name: 'SubDepartmentEmployees', params: { departmentId: slotProps.data.departmentId, subDepartmentId: slotProps.data.id } }">
+                <Button v-tooltip.left="t('employees')" icon="pi pi-users" class="p-button-rounded p-button-primary mr-2"/>
+              </router-link>
+              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -75,12 +78,8 @@
               }}
             </Message>
             <div>
-              <DepartmentSelector v-model="departmentId"
-                                  :default-options="dialogDepartments"
-                                  :include-empty="false"
-                                  :label-classes="['mr-2']"
-                                  :disabled="item.id > 0"
-                                  v-on:update:selectedObject="onSelectedDialogDepartment"></DepartmentSelector>
+              <label for="department">{{ t('department') }}</label>
+              <InputText id="department" :value="departments.find(d => d.value === item.departmentId).text" disabled/>
             </div>
             <ErrorWrap :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
               <label for="name">{{ t('name') }}</label>
@@ -120,20 +119,23 @@ import { SelectItem } from "@/utils/fetch-utils";
 import { capitalize } from "@/utils/string-utils";
 import { useSessionStore } from "@/store/session";
 import { ref, reactive, onMounted, computed, watch } from "vue";
-import SubDepartmentsApi, { SubDepartment } from "@/services/api/sub-departments";
+import { useRoute, useRouter } from "vue-router";
 import { useToast } from "primevue/usetoast";
 import { useI18n } from "vue-i18n";
+import { required, maxLength } from "@/i18n/validators";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
+import SubDepartmentsApi, { SubDepartment } from "@/services/api/sub-departments";
+import DepartmentsApi from "@/services/api/departments";
 import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
-import { required, maxLength } from "@/i18n/validators";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
 
+const Router = useRouter();
+const route = useRoute();
 const { d, t } = useI18n();
 const { user } = useSessionStore();
 const organizationId = user!.organizationId;
-const globalDepartments = ref([ { text: user!.department, value: user!.departmentId } as SelectItem<number> ]);
-const dialogDepartments = ref([ { text: user!.department, value: user!.departmentId } as SelectItem<number> ]);
+const departments = ref([ { text: user!.department, value: user!.departmentId } as SelectItem<number> ]);
 const departmentId = ref(user!.departmentId);
 const toast = useToast();
 const items = ref([] as SubDepartment[]);
@@ -158,24 +160,29 @@ const rules = computed(() => {
 });
 const v$ = useVuelidate(rules, item, { $lazy: true });
 
+onMounted(async () => await initAsync());
 
-onMounted(async () => {
-  await getDataAsync();
+watch(departmentId, async (id) => {
+  await Router.push({ name: "SubDepartments", params: { departmentId: id } });
 });
 
-watch(departmentId, async (newId, oldId) => {
-  if (newId != oldId) {
-    tableData.page = 1;
-    await getDataAsync();
+watch(() => route.params.departmentId, async (newId, oldId) => {
+  if(oldId !== newId){
+    await initAsync();
   }
 });
 
-function onSelectedGlobalDepartment(item: SelectItem<number>) {
-  dialogDepartments.value = [ item ];
-}
-
-function onSelectedDialogDepartment(item: SelectItem<number>) {
-  globalDepartments.value = [ item ];
+async function initAsync() {
+  isLoading.value = true;
+  const response = await DepartmentsApi.getById(parseInt(route.params.departmentId.toString()), organizationId);
+  if(response.success){
+    departments.value = [ { text: response.data!.name, value: response.data!.id } ];
+    departmentId.value = response.data!.id;
+    await getDataAsync();
+    return;
+  } else {
+    await Router.push({ name: "NotFound" });
+  }
 }
 
 async function useFilterAsync() {
@@ -210,7 +217,7 @@ async function onSortAsync(event: DataTableSortEvent) {
 
 function create() {
   externalErrors.value = {} as Object<string[]>;
-  item.value = {} as SubDepartment;
+  item.value = { departmentId: departmentId.value } as SubDepartment;
   itemDialog.value = true;
 }
 
@@ -282,6 +289,7 @@ async function deleteItemAsync() {
 <i18n locale="en">
 {
   "department": "Department",
+  "employees": "Employees",
   "subdepartments": "sub-departments",
   "manageSubdepartments": "sub-departments",
   "name": "Name",
@@ -292,6 +300,7 @@ async function deleteItemAsync() {
 <i18n locale="uk">
 {
   "department": "Відділ",
+  "employees": "Працівники",
   "subdepartments": "підрозділів",
   "manageSubdepartments": "підрозділами",
   "name": "Назва",

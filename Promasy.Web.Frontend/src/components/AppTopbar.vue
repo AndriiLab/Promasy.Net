@@ -13,9 +13,18 @@
           <i class="pi pi-cog"></i>
         </button>
         <OverlayPanel ref="settingsMenuPanel">
-          <div class="text-900 font-medium text-xl mb-2">{{ t('settings') }}</div>
-          <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
-          <LanguageSelector :selectorClasses="['ml-2']"></LanguageSelector>
+          <div class="p-fluid formgrid grid w-15rem">
+            <div class="field col-12 text-900 font-medium text-xl mb-2">{{ t('settings') }}</div>
+            <hr class="field col-12 mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
+            <div class="field col-12">
+              <label for="language">{{ t('language') }}</label>
+              <LanguageSelector id="language"></LanguageSelector>
+            </div>
+            <div class="field col-12">
+              <label for="currentYear">{{ t('queryYear') }}</label>
+              <YearSelector id="currentYear"></YearSelector>
+            </div>
+          </div>
         </OverlayPanel>
       </li>
       <li>
@@ -45,7 +54,8 @@
           <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
           <div class="flex justify-content-between">
             <router-link to="/me">
-              <Button :label="t('userProfile')" icon="pi pi-user" class="p-button-info p-button-sm" @click="() => profileMenuPanel.toggle(false)"></Button>
+              <Button :label="t('userProfile')" icon="pi pi-user" class="p-button-info p-button-sm"
+                      @click="() => profileMenuPanel.toggle(false)"></Button>
             </router-link>
             <router-link to="/logout">
               <Button :label="t('logout')" icon="pi pi-sign-out" class="p-button-danger p-button-sm"></Button>
@@ -64,6 +74,7 @@ import { useI18n } from "vue-i18n";
 import { useSessionStore } from "@/store/session";
 import LanguageSelector from "./LanguageSelector.vue";
 import RoleBadge from "./RoleBadge.vue";
+import YearSelector from "./YearSelector.vue";
 
 const { t } = useI18n({ useScope: "local" });
 const profileMenuPanel = ref(null);

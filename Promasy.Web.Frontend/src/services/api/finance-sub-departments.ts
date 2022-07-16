@@ -23,7 +23,7 @@ export default {
       ])}`
     );
   },
-  getByFinanceAndSubDepartmentId(subDepartmentId: number, financeSourceId: number) : Promise<Response<FinanceSubDepartment, ErrorApiResponse>> {
+  get(subDepartmentId: number, financeSourceId: number) : Promise<Response<FinanceSubDepartment, ErrorApiResponse>> {
     return Fetch.Get<FinanceSubDepartment, ErrorApiResponse>(`/api/finances/${ financeSourceId }/sub-departments/${subDepartmentId}`);
   },
   create(request: CreateFinanceSubDepartmentRequest) : Promise<Response<FinanceSubDepartment, ErrorApiResponse>> {
@@ -46,10 +46,13 @@ export interface FinanceSubDepartment {
   department: string;
   totalEquipment: string;
   spentEquipment: string;
+  leftEquipment: string;
   totalMaterials: string;
   spentMaterials: string;
+  leftMaterials: string;
   totalServices: string;
   spentServices: string;
+  leftServices: string;
   editorId: number;
   editor: string;
   editedDate: Date;

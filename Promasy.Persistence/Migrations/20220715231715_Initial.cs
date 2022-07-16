@@ -631,11 +631,14 @@ END
     $$ LANGUAGE plpgsql;");
 
             migrationBuilder.Sql(@"
-CREATE VIEW ""PromasyCore"".""VW_FinanceSourcesWithSpend"" AS
+CREATE VIEW ""PromasyCore"".""VW_FinanceSources"" AS
     SELECT FS.*,
     COALESCE(SUM(OM.""Total""), 0) AS ""SpentMaterials"",
     COALESCE(SUM(OE.""Total""), 0) AS ""SpentEquipment"",
-    COALESCE(SUM(OS.""Total""), 0) AS ""SpentServices""
+    COALESCE(SUM(OS.""Total""), 0) AS ""SpentServices"",
+    FS.""TotalMaterials"" - COALESCE(SUM(OM.""Total""), 0) AS ""LeftMaterials"",
+    FS.""TotalEquipment"" - COALESCE(SUM(OE.""Total""), 0) AS ""LeftEquipment"",
+    FS.""TotalServices"" - COALESCE(SUM(OS.""Total""), 0) AS ""LeftServices""
     FROM ""PromasyCore"".""FinanceSources"" FS
         LEFT JOIN ""PromasyCore"".""FinanceSubDepartments"" FD on FS.""Id"" = FD.""FinanceSourceId"" AND FD.""Deleted"" = false
         LEFT JOIN ""PromasyCore"".""Orders"" OM ON FD.""Id"" = OM.""FinanceSubDepartmentId"" AND OM.""Deleted"" = false AND OM.""Type"" = 1
@@ -645,11 +648,14 @@ CREATE VIEW ""PromasyCore"".""VW_FinanceSourcesWithSpend"" AS
     GROUP BY FS.""Id"";");
 
             migrationBuilder.Sql(@"
-CREATE VIEW ""PromasyCore"".""VW_FinanceSubDepartmentsWithSpend"" AS
+CREATE VIEW ""PromasyCore"".""VW_FinanceSubDepartments"" AS
     SELECT FD.*,
     COALESCE(SUM(OM.""Total""), 0) AS ""SpentMaterials"",
     COALESCE(SUM(OE.""Total""), 0) AS ""SpentEquipment"",
-    COALESCE(SUM(OS.""Total""), 0) AS ""SpentServices""
+    COALESCE(SUM(OS.""Total""), 0) AS ""SpentServices"",
+    FD.""TotalMaterials"" - COALESCE(SUM(OM.""Total""), 0) AS ""LeftMaterials"",
+    FD.""TotalEquipment"" - COALESCE(SUM(OE.""Total""), 0) AS ""LeftEquipment"",
+    FD.""TotalServices"" - COALESCE(SUM(OS.""Total""), 0) AS ""LeftServices""
     FROM ""PromasyCore"".""FinanceSubDepartments"" FD
         LEFT JOIN ""PromasyCore"".""Orders"" OM ON FD.""Id"" = OM.""FinanceSubDepartmentId"" AND OM.""Deleted"" = false AND OM.""Type"" = 1
         LEFT JOIN ""PromasyCore"".""Orders"" OE ON FD.""Id"" = OE.""FinanceSubDepartmentId"" AND OE.""Deleted"" = false AND OE.""Type"" = 2

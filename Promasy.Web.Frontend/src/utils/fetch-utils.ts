@@ -59,7 +59,7 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
         return typedFetchAsync<TOkResponse, TErrorResponse>(method, input, init, false);
       }
     }
-    await Router.push("/logout");
+    await Router.push({ name: "Logout" });
   } else {
     response.error = body as TErrorResponse;
   }

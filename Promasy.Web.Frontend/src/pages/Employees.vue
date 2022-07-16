@@ -6,7 +6,7 @@
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <router-link :to="'/employees/new'">
+              <router-link :to="{ name: 'EmployeeCreate' }">
                 <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"/>
               </router-link>
             </div>
@@ -14,7 +14,7 @@
           <template v-slot:end>
             <label for="department" class="mr-2">{{ t('department') }}</label>
             <DepartmentSelector id="department"
-                                :default-options="[{ value: user.departmentId, text: user.department }]"
+                                :default-options="departments"
                                 v-model="departmentId"
                                 :include-empty="true"
                                 class="mr-4 w-23rem">
@@ -22,8 +22,9 @@
             <label for="subDepartment" class="mr-2">{{ t('subDepartment') }}</label>
             <SubDepartmentSelector id="subDepartment"
                                    :department-id="departmentId"
-                                   :default-options="[{ value: user.subDepartmentId, text: user.subDepartment }]"
+                                   :default-options="subDepartments"
                                    v-model="subDepartmentId"
+                                   :include-empty="true"
                                    class="w-20rem">
             </SubDepartmentSelector>
           </template>
@@ -88,10 +89,10 @@
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
-                           :to="`/employees/${slotProps.data.id}`">
-                <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"/>
+                           :to="{ name: 'EmployeeView', params: {employeeId: slotProps.data.id}}">
+                <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"/>
               </router-link>
-              <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -120,9 +121,11 @@
 </template>
 
 <script lang="ts" setup>
-import { useRolesStore } from "@/store/roles";
 import { useSessionStore } from "@/store/session";
+import { SelectItem } from "@/utils/fetch-utils";
 import { ref, reactive, onMounted, computed, watch } from "vue";
+import DepartmentsApi from "@/services/api/departments";
+import SubDepartmentsApi from "@/services/api/sub-departments";
 import EmployeesApi, { EmployeeShort } from "@/services/api/employees";
 import { useToast } from "primevue/usetoast";
 import { useI18n } from "vue-i18n";
@@ -131,18 +134,23 @@ import DepartmentSelector from "@/components/DepartmentSelector.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import RoleBadge from "@/components/RoleBadge.vue";
 import { debounce } from "vue-debounce";
+import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 
 const { d, t } = useI18n();
 const { user } = useSessionStore();
-const { getRoleName } = useRolesStore();
 const toast = useToast();
+const Router = useRouter();
+const route = useRoute();
+
 const items = ref([] as EmployeeShort[]);
 const externalErrors = ref({} as Object<string[]>);
 const item = ref({} as EmployeeShort);
 const deleteItemDialog = ref(false);
 const isLoading = ref(false);
-const departmentId = ref(user!.departmentId);
-const subDepartmentId = ref(user!.subDepartmentId);
+const departmentId = ref(0);
+const departments = ref([] as SelectItem<number>[]);
+const subDepartmentId = ref(0);
+const subDepartments = ref([] as SelectItem<number>[]);
 const tableData: TablePagingData = reactive({
   page: 1,
   offset: 10,
@@ -152,15 +160,84 @@ const tableData: TablePagingData = reactive({
   total: 0,
 });
 const sortFields: { [key: string]: string } = {
-  "name": "LastName",
+  "name": "ShortName",
 };
 
 onMounted(async () => {
-  await getDataAsync();
+  await initAsync();
 });
 
-watch(departmentId, async () => await debouncedGetDataAsync());
-watch(subDepartmentId, async () => await debouncedGetDataAsync());
+watch(() => route.params.departmentId, async (newId, oldId) => {
+  if (oldId !== newId) {
+    await initAsync();
+  }
+});
+
+watch(() => route.params.subDepartmentId, async (newId, oldId) => {
+  if (oldId !== newId) {
+    await initAsync();
+  }
+});
+
+watch(departmentId, async () => await debouncedSetPathAsync());
+watch(subDepartmentId, async () => await debouncedSetPathAsync());
+
+async function initAsync() {
+  let isSuccess = true;
+  isLoading.value = true;
+  const selectedDepartmentId = parseInt(route.params.departmentId?.toString());
+  if (!isNaN(selectedDepartmentId)) {
+    isSuccess = await setDepartmentAsync(selectedDepartmentId)
+    const selectedSubDepartmentId = parseInt(route.params.subDepartmentId?.toString());
+    if (!isNaN(selectedSubDepartmentId) && isSuccess) {
+      isSuccess = await setSubDepartmentAsync(selectedSubDepartmentId);
+    }
+  }
+
+  if (isSuccess) {
+    await getDataAsync();
+  } else {
+    await Router.push({ name: "NotFound" });
+  }
+}
+
+const debouncedSetPathAsync =
+    debounce(async () => await setPathAsync(), 400);
+
+async function setPathAsync() {
+  let location: RouteLocationRaw;
+  if (departmentId.value) {
+    if (subDepartmentId.value) {
+      location = {
+        name: "SubDepartmentEmployees",
+        params: { departmentId: departmentId.value, subDepartmentId: subDepartmentId.value },
+      };
+    } else {
+      location = { name: "DepartmentEmployees", params: { departmentId: departmentId.value } };
+    }
+  } else {
+    location = { name: "Employees" };
+  }
+  await Router.push(location);
+}
+
+async function setDepartmentAsync(id: number) {
+  const response = await DepartmentsApi.getById(id, user!.organizationId);
+  if (response.success) {
+    departments.value = [ { text: response.data!.name, value: response.data!.id } ];
+    departmentId.value = response.data!.id;
+  }
+  return response.success;
+}
+
+async function setSubDepartmentAsync(id: number) {
+  const response = await SubDepartmentsApi.getById(id, user!.organizationId, departmentId.value);
+  if (response.success) {
+    subDepartments.value = [ { text: response.data!.name, value: response.data!.id } ];
+    subDepartmentId.value = response.data!.id;
+  }
+  return response.success;
+}
 
 const debouncedGetDataAsync =
     debounce(async () => await getDataAsync(), 400);
@@ -231,8 +308,8 @@ async function deleteItemAsync() {
 
 <i18n locale="uk">
 {
-  "employees": "співробітників",
-  "manageEmployees": "співробітниками",
+  "employees": "працівників",
+  "manageEmployees": "працівниками",
   "name": "Ім'я",
   "department": "Відділ",
   "subDepartment": "Підрозділ",

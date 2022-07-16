@@ -12,7 +12,7 @@ using Promasy.Persistence.Context;
 namespace Promasy.Persistence.Migrations
 {
     [DbContext(typeof(PromasyContext))]
-    [Migration("20220715193944_Initial")]
+    [Migration("20220715231715_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -773,7 +773,7 @@ namespace Promasy.Persistence.Migrations
                     b.ToTable("SubDepartments", "PromasyCore");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSourceWithSpend", b =>
+            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSourceView", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
@@ -798,6 +798,15 @@ namespace Promasy.Persistence.Migrations
                     b.Property<string>("Kpkvk")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("LeftEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("LeftMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("LeftServices")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -839,10 +848,10 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToView("\"VW_FinanceSourcesWithSpend\"");
+                    b.ToView("VW_FinanceSources");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsWithSpend", b =>
+            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsView", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
@@ -860,6 +869,15 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<int>("FinanceSourceId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("LeftEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("LeftMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("LeftServices")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
@@ -897,7 +915,7 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasIndex("SubDepartmentId");
 
-                    b.ToView("\"VW_FinanceSubDepartmentsWithSpend\"");
+                    b.ToView("VW_FinanceSubDepartments");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Suppliers.Supplier", b =>
@@ -1135,7 +1153,7 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsWithSpend", b =>
+            modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsView", b =>
                 {
                     b.HasOne("Promasy.Domain.Finances.FinanceSource", "FinanceSource")
                         .WithMany()

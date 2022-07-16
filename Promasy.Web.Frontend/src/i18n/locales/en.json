@@ -11,7 +11,14 @@
   "save": "Save",
   "yes": "Yes",
   "no": "No",
+  "edit": "Edit",
+  "delete": "Delete",
   "merge": "Merge",
+  "language": "Language",
+  "queryYear": "Query Year",
+  "departments": "Departments",
+  "sub-departments": "Sub-departments",
+  "employees": "Employees",
   "createDialog": {
     "addNew": "New"
   },
