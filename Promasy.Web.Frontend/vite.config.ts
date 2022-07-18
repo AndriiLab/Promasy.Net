@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 import vueI18n from "@intlify/vite-plugin-vue-i18n";
-import mkcert from "vite-plugin-mkcert";
+import viteAspNetCoreSslPlugin from "./.vite/vite-aspnetcore-https";
 import svgLoader from "vite-svg-loader";
 
 // https://vitejs.dev/config/
@@ -15,7 +15,6 @@ export default defineConfig({
     },
   },
   server: {
-    https: true,
     host: process.env.NODE_ENV !== "production",
     proxy: {
       "/api": {
@@ -30,7 +29,7 @@ export default defineConfig({
     vueI18n({
       include: resolve(__dirname, "./src/i18n/locales/**"),
     }),
-    mkcert(),
+    viteAspNetCoreSslPlugin(),
     svgLoader(),
   ],
   css: {

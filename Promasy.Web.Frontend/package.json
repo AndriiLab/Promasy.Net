@@ -2,7 +2,7 @@
   "name": "promasy-frontend",
   "version": "0.1.0",
   "scripts": {
-    "dev": "node aspnetcore-https.ts && vite",
+    "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
@@ -21,14 +21,14 @@
     "vue-router": "^4.1.2"
   },
   "devDependencies": {
-    "@intlify/vite-plugin-vue-i18n": "^3.4.0",
-    "@types/node": "^16.11.43",
-    "@vitejs/plugin-vue": "^2.3.3",
+    "@expo/spawn-async": "^1.6.0",
+    "@intlify/vite-plugin-vue-i18n": "^5.0.0",
+    "@types/node": "^16.11.45",
+    "@vitejs/plugin-vue": "^3.0.1",
     "sass": "^1.53.0",
     "typescript": "^4.7.4",
-    "vite": "^2.9.14",
-    "vite-plugin-mkcert": "^1.7.2",
+    "vite": "^3.0.1",
     "vite-svg-loader": "^3.4.0",
-    "vue-tsc": "^0.38.5"
+    "vue-tsc": "^0.38.8"
   }
 }

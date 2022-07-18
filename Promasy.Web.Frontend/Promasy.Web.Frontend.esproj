@@ -10,4 +10,7 @@
   <ItemGroup>
     <None Include="src\components\interfaces\menu-item.ts" />
   </ItemGroup>
+  <ItemGroup>
+    <Script Include=".vite\vite-aspnetcore-https.ts" />
+  </ItemGroup>
 </Project>
