@@ -175,10 +175,15 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             }
 
             await _database.Orders
-                .Where(o => entities.Select(e => e.Id).Contains(o.FinanceSubDepartment.FinanceSourceId))
+                .Where(o => entities.Select(e => e.Id).Contains(o.FinanceSubDepartmentId))
                 .UpdateAsync(o => new Order
                     {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
 
+            await _database.OrderStatuses
+                .Where(s => entities.Select(e => e.Id).Contains(s.Order.FinanceSubDepartmentId))
+                .UpdateAsync(s => new OrderStatusHistory
+                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+            
             _database.FinanceSubDepartments.RemoveRange(entities);
             await _database.SaveChangesAsync();
 

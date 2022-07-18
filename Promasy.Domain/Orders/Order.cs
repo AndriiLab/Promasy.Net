@@ -17,7 +17,7 @@ public class Order : OrganizationEntity
     public decimal Total { get; set; }
     public OrderType Type { get; set; }
     public string? Kekv { get; set; }
-    public DateTime? ProcurementStartDate { get; set; }
+    public DateOnly? ProcurementStartDate { get; set; }
 
     public int UnitId { get; set; }
     public Unit Unit { get; set; }

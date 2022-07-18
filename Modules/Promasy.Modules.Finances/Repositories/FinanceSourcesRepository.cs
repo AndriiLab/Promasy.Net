@@ -168,6 +168,11 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
                 .UpdateAsync(o => new FinanceSubDepartment
                     {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
 
+            await _database.OrderStatuses
+                .Where(s => s.Order.FinanceSubDepartment.FinanceSourceId == entity.Id)
+                .UpdateAsync(s => new OrderStatusHistory
+                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+            
             _database.FinanceSources.Remove(entity);
             await _database.SaveChangesAsync();
 

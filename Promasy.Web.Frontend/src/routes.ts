@@ -42,18 +42,8 @@ export const routes = [
         component: () => import("./pages/FinanceSubDepartments.vue"),
       },
       {
-        name: "Orders",
-        path: "/orders",
-        component: () => import("./pages/Orders.vue"),
-      },
-      {
-        name: "FinanceSubDepartmentsOrders",
-        path: "/finances/:financeId(\\d+)/sub-departments/:subDepartmentId(\\d+)/orders",
-        component: () => import("./pages/Orders.vue"),
-      },
-      {
         name: "OrdersByCpv",
-        path: "/cpv-orders",
+        path: "/reports/cpv-orders",
         component: () => import("./pages/CpvOrders.vue"),
       },
       {
@@ -100,6 +90,36 @@ export const routes = [
         name: "EmployeeMe",
         path: "/me",
         redirect: () => `/employees/${ useSessionStore().user?.id }`,
+      },
+      {
+        name: "Orders",
+        path: "/orders/:type(\\d+)",
+        component: () => import("./pages/Orders.vue"),
+      },
+      {
+        name: "FinanceOrders",
+        path: "/finances/:financeId(\\d+)/orders/:type(\\d+)",
+        component: () => import("./pages/Orders.vue"),
+      },
+      {
+        name: "FinanceDepartmentOrders",
+        path: "/finances/:financeId(\\d+)/departments/:departmentId(\\d+)/orders/:type(\\d+)",
+        component: () => import("./pages/Orders.vue"),
+      },
+      {
+        name: "DepartmentOrders",
+        path: "/departments/:departmentId(\\d+)/orders/:type(\\d+)",
+        component: () => import("./pages/Orders.vue"),
+      },
+      {
+        name: "SubDepartmentsOrders",
+        path: "/departments/:departmentId(\\d+)/sub-departments/:subDepartmentId(\\d+)/orders/:type(\\d+)",
+        component: () => import("./pages/Orders.vue"),
+      },
+      {
+        name: "FinanceSubDepartmentsOrders",
+        path: "/finances/:financeId(\\d+)/sub-departments/:subDepartmentId(\\d+)/orders/:type(\\d+)",
+        component: () => import("./pages/Orders.vue"),
       },
     ],
   },

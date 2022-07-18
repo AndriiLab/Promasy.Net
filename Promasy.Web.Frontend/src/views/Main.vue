@@ -49,7 +49,7 @@ const menu: MenuItem[] = [
   {
     label: t("order", 2),
     items: [
-      { label: t("ordersList"), icon: "pi pi-fw pi-shopping-cart", to: { name: "Orders" } },
+      { label: t("ordersList"), icon: "pi pi-fw pi-shopping-cart", to: { name: "Orders", params: { type: 1 } } },
       { label: t("cpv"), icon: "pi pi-fw pi-book", to: { name: "CpvList" } },
       { label: t("units"), icon: "pi pi-fw pi-arrows-h", to: { name: "Units" } },
       { label: t("manufacturers"), icon: "pi pi-fw pi-box", to: { name: "Manufacturers" } },

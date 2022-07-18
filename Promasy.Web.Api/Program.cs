@@ -7,6 +7,7 @@ using Promasy.Modules.Cpv;
 using Promasy.Modules.Employees;
 using Promasy.Modules.Finances;
 using Promasy.Modules.Manufacturers;
+using Promasy.Modules.Orders;
 using Promasy.Modules.Organizations;
 using Promasy.Modules.Suppliers;
 using Promasy.Modules.Units;
@@ -41,19 +42,21 @@ try
     builder.Services.RegisterModule<SuppliersModule>(builder.Configuration);
     builder.Services.RegisterModule<OrganizationsModule>(builder.Configuration);
     builder.Services.RegisterModule<FinancesModule>(builder.Configuration);
-    
+    builder.Services.RegisterModule<OrdersModule>(builder.Configuration);
+
     // Localization
     builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddMvcCore()
-    .AddDataAnnotationsLocalization();
-    
+        .AddDataAnnotationsLocalization();
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(o =>
     {
-        o.SwaggerDoc("V1", new OpenApiInfo {
+        o.SwaggerDoc("V1", new OpenApiInfo
+        {
             Version = "V1",
             Title = "WebAPI",
             Description = "Promasy WebAPI"
@@ -65,7 +68,8 @@ try
             Scheme = "Bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
+            Description =
+                "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
         });
         o.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
@@ -80,13 +84,13 @@ try
                 },
                 Array.Empty<string>()
             }
-        }); 
+        });
     });
-    
+
     builder.Services.AddCors();
-    
+
     // Supported localization cultures
-    var supportedCultures = new [] { "en", "uk" };
+    var supportedCultures = new[] {"en", "uk"};
     builder.Services.Configure<RequestLocalizationOptions>(options =>
     {
         options.SetDefaultCulture(supportedCultures[0])
@@ -97,7 +101,7 @@ try
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
-    
+
     app.UseCors(x => x
         .AllowAnyOrigin()
         .AllowAnyMethod()
@@ -110,20 +114,18 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI(o => {
-            o.SwaggerEndpoint("/swagger/V1/swagger.json", "Promasy WebAPI");
-        });
+        app.UseSwaggerUI(o => { o.SwaggerEndpoint("/swagger/V1/swagger.json", "Promasy WebAPI"); });
     }
 
     app.UseHttpsRedirection();
-    
+
     // Configure parse localization from request 
     app.UseRequestLocalization(new RequestLocalizationOptions()
         .SetDefaultCulture(supportedCultures[0])
         .AddSupportedCultures(supportedCultures)
         .AddSupportedUICultures(supportedCultures)
         .AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
-        {                    
+        {
             var requestLanguages = context.Request.Headers["Accept-Language"].ToString();
             var requestLanguage = requestLanguages.Split(',').FirstOrDefault() ?? string.Empty;
             string selectedLanguage;
@@ -137,6 +139,7 @@ try
                 selectedLanguage = supportedCultures[0];
                 Log.Information("Request culture not defined. Fallback to default culture: {Culture}", requestLanguage);
             }
+
             return Task.FromResult(new ProviderCultureResult(selectedLanguage, selectedLanguage));
         })));
 

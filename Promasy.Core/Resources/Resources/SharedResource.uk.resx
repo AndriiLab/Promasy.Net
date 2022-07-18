@@ -108,4 +108,7 @@
   <data name="Cannot assign requested amount" xml:space="preserve">
     <value>Недостатньо коштів для призначення вказаної суми</value>
   </data>
+  <data name="Order type not exists" xml:space="preserve">
+    <value>Невідома категорія замовлення</value>
+  </data>
 </root>

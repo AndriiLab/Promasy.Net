@@ -87,7 +87,7 @@
           <Column headerStyle="min-width:12rem;">
             <template #body="slotProps">
               <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
-                           :to="{ name: 'FinanceSubDepartmentsOrders', params: {financeId: slotProps.data.financeSourceId, subDepartmentId: slotProps.data.subDepartmentId}}">
+                           :to="{ name: 'FinanceSubDepartmentsOrders', params: {financeId: slotProps.data.financeSourceId, subDepartmentId: slotProps.data.subDepartmentId, type: 1 }}">
                 <Button v-tooltip.left="t('order', 2)" icon="pi pi-shopping-cart" class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
               <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>

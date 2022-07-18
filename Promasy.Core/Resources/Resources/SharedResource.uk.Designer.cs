@@ -214,6 +214,15 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Невідома категорія замовлення.
+        /// </summary>
+        internal static string Order_type_not_exists {
+            get {
+                return ResourceManager.GetString("Order type not exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Організація має відділи.
         /// </summary>
         internal static string Organization_already_has_departments {
