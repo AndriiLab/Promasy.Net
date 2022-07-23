@@ -84,12 +84,12 @@
             <ErrorWrap class="field col-12 md:col-4" :errors="v$.password.$errors"
                        :external-errors="externalErrors['Password']">
               <label for="password">{{ t('password') }}</label>
-              <PasswordInput id="password" type="text" v-model.trim="model.password" :feedback="true"/>
+              <Password id="password" type="text" v-model.trim="model.password" :feedback="true" :toggleMask="true"/>
             </ErrorWrap>
             <ErrorWrap class="field col-12 md:col-4" :errors="v$.passwordRepeat.$errors" :external-errors="[]">
               <label for="passwordRepeat">{{ t('passwordRepeat') }}</label>
-              <PasswordInput id="passwordRepeat" type="text" v-model.trim="model.passwordRepeat" :feedback="true"
-                             :promptLabel="t('passwordRepeat')"/>
+              <Password id="passwordRepeat" type="text" v-model.trim="model.passwordRepeat" :toggleMask="true"
+                             :promptLabel="t('passwordRepeat')" />
             </ErrorWrap>
           </template>
         </div>
@@ -118,7 +118,6 @@ import { useSessionStore } from "@/store/session";
 import EmployeesApi, { Employee } from "@/services/api/employees";
 import ErrorWrap from "@/components/ErrorWrap.vue";
 import Loader from "@/components/Loader.vue";
-import PasswordInput from "@/components/PasswordInput.vue";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 
@@ -298,6 +297,18 @@ interface EmployeeModel {
   editor: string | undefined
 }
 </script>
+
+<style scoped>
+.pi-eye {
+  transform:scale(1.6);
+  margin-right: 1rem;
+}
+
+.pi-eye-slash {
+  transform:scale(1.6);
+  margin-right: 1rem;
+}
+</style>
 
 <i18n locale="en">
 {

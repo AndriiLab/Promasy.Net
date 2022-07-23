@@ -73,7 +73,7 @@ internal class OrdersRepository : IOrdersRepository
         var spentAmount = await query.SumAsync(o => o.Total);
         var response = await query
             .PaginateAsync(request,
-                o => new OrderShortDto(o.Id, o.Description, o.Total.ToString("F2"),
+                o => new OrderShortDto(o.Id, o.Description, o.Total,
                     (int) o.Statuses.OrderByDescending(s => s.ModifiedDate ?? s.CreatedDate).Select(s => s.Status).FirstOrDefault(),
                     o.ModifierId ?? o.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(o.ModifierId ?? o.CreatorId),

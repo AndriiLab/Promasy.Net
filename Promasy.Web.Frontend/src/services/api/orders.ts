@@ -57,7 +57,7 @@ export interface OrderPagedResponse extends PagedResponse<OrderShort> {
 export interface OrderShort {
   id: number;
   description: string;
-  total: string;
+  total: number;
   status: number;
   editorId: number;
   editor: string;
@@ -68,8 +68,8 @@ export interface Order {
   id: number;
   description: string;
   catNum?: string;
-  onePrice: string;
-  amount: string;
+  onePrice: number;
+  amount: number;
   type: number;
   kekv?: string;
   procurementStartDate?: Date;
@@ -94,8 +94,8 @@ export interface Order {
 export interface CreateOrderRequest {
   description: string;
   catNum?: string;
-  onePrice: string;
-  amount: string;
+  onePrice: number;
+  amount: number;
   type: number;
   kekv?: string;
   procurementStartDate?: Date;
@@ -111,8 +111,8 @@ export interface UpdateOrderRequest {
   id: number;
   description: string;
   catNum?: string;
-  onePrice: string;
-  amount: string;
+  onePrice: number;
+  amount: number;
   type: number;
   kekv?: string;
   procurementStartDate?: Date;

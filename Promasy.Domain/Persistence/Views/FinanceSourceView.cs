@@ -15,13 +15,13 @@ public class FinanceSourceView : OrganizationEntity
     public DateOnly End { get; set; }
 
     public decimal TotalEquipment { get; set; }
-    public decimal SpentEquipment { get; set; } // todo: possibly not used
+    public decimal UnassignedEquipment { get; set; }
     public decimal LeftEquipment { get; set; }
     public decimal TotalMaterials { get; set; }
-    public decimal SpentMaterials { get; set; }
+    public decimal UnassignedMaterials { get; set; }
     public decimal LeftMaterials { get; set; }
     public decimal TotalServices { get; set; }
-    public decimal SpentServices { get; set; }
+    public decimal UnassignedServices { get; set; }
     public decimal LeftServices { get; set; }
 
 }

@@ -1,56 +1,56 @@
 /* eslint-disable node/no-extraneous-import */
-import path from 'node:path'
-import { existsSync, readFileSync } from 'node:fs'
-import type { Plugin } from 'vite'
-import spawnAsync from '@expo/spawn-async';
+import path from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import type { Plugin } from "vite";
+import spawnAsync from "@expo/spawn-async";
 
 function viteAspNetCoreSslPlugin(): Plugin {
   return {
-    name: 'vite:aspnetcore-https',
+    name: "vite:aspnetcore-https",
     async config(config) {
       const { cert, key } = await buildCertificate();
       const https = () => ({
-        https: { cert: readFileSync(cert), key: readFileSync(key) }
-      })
+        https: { cert: readFileSync(cert), key: readFileSync(key) },
+      });
       return {
         server: https(),
-        preview: https()
-      }
-    }
-  }
+        preview: https(),
+      };
+    },
+  };
 }
 
 export async function buildCertificate() {
   // This script sets up HTTPS for the application using the ASP.NET Core HTTPS certificate
   const baseFolder =
-    process.env.APPDATA !== undefined && process.env.APPDATA !== ''
-      ? `${process.env.APPDATA}/ASP.NET/https`
-      : `${process.env.HOME}/.aspnet/https`;
-  
+    process.env.APPDATA !== undefined && process.env.APPDATA !== ""
+      ? `${ process.env.APPDATA }/ASP.NET/https`
+      : `${ process.env.HOME }/.aspnet/https`;
+
   const certificateArg = process.argv.map(arg => arg.match(/--name=(?<value>.+)/i)).filter(Boolean)[0];
   const certificateName = certificateArg ? certificateArg.groups?.value : process.env.npm_package_name;
-  
+
   if (!certificateName) {
-    console.error('Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.')
+    console.error("Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.");
     process.exit(-1);
   }
-  
-  const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
-  const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
-  
+
+  const certFilePath = path.join(baseFolder, `${ certificateName }.pem`);
+  const keyFilePath = path.join(baseFolder, `${ certificateName }.key`);
+
   if (!existsSync(certFilePath) || !existsSync(keyFilePath)) {
-    await spawnAsync('dotnet', [
-      'dev-certs',
-      'https',
-      '--export-path',
+    await spawnAsync("dotnet", [
+      "dev-certs",
+      "https",
+      "--export-path",
       certFilePath,
-      '--format',
-      'Pem',
-      '--no-password',
-    ], { stdio: 'inherit', });
-    console.log(`dotnet dev-certs generated ${certificateName}.pem and ${certificateName}.key in ${baseFolder}`);
+      "--format",
+      "Pem",
+      "--no-password",
+    ], { stdio: "inherit" });
+    console.log(`dotnet dev-certs generated ${ certificateName }.pem and ${ certificateName }.key in ${ baseFolder }`);
   }
-  
+
   return { cert: certFilePath, key: keyFilePath };
 }
 

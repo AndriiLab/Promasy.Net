@@ -48,12 +48,15 @@ export interface FinanceSource {
   start: Date;
   end: Date;
   kpkvk: string;
-  totalEquipment: string;
-  leftEquipment: string;
-  totalMaterials: string;
-  leftMaterials: string;
-  totalServices: string;
-  leftServices: string;
+  totalEquipment: number;
+  leftEquipment: number;
+  unassignedEquipment: number;
+  totalMaterials: number;
+  leftMaterials: number;
+  unassignedMaterials: number;
+  totalServices: number;
+  leftServices: number;
+  unassignedServices: number;
   editorId: number;
   editor: string;
   editedDate: Date;
@@ -63,12 +66,12 @@ export interface CreateFinanceSourceRequest {
   number: string;
   name: string;
   fundType: number;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
   kpkvk: string;
-  totalEquipment: string;
-  totalMaterials: string;
-  totalServices: string;
+  totalEquipment: number;
+  totalMaterials: number;
+  totalServices: number;
 }
 
 export interface UpdateFinanceSourceRequest {
@@ -76,10 +79,10 @@ export interface UpdateFinanceSourceRequest {
   number: string;
   name: string;
   fundType: number;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
   kpkvk: string;
-  totalEquipment: string;
-  totalMaterials: string;
-  totalServices: string;
+  totalEquipment: number;
+  totalMaterials: number;
+  totalServices: number;
 }

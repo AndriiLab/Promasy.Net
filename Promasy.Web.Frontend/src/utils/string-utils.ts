@@ -4,11 +4,15 @@
 
 export function truncate(s: string | undefined, size: number) {
   if (!s) {
-    return '';
+    return "";
   }
-  if(s.length <= size) {
+  if (s.length <= size) {
     return s;
   }
-  
-  return `${s.slice(0, size - 3)}...`;
+
+  return `${ s.slice(0, size - 3) }...`;
+}
+
+export function zeroPad(num: number, places: number) {
+  return String(num).padStart(places, "0");
 }

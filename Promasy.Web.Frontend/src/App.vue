@@ -4,6 +4,7 @@
 </template>
 
 <script lang="ts" setup>
+import { setPrimeVueLocale } from "@/i18n";
 import { onMounted } from "vue";
 import Toast from "primevue/toast";
 import { initStores } from "./store";
@@ -26,10 +27,11 @@ onMounted(async () => {
 function initLocale() {
   const { locale } = useI18n();
   locale.value = sessionStore.locale;
-
+  setPrimeVueLocale();
   sessionStore.$subscribe(async (mutation, state) => {
     if (state.locale !== locale.value) {
       locale.value = state.locale;
+      setPrimeVueLocale();
       await rolesStore.setRolesAsync();
     }
   });

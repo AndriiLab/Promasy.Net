@@ -7,7 +7,7 @@ namespace Promasy.Modules.Finances.Interfaces;
 
 public interface IFinanceSourcesRepository : IRepository
 {
-    Task<PagedResponse<FinanceSourceDto>> GetPagedListAsync(FinanceSourcesPagedRequest request);
+    Task<PagedResponse<FinanceSourceShortDto>> GetPagedListAsync(FinanceSourcesPagedRequest request);
     Task<FinanceSourceDto?> GetByIdAsync(int id);
     Task<int> CreateAsync(CreateFinanceSourceDto item);
     Task UpdateAsync(UpdateFinanceSourceDto item);

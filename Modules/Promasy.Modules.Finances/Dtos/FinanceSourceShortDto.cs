@@ -1,9 +1,10 @@
-﻿using Promasy.Modules.Core.Dtos;
+﻿using Promasy.Domain.Finances;
+using Promasy.Modules.Core.Dtos;
 
 namespace Promasy.Modules.Finances.Dtos;
 
-public record FinanceSubDepartmentDto(int Id, int FinanceSourceId, 
-        int SubDepartmentId, string SubDepartment, int DepartmentId, string Department,
+public record FinanceSourceShortDto(int Id, string Number, string Name, FinanceFundType FundType,
+        DateOnly Start, DateOnly End, string Kpkvk,
         decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices,
         decimal LeftEquipment, decimal LeftMaterials, decimal LeftServices,
         int EditorId = default, string Editor = "", DateTime EditedDate = default)

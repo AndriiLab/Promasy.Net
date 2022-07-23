@@ -1,9 +1,9 @@
 <template>
-  <Dropdown v-model="language" :options="avaliableLanguages" optionLabel="name" optionValue="value">
+  <Dropdown v-model="language" :options="availableLanguages" optionLabel="name" optionValue="value">
     <template #value="slotProps">
       <div class="flex align-items-center">
         <span :class="'mr-2 flag flag-' + getFlag(slotProps.value)" style="width:18px; height: 12px"/>
-        <div>{{ getNameByKey(slotProps.value, avaliableLanguages) }}</div>
+        <div>{{ getNameByKey(slotProps.value, availableLanguages) }}</div>
       </div>
     </template>
     <template #option="slotProps">
@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import { avaliableLanguages } from "@/i18n";
+import { availableLanguages } from "@/i18n";
 import { useSessionStore } from "@/store/session";
 
 const sessionStore = useSessionStore();

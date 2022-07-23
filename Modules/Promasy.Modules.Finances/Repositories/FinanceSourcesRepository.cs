@@ -42,14 +42,14 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
             .AnyAsync(s => EF.Functions.ILike(s.Number, number), ct) == false;
     }
 
-    public Task<PagedResponse<FinanceSourceDto>> GetPagedListAsync(FinanceSourcesPagedRequest request)
+    public Task<PagedResponse<FinanceSourceShortDto>> GetPagedListAsync(FinanceSourcesPagedRequest request)
     {
         return request.IncludeCalculatedAmounts
             ? GetPagedListExtendedAsync(request)
             : GetPagedListShortAsync(request);
     }
 
-    private Task<PagedResponse<FinanceSourceDto>> GetPagedListShortAsync(FinanceSourcesPagedRequest request)
+    private Task<PagedResponse<FinanceSourceShortDto>> GetPagedListShortAsync(FinanceSourcesPagedRequest request)
     {
         var query = _database.FinanceSources
             .AsNoTracking()
@@ -62,15 +62,15 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
 
         return query
             .PaginateAsync(request,
-                f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
-                    f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
-                    string.Empty, string.Empty, string.Empty, 
+                f => new FinanceSourceShortDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
+                    f.Kpkvk, f.TotalEquipment, f.TotalMaterials, f.TotalServices,
+                    decimal.Zero, decimal.Zero, decimal.Zero, 
                     f.ModifierId ?? f.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                     f.ModifiedDate ?? f.CreatedDate));
     }
 
-    private Task<PagedResponse<FinanceSourceDto>> GetPagedListExtendedAsync(FinanceSourcesPagedRequest request)
+    private Task<PagedResponse<FinanceSourceShortDto>> GetPagedListExtendedAsync(FinanceSourcesPagedRequest request)
     {
         var query = _database.FinanceSourceWithSpendView
             .AsNoTracking()
@@ -83,9 +83,9 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
 
         return query
             .PaginateAsync(request,
-                f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
-                    f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
-                    f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
+                f => new FinanceSourceShortDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
+                    f.Kpkvk, f.TotalEquipment, f.TotalMaterials, f.TotalServices,
+                    f.LeftEquipment, f.LeftMaterials, f.LeftServices, 
                     f.ModifierId ?? f.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                     f.ModifiedDate ?? f.CreatedDate));
@@ -97,10 +97,10 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
             .AsNoTracking()
             .Where(f => f.Id == id)
             .Select(f => new FinanceSourceDto(f.Id, f.Number, f.Name, f.FundType, f.Start, f.End,
-                f.Kpkvk, f.TotalEquipment.ToString("F2"), f.TotalMaterials.ToString("F2"), f.TotalServices.ToString("F2"),
-                f.LeftEquipment.ToString("F2"), f.LeftMaterials.ToString("F2"), f.LeftServices.ToString("F2"), 
-                f.ModifierId ?? f.CreatorId,
-                PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
+                f.Kpkvk, f.TotalEquipment, f.TotalMaterials, f.TotalServices,
+                f.UnassignedEquipment, f.UnassignedMaterials, f.UnassignedServices,
+                f.LeftEquipment, f.LeftMaterials, f.LeftServices,
+                f.ModifierId ?? f.CreatorId, PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
                 f.ModifiedDate ?? f.CreatedDate))
             .FirstOrDefaultAsync();
     }
@@ -144,6 +144,8 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
         entity.TotalEquipment = item.TotalEquipment;
         entity.TotalMaterials = item.TotalMaterials;
         entity.TotalServices = item.TotalServices;
+
+        await _database.SaveChangesAsync();
     }
 
     public async Task DeleteByIdAsync(int id)

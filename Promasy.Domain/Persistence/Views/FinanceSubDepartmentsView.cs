@@ -12,12 +12,9 @@ public class FinanceSubDepartmentsView : Entity
     public SubDepartment SubDepartment { get; set; }
     
     public decimal TotalEquipment { get; set; }
-    public decimal SpentEquipment { get; set; }
     public decimal LeftEquipment { get; set; }
     public decimal TotalMaterials { get; set; }
-    public decimal SpentMaterials { get; set; }
     public decimal LeftMaterials { get; set; }
     public decimal TotalServices { get; set; }
-    public decimal SpentServices { get; set; }
     public decimal LeftServices { get; set; }
 }

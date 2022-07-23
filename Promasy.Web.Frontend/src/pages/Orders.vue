@@ -70,10 +70,10 @@
             </template>
           </Column>
           <Column field="total" :header="t('total')" :sortable="true"
-                  headerStyle="width:15%; min-width:5rem;">
+                  headerStyle="width:15%; min-width:5rem;" style="text-align: right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('total') }}</span>
-              {{ uah(slotProps.data.total).format() }}
+              {{ currency(slotProps.data.total).format() }}
             </template>
           </Column>
           <Column field="status" :header="t('status')"
@@ -105,8 +105,8 @@
           </Column>
           <template #footer>
             <div class="flex justify-content-end">
-              <span v-if="tableData.leftAmount" class="mr-7">{{t('leftAmount')}}: {{uah(tableData.leftAmount).format()}}</span>
-              <span>{{t('total')}}: {{uah(tableData.spentAmount).format()}}</span>
+              <span v-if="tableData.leftAmount" class="mr-7">{{t('leftAmount')}}: {{currency(tableData.leftAmount).format()}}</span>
+              <span>{{t('total')}}: {{currency(tableData.spentAmount).format()}}</span>
             </div>
           </template>
         </DataTable>
@@ -169,7 +169,7 @@ import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "@/components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@/i18n/validators";
-import Currency from "currency.js";
+import currency from "@/utils/currency-utils";
 import YearSelector from "@/components/YearSelector.vue";
 import OrderStatusBadge from "@/components/OrderStatusBadge.vue";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
@@ -178,7 +178,6 @@ import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 const Router = useRouter();
 const route = useRoute();
 const { t, d } = useI18n();
-const uah = (v: string) => Currency(v, { symbol: "₴ ", separator: " ", decimal: "," });
 const sessionStore = useSessionStore();
 const toast = useToast();
 const items = ref([] as OrderShort[]);

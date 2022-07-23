@@ -46,12 +46,12 @@ export interface FinanceSubDepartment {
   subDepartment: string;
   departmentId: number;
   department: string;
-  totalEquipment: string;
-  leftEquipment: string;
-  totalMaterials: string;
-  leftMaterials: string;
-  totalServices: string;
-  leftServices: string;
+  totalEquipment: number;
+  leftEquipment: number;
+  totalMaterials: number;
+  leftMaterials: number;
+  totalServices: number;
+  leftServices: number;
   editorId: number;
   editor: string;
   editedDate: Date;
@@ -60,16 +60,16 @@ export interface FinanceSubDepartment {
 export interface CreateFinanceSubDepartmentRequest {
   financeSourceId: number;
   subDepartmentId: number;
-  totalEquipment: string;
-  totalMaterials: string;
-  totalServices: string;
+  totalEquipment: number;
+  totalMaterials: number;
+  totalServices: number;
 }
 
 export interface UpdateFinanceSubDepartmentRequest {
   id: number;
   financeSourceId: number;
   subDepartmentId: number;
-  totalEquipment: string;
-  totalMaterials: string;
-  totalServices: string;
+  totalEquipment: number;
+  totalMaterials: number;
+  totalServices: number;
 }

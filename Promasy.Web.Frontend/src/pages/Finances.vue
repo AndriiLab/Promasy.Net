@@ -34,61 +34,87 @@
             </div>
           </template>
 
-          <Column field="number" :header="t('number')" :sortable="true" headerStyle="width:10%; min-width:5rem;">
+          <Column field="number" :header="t('number')" :sortable="true" headerStyle="width:7%; min-width:5rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('number') }}</span>
               {{ slotProps.data.number }}
             </template>
           </Column>
-          <Column field="name" :header="t('name')" :sortable="true" headerStyle="width:15%; min-width:5rem;">
+          <Column field="name" :header="t('name')" :sortable="true" headerStyle="width:10%; min-width:5rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('name') }}</span>
               {{ slotProps.data.name }}
             </template>
           </Column>
-          <Column field="totalMaterials" :header="t('totalMaterials')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="totalMaterials" :header="t('totalMaterials')" :sortable="true"
+                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalMaterials') }}</span>
-              {{ uah(slotProps.data.totalMaterials).format() }}
+              {{ currency(slotProps.data.totalMaterials).format() }}
             </template>
           </Column>
-          <Column field="leftMaterials" :header="t('leftMaterials')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="leftMaterials" :header="t('leftName', { name: t('totalMaterials') })" :sortable="true"
+                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
             <template #body="slotProps">
-              <span class="p-column-title">{{ t('leftMaterials') }}</span>
-              <span :class="{ 'p-error': parseInt(slotProps.data.leftMaterials) < 0 }">{{ uah(slotProps.data.leftMaterials).format() }}</span>
+              <span class="p-column-title">{{ t('leftName', {name: t('totalMaterials')}) }}</span>
+              <span :class="{ 'p-error': parseInt(slotProps.data.leftMaterials) < 0 }">{{
+                  currency(slotProps.data.leftMaterials).format()
+                }}</span>
             </template>
           </Column>
-          <Column field="totalEquipment" :header="t('totalEquipment')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="totalEquipment" :header="t('totalEquipment')" :sortable="true"
+                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalEquipment') }}</span>
-              {{ uah(slotProps.data.totalEquipment).format() }}
+              {{ currency(slotProps.data.totalEquipment).format() }}
             </template>
           </Column>
-          <Column field="leftEquipment" :header="t('leftEquipment')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="leftEquipment" :header="t('leftName', { name: t('totalEquipment') })" :sortable="true"
+                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
             <template #body="slotProps">
-              <span class="p-column-title">{{ t('leftEquipment') }}</span>
-              <span :class="{ 'p-error': parseInt(slotProps.data.leftEquipment) < 0 }">{{ uah(slotProps.data.leftEquipment).format() }}</span>
+              <span class="p-column-title">{{ t('leftName', {name: t('totalEquipment')}) }}</span>
+              <span :class="{ 'p-error': parseInt(slotProps.data.leftEquipment) < 0 }">{{
+                  currency(slotProps.data.leftEquipment).format()
+                }}</span>
             </template>
           </Column>
-          <Column field="totalServices" :header="t('totalServices')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="totalServices" :header="t('totalServices')" :sortable="true"
+                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalServices') }}</span>
-              {{ uah(slotProps.data.totalServices).format() }}
+              {{ currency(slotProps.data.totalServices).format() }}
             </template>
           </Column>
-          <Column field="leftServices" :header="t('leftServices')" :sortable="true" headerStyle="width:10%; min-width:10rem;">
+          <Column field="leftServices" :header="t('leftName', { name: t('totalServices') })" :sortable="true"
+                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
             <template #body="slotProps">
-              <span class="p-column-title">{{ t('leftServices') }}</span>
-              <span :class="{ 'p-error': parseInt(slotProps.data.leftServices) < 0 }">{{ uah(slotProps.data.leftServices).format() }}</span>
+              <span class="p-column-title">{{ t('leftName', {name: t('totalServices')}) }}</span>
+              <span :class="{ 'p-error': parseInt(slotProps.data.leftServices) < 0 }">{{
+                  currency(slotProps.data.leftServices).format()
+                }}</span>
+            </template>
+          </Column>
+          <Column field="start" :header="t('start')" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+            <template #body="slotProps">
+              <span class="p-column-title">{{ t('start') }}</span>
+              {{ d(slotProps.data.start, 'short') }}
+            </template>
+          </Column>
+          <Column field="end" :header="t('end')" :sortable="true" headerStyle="width:8%; min-width:5rem;">
+            <template #body="slotProps">
+              <span class="p-column-title">{{ t('end') }}</span>
+              {{ d(slotProps.data.end, 'short') }}
             </template>
           </Column>
           <Column headerStyle="min-width:12rem;">
             <template #body="slotProps">
               <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                            :to="{ name: 'FinanceSubDepartments', params: {financeId: slotProps.data.id}}">
-                <Button v-tooltip.left="t('sub-department', 2)" icon="pi pi-briefcase" class="p-button-rounded p-button-primary mr-2"/>
+                <Button v-tooltip.left="t('sub-department', 2)" icon="pi pi-briefcase"
+                        class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
-              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                      @click="edit(slotProps.data)"/>
               <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
@@ -103,9 +129,45 @@
                 err
               }}
             </Message>
-            <ErrorWrap :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
+            <ErrorWrap :errors="v$.number.$errors" :external-errors="externalErrors['Number']">
+              <label for="number">{{ t('number') }}</label>
+              <InputText id="number" v-model.trim="item.number" required="true" autofocus/>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.name.$errors" :external-errors="externalErrors['Name']" class="mt-3">
               <label for="name">{{ t('name') }}</label>
-              <InputText id="name" v-model.trim="item.name" required="true" autofocus/>
+              <InputText id="name" v-model.trim="item.name" required="true"/>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.fundType.$errors" :external-errors="externalErrors['FundType']" class="mt-3">
+              <label for="fundType">{{ t('fundType') }}</label>
+              <Dropdown id="fundType" :options="fundTypes" v-model="item.fundType" option-label="text"
+                        option-value="value"></Dropdown>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.totalMaterials.$errors" :external-errors="externalErrors['TotalMaterials']"
+                       class="mt-3">
+              <label for="totalMaterials">{{ t('totalMaterials') }}</label>
+              <FinanceInput input-id="totalMaterials" v-model="item.totalMaterials" input-placeholder=""></FinanceInput>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.totalEquipment.$errors" :external-errors="externalErrors['TotalEquipment']"
+                       class="mt-3">
+              <label for="totalEquipment">{{ t('totalEquipment') }}</label>
+              <FinanceInput input-id="totalEquipment" v-model="item.totalEquipment" input-placeholder=""></FinanceInput>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.totalServices.$errors" :external-errors="externalErrors['TotalServices']"
+                       class="mt-3">
+              <label for="totalServices">{{ t('totalServices') }}</label>
+              <FinanceInput input-id="totalServices" v-model="item.totalServices" input-placeholder=""></FinanceInput>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.start.$errors" :external-errors="externalErrors['Start']" class="mt-3">
+              <label for="start">{{ t('start') }}</label>
+              <Calendar id="start" v-model="item.start" dateFormat="yy-mm-dd"></Calendar>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.end.$errors" :external-errors="externalErrors['End']" class="mt-3">
+              <label for="end">{{ t('end') }}</label>
+              <Calendar id="end" v-model="item.end" dateFormat="yy-mm-dd"></Calendar>
+            </ErrorWrap>
+            <ErrorWrap :errors="v$.kpkvk.$errors" :external-errors="externalErrors['Kpkvk']" class="mt-3">
+              <label for="kpkvk">{{ t('kpkvk') }}</label>
+              <InputText id="kpkvk" v-model.trim="item.kpkvk" required="true"/>
             </ErrorWrap>
           </div>
 
@@ -138,6 +200,7 @@
 
 <script lang="ts" setup>
 import { useSessionStore } from "@/store/session";
+import { formatAsDate } from "@/utils/date-utils";
 import { SelectItem } from "@/utils/fetch-utils";
 import { capitalize } from "@/utils/string-utils";
 import { ref, reactive, onMounted, computed, watch } from "vue";
@@ -146,13 +209,13 @@ import { useToast } from "primevue/usetoast";
 import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "@/components/ErrorWrap.vue";
+import FinanceInput from "@/components/FinanceInput.vue";
 import YearSelector from "@/components/YearSelector.vue";
 import useVuelidate from "@vuelidate/core";
-import { required, maxLength } from "@/i18n/validators";
-import Currency from "currency.js";
+import { required, maxLength, minValue } from "@/i18n/validators";
+import currency from "@/utils/currency-utils";
 
-const { t } = useI18n();
-const uah = (v : string) => Currency(v, { symbol: "₴ ", separator: " ", decimal: "," });
+const { t, d } = useI18n();
 const sessionStore = useSessionStore();
 const toast = useToast();
 const items = ref([] as FinanceSource[]);
@@ -173,7 +236,15 @@ const tableData: TablePagingData = reactive({
 
 const rules = computed(() => {
   return {
+    number: { required, maxLength: maxLength(100) },
     name: { required, maxLength: maxLength(300) },
+    kpkvk: { required, maxLength: maxLength(10) },
+    fundType: { required },
+    totalEquipment: { required, minValue: minValue(0) },
+    totalMaterials: { required, minValue: minValue(0) },
+    totalServices: { required, minValue: minValue(0) },
+    start: { required },
+    end: { required },
   };
 });
 const v$ = useVuelidate(rules, item, { $lazy: true });
@@ -184,9 +255,11 @@ onMounted(async () => {
   await getDataAsync();
 });
 
-watch(() => sessionStore.year, async () => { await getDataAsync(); })
+watch(() => sessionStore.year, async () => {
+  await getDataAsync();
+});
 
-async function getFundTypes(){
+async function getFundTypes() {
   const response = await FinanceSourcesApi.getFundTypes();
   if (response.success) {
     fundTypes.value = response.data!;
@@ -225,13 +298,22 @@ async function onSortAsync(event: DataTableSortEvent) {
 
 function create() {
   externalErrors.value = {} as Object<string[]>;
-  item.value = {} as FinanceSource;
+  item.value = {
+    fundType: 1,
+    totalEquipment: 0,
+    totalMaterials: 0,
+    totalServices: 0,
+    start: new Date(),
+    end: new Date(new Date().getFullYear(), 11, 31),
+  } as FinanceSource;
   itemDialog.value = true;
 }
 
 function edit(selectedItem: FinanceSource) {
   externalErrors.value = {} as Object<string[]>;
   item.value = { ...selectedItem };
+  item.value.start = new Date(item.value.start);
+  item.value.end = new Date(item.value.end);
   itemDialog.value = true;
 }
 
@@ -257,27 +339,27 @@ async function saveAsync() {
   }
   const response = await (item.value.id
       ? FinanceSourcesApi.update({
-        end: item.value.end,
+        end: formatAsDate(item.value.end),
         fundType: item.value.fundType,
         id: item.value.id,
         kpkvk: item.value.kpkvk,
         name: item.value.name,
         number: item.value.number,
-        start: item.value.start,
+        start: formatAsDate(item.value.start),
         totalEquipment: item.value.totalEquipment,
         totalMaterials: item.value.totalMaterials,
-        totalServices: item.value.totalServices
+        totalServices: item.value.totalServices,
       })
       : FinanceSourcesApi.create({
-        end: item.value.end,
+        end: formatAsDate(item.value.end),
         fundType: item.value.fundType,
         kpkvk: item.value.kpkvk,
         name: item.value.name,
         number: item.value.number,
-        start: item.value.start,
+        start: formatAsDate(item.value.start),
         totalEquipment: item.value.totalEquipment,
         totalMaterials: item.value.totalMaterials,
-        totalServices: item.value.totalServices
+        totalServices: item.value.totalServices,
       }));
   if (response.success) {
     itemDialog.value = false;
@@ -316,9 +398,11 @@ async function deleteItemAsync() {
   "totalMaterials": "Materials",
   "totalEquipment": "Equipment",
   "totalServices": "Services",
-  "leftEquipment": "Equipment left",
-  "leftMaterials": "Materials left",
-  "leftServices": "Services left"
+  "leftName": "{name} left",
+  "start": "Start date",
+  "end": "End date",
+  "fundType": "Finance type",
+  "kpkvk": "KPKVK"
 }
 </i18n>
 
@@ -332,8 +416,10 @@ async function deleteItemAsync() {
   "totalMaterials": "Матеріали",
   "totalEquipment": "Обладнання",
   "totalServices": "Послуги",
-  "leftEquipment": "Обладнання (залишок)",
-  "leftMaterials": "Матеріали (залишок)",
-  "leftServices": "Послуги (залишок)"
+  "leftName": "{name} (залишок)",
+  "start": "Дата початку",
+  "end": "Дата завершення",
+  "fundType": "Тип фінансування",
+  "kpkvk": "КПКВК"
 }
 </i18n>

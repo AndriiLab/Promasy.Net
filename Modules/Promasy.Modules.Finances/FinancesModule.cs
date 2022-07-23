@@ -54,7 +54,7 @@ public class FinancesModule : IModule
             .WithTags(Tag)
             .WithName("Get Finance sources list")
             .RequireAuthorization()
-            .Produces<PagedResponse<FinanceSubDepartmentDto>>();
+            .Produces<PagedResponse<FinanceSourceShortDto>>();
         
         endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IFinanceSourcesRepository repository) =>
             {

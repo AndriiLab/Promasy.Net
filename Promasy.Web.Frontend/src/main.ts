@@ -33,6 +33,7 @@ import Toolbar from "primevue/toolbar";
 import Menu from "primevue/menu";
 import Dialog from "primevue/dialog";
 import Chip from "primevue/chip";
+import Calendar from "primevue/calendar";
 import ToastService from "primevue/toastservice";
 import { vue3Debounce } from "vue-debounce";
 
@@ -48,7 +49,7 @@ app.use(ToastService);
 
 app.directive("ripple", Ripple);
 app.directive("tooltip", Tooltip);
-app.directive('debounce', vue3Debounce({ lock: true }));
+app.directive("debounce", vue3Debounce({ lock: true }));
 
 app.component("InputText", InputText);
 app.component("InputNumber", InputNumber);
@@ -70,5 +71,6 @@ app.component("Toolbar", Toolbar);
 app.component("Menu", Menu);
 app.component("Dialog", Dialog);
 app.component("Chip", Chip);
+app.component("Calendar", Calendar);
 
 app.mount("#app");

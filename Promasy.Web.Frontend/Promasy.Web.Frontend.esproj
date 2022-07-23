@@ -12,5 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <Script Include=".vite\vite-aspnetcore-https.ts" />
+    <Script Include="src\utils\currency-utils.ts" />
+    <Script Include="src\utils\date-utils.ts" />
   </ItemGroup>
 </Project>
