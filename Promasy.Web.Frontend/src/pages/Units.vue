@@ -199,12 +199,14 @@ async function onSortAsync(event: DataTableSortEvent) {
 function create() {
   externalErrors.value = {} as Object<string[]>;
   item.value = {} as Unit;
+  v$.value.$reset();
   itemDialog.value = true;
 }
 
 function edit(selectedItem: Unit) {
   externalErrors.value = {} as Object<string[]>;
   item.value = { ...selectedItem };
+  v$.value.$reset();
   itemDialog.value = true;
 }
 

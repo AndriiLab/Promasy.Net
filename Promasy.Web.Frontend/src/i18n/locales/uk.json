@@ -6,8 +6,8 @@
     "email": "Значення не є емейл адресою.",
     "numeric": "Значення повинно бути цифровим.",
     "sameAs": "Значення повинно бути таким як значення в полі {otherName}.",
-    "maxValue": "Максимальне значенн {maxValue}",
-    "minValue": "Мінімальне значення {minValue}"
+    "maxValue": "Максимальне значення {max}",
+    "minValue": "Мінімальне значення {min}"
   },
   "cancel": "Відмінити",
   "save": "Зберегти",
@@ -45,7 +45,7 @@
     },
     "header": "Керування {itemName}",
     "loadError": "Не вдалося отримати дані для таблиці",
-    "paginationFooter": "Відображено {'{'}first{'}'} до {'{'}last{'}'} з {'{'}totalRecords{'}'} {itemName}",
+    "paginationFooter": "Відображено з {'{'}first{'}'} по {'{'}last{'}'} з {'{'}totalRecords{'}'} {itemName}",
     "search": "Пошук"
   }
 }

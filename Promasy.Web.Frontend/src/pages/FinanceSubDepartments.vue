@@ -26,21 +26,21 @@
             </template>
           </Column>
           <Column field="unassignedMaterials" :header="t('unassignedName', { name: t('totalMaterials') })"
-                  headerStyle="width:25%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:25%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('unassignedName', {name: t('totalMaterials')}) }}</span>
               {{ currency(slotProps.data.unassignedMaterials).format() }}
             </template>
           </Column>
           <Column field="unassignedEquipment" :header="t('unassignedName', { name: t('totalEquipment') })"
-                  headerStyle="width:25%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:25%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('unassignedName', {name: t('totalEquipment')}) }}</span>
               {{ currency(slotProps.data.unassignedEquipment).format() }}
             </template>
           </Column>
           <Column field="unassignedServices" :header="t('unassignedName', { name: t('totalServices') })"
-                  headerStyle="width:25%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:25%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('unassignedName', {name: t('totalServices')}) }}</span>
               {{ currency(slotProps.data.unassignedServices).format() }}
@@ -81,14 +81,14 @@
             </template>
           </Column>
           <Column field="totalMaterials" :header="t('totalMaterials')" :sortable="true"
-                  headerStyle="width:10%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:10%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalMaterials') }}</span>
               {{ currency(slotProps.data.totalMaterials).format() }}
             </template>
           </Column>
           <Column field="leftMaterials" :header="t('leftName', { name: t('totalMaterials') })" :sortable="true"
-                  headerStyle="width:10%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:10%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('leftName', {name: t('totalMaterials')}) }}</span>
               <span :class="{ 'p-error': parseInt(slotProps.data.leftMaterials) < 0 }">{{
@@ -97,14 +97,14 @@
             </template>
           </Column>
           <Column field="totalEquipment" :header="t('totalEquipment')" :sortable="true"
-                  headerStyle="width:10%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:10%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalEquipment') }}</span>
               {{ currency(slotProps.data.totalEquipment).format() }}
             </template>
           </Column>
           <Column field="leftEquipment" :header="t('leftName', { name: t('totalEquipment') })" :sortable="true"
-                  headerStyle="width:10%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:10%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('leftName', {name: t('totalEquipment')}) }}</span>
               <span :class="{ 'p-error': parseInt(slotProps.data.leftEquipment) < 0 }">{{
@@ -113,14 +113,14 @@
             </template>
           </Column>
           <Column field="totalServices" :header="t('totalServices')" :sortable="true"
-                  headerStyle="width:10%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:10%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalServices') }}</span>
               {{ currency(slotProps.data.totalServices).format() }}
             </template>
           </Column>
           <Column field="leftServices" :header="t('leftName', { name: t('totalServices') })" :sortable="true"
-                  headerStyle="width:10%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:10%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('leftName', {name: t('totalServices')}) }}</span>
               <span :class="{ 'p-error': parseInt(slotProps.data.leftServices) < 0 }">{{
@@ -159,7 +159,8 @@
                                   :include-empty="false">
               </DepartmentSelector>
             </ErrorWrap>
-            <ErrorWrap :errors="v$.subDepartmentId.$errors" :external-errors="externalErrors['SubDepartmentId']" class="mt-3">
+            <ErrorWrap :errors="v$.subDepartmentId.$errors" :external-errors="externalErrors['SubDepartmentId']"
+                       class="mt-3">
               <label for="subDepartmentId" class="mr-2">{{ t('sub-department') }}</label>
               <SubDepartmentSelector id="subDepartmentId"
                                      :department-id="item.departmentId"
@@ -171,17 +172,23 @@
             <ErrorWrap :errors="v$.totalMaterials.$errors" :external-errors="externalErrors['TotalMaterials']"
                        class="mt-3">
               <label for="totalMaterials">{{ t('totalMaterials') }}</label>
-              <FinanceInput input-id="totalMaterials" v-model="item.totalMaterials" input-placeholder=""></FinanceInput>
+              <FinanceInputWithLimit input-id="totalMaterials" v-model="item.totalMaterials"
+                                     :limit="financeSource.unassignedMaterials"
+                                     input-placeholder=""></FinanceInputWithLimit>
             </ErrorWrap>
             <ErrorWrap :errors="v$.totalEquipment.$errors" :external-errors="externalErrors['TotalEquipment']"
                        class="mt-3">
               <label for="totalEquipment">{{ t('totalEquipment') }}</label>
-              <FinanceInput input-id="totalEquipment" v-model="item.totalEquipment" input-placeholder=""></FinanceInput>
+              <FinanceInputWithLimit input-id="totalEquipment" v-model="item.totalEquipment"
+                                     :limit="financeSource.unassignedEquipment"
+                                     input-placeholder=""></FinanceInputWithLimit>
             </ErrorWrap>
             <ErrorWrap :errors="v$.totalServices.$errors" :external-errors="externalErrors['TotalServices']"
                        class="mt-3">
               <label for="totalServices">{{ t('totalServices') }}</label>
-              <FinanceInput input-id="totalServices" v-model="item.totalServices" input-placeholder=""></FinanceInput>
+              <FinanceInputWithLimit input-id="totalServices" v-model="item.totalServices"
+                                     :limit="financeSource.unassignedServices"
+                                     input-placeholder=""></FinanceInputWithLimit>
             </ErrorWrap>
           </div>
 
@@ -223,11 +230,11 @@ import { useToast } from "primevue/usetoast";
 import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "@/components/ErrorWrap.vue";
-import FinanceInput from "@/components/FinanceInput.vue";
+import FinanceInputWithLimit from "@/components/FinanceInputWithLimit.vue";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import useVuelidate from "@vuelidate/core";
-import { required, minValue } from "@/i18n/validators";
+import { required, minValue, maxValue } from "@/i18n/validators";
 import currency from "@/utils/currency-utils";
 import { useRoute, useRouter } from "vue-router";
 
@@ -238,11 +245,10 @@ const sessionStore = useSessionStore();
 const toast = useToast();
 const items = ref([] as FinanceSubDepartment[]);
 const externalErrors = ref({} as Object<string[]>);
-const item = ref({} as FinanceSubDepartment);
+const item = ref(getDefaultItem());
 const itemDialog = ref(false);
 const deleteItemDialog = ref(false);
 const isLoading = ref(false);
-const financeSourceId = ref(0);
 const financeSources = ref([] as FinanceSource[]);
 const financeSource = ref({} as FinanceSource);
 const departments = ref([] as SelectItem<number>[]);
@@ -261,13 +267,12 @@ const rules = computed(() => {
     financeSourceId: { required },
     departmentId: { required },
     subDepartmentId: { required },
-    totalEquipment: { required, minValue: minValue(0) },
-    totalMaterials: { required, minValue: minValue(0) },
-    totalServices: { required, minValue: minValue(0) },
+    totalEquipment: { required, minValue: minValue(0), maxValue: maxValue(financeSource.value.unassignedEquipment) },
+    totalMaterials: { required, minValue: minValue(0), maxValue: maxValue(financeSource.value.unassignedMaterials) },
+    totalServices: { required, minValue: minValue(0), maxValue: maxValue(financeSource.value.unassignedServices) },
   };
 });
 const v$ = useVuelidate(rules, item, { $lazy: true });
-
 
 onMounted(async () => await initAsync());
 
@@ -282,16 +287,7 @@ watch(() => route.params.financeId, async (newId, oldId) => {
 });
 
 async function initAsync() {
-  isLoading.value = true;
-  const response = await FinanceSourcesApi.getById(parseInt(route.params.financeId.toString()));
-  if (response.success) {
-    financeSource.value = response.data!;
-    financeSources.value = [ response.data! ];
-    await getDataAsync();
-    return;
-  } else {
-    await Router.push({ name: "NotFound" });
-  }
+  await getDataAsync();
 }
 
 async function getFinanceSourceListAsync() {
@@ -309,6 +305,18 @@ async function useFilterAsync() {
 
 async function getDataAsync() {
   isLoading.value = true;
+  const response = await FinanceSourcesApi.getById(parseInt(route.params.financeId.toString()));
+  if (response.success) {
+    financeSource.value = response.data!;
+    financeSources.value = [ response.data! ];
+    await getFinanceSubDepartmentsAsync();
+    return;
+  } else {
+    await Router.push({ name: "NotFound" });
+  }
+}
+
+async function getFinanceSubDepartmentsAsync() {
   const response = await FinanceSubDepartmentsApi.getList(financeSource.value.id, true, tableData.page, tableData.offset, tableData.filter, tableData.orderBy, tableData.descending);
   if (response.success) {
     items.value = response.data?.collection ?? [] as FinanceSubDepartment[];
@@ -337,7 +345,8 @@ function create() {
   externalErrors.value = {} as Object<string[]>;
   departments.value = [];
   subDepartments.value = [];
-  item.value = {} as FinanceSubDepartment;
+  item.value = getDefaultItem();
+  v$.value.$reset();
   itemDialog.value = true;
 }
 
@@ -346,6 +355,7 @@ function edit(selectedItem: FinanceSubDepartment) {
   item.value = { ...selectedItem };
   departments.value = [ { text: item.value.department, value: item.value.departmentId } ];
   subDepartments.value = [ { text: item.value.subDepartment, value: item.value.subDepartmentId } ];
+  v$.value.$reset();
   itemDialog.value = true;
 }
 
@@ -398,9 +408,9 @@ async function saveAsync() {
 
 async function deleteItemAsync() {
   externalErrors.value = {} as Object<string[]>;
-  const response = await FinanceSourcesApi.delete(item.value.id);
+  const response = await FinanceSubDepartmentsApi.delete(item.value.subDepartmentId, item.value.financeSourceId);
   if (response.success) {
-    item.value = {} as FinanceSubDepartment;
+    item.value = getDefaultItem();
     deleteItemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
@@ -409,6 +419,26 @@ async function deleteItemAsync() {
   if (response.error?.errors) {
     externalErrors.value = response.error.errors;
   }
+}
+
+function getDefaultItem(): FinanceSubDepartment {
+  return {
+    department: "",
+    departmentId: 0,
+    editedDate: new Date(),
+    editor: "",
+    editorId: 0,
+    financeSourceId: financeSource.value.id,
+    id: 0,
+    leftEquipment: 0,
+    leftMaterials: 0,
+    leftServices: 0,
+    subDepartment: "",
+    subDepartmentId: 0,
+    totalEquipment: 0,
+    totalMaterials: 0,
+    totalServices: 0,
+  };
 }
 </script>
 

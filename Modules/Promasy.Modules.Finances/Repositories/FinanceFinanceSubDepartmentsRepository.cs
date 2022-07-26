@@ -47,6 +47,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return _database.FinanceSources
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalEquipment - s.FinanceDepartments
+                .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Sum(d => d.TotalEquipment) - amount > 0, ct);
     }
 
@@ -55,6 +56,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return _database.FinanceSources
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalEquipment - s.FinanceDepartments
+                .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Where(d => d.Id != id)
                 .Sum(d => d.TotalEquipment) - amount > 0, ct);
     }
@@ -64,6 +66,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return _database.FinanceSources
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalMaterials - s.FinanceDepartments
+                .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Sum(d => d.TotalMaterials) - amount > 0, ct);
     }
 
@@ -72,6 +75,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return _database.FinanceSources
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalMaterials - s.FinanceDepartments
+                .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Where(d => d.Id != id)
                 .Sum(d => d.TotalMaterials) - amount > 0, ct);
     }
@@ -81,6 +85,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return _database.FinanceSources
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalServices - s.FinanceDepartments
+                .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Sum(d => d.TotalServices) - amount > 0, ct);
     }
 
@@ -89,6 +94,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
         return _database.FinanceSources
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalServices - s.FinanceDepartments
+                .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Where(d => d.Id != id)
                 .Sum(d => d.TotalServices) - amount > 0, ct);
     }

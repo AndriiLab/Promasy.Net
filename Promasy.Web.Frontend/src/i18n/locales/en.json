@@ -6,8 +6,8 @@
     "email": "Value is not a valid email address.",
     "numeric": "Value must be numeric.",
     "sameAs": "The value must be equal to the {otherName} value.",
-    "maxValue": "The maximum value allowed is {maxValue}",
-    "minValue": "The minimum value allowed is {minValue}"
+    "maxValue": "The maximum value allowed is {max}",
+    "minValue": "The minimum value allowed is {min}"
   },
   "cancel": "Cancel",
   "save": "Save",

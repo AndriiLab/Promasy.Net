@@ -47,14 +47,14 @@
             </template>
           </Column>
           <Column field="totalMaterials" :header="t('totalMaterials')" :sortable="true"
-                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:7%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalMaterials') }}</span>
               {{ currency(slotProps.data.totalMaterials).format() }}
             </template>
           </Column>
           <Column field="leftMaterials" :header="t('leftName', { name: t('totalMaterials') })" :sortable="true"
-                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:7%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('leftName', {name: t('totalMaterials')}) }}</span>
               <span :class="{ 'p-error': parseInt(slotProps.data.leftMaterials) < 0 }">{{
@@ -63,14 +63,14 @@
             </template>
           </Column>
           <Column field="totalEquipment" :header="t('totalEquipment')" :sortable="true"
-                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:7%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalEquipment') }}</span>
               {{ currency(slotProps.data.totalEquipment).format() }}
             </template>
           </Column>
           <Column field="leftEquipment" :header="t('leftName', { name: t('totalEquipment') })" :sortable="true"
-                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:7%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('leftName', {name: t('totalEquipment')}) }}</span>
               <span :class="{ 'p-error': parseInt(slotProps.data.leftEquipment) < 0 }">{{
@@ -79,14 +79,14 @@
             </template>
           </Column>
           <Column field="totalServices" :header="t('totalServices')" :sortable="true"
-                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:7%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('totalServices') }}</span>
               {{ currency(slotProps.data.totalServices).format() }}
             </template>
           </Column>
           <Column field="leftServices" :header="t('leftName', { name: t('totalServices') })" :sortable="true"
-                  headerStyle="width:7%; min-width:10rem;" style="text-align: right">
+                  headerStyle="width:7%; min-width:10rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('leftName', {name: t('totalServices')}) }}</span>
               <span :class="{ 'p-error': parseInt(slotProps.data.leftServices) < 0 }">{{
@@ -199,6 +199,7 @@
 </template>
 
 <script lang="ts" setup>
+import { FinanceSubDepartment } from "@/services/api/finance-sub-departments";
 import { useSessionStore } from "@/store/session";
 import { formatAsDate } from "@/utils/date-utils";
 import { SelectItem } from "@/utils/fetch-utils";
@@ -221,7 +222,7 @@ const toast = useToast();
 const items = ref([] as FinanceSource[]);
 const fundTypes = ref([] as SelectItem<number>[]);
 const externalErrors = ref({} as Object<string[]>);
-const item = ref({} as FinanceSource);
+const item = ref(getDefaultItem());
 const itemDialog = ref(false);
 const deleteItemDialog = ref(false);
 const isLoading = ref(false);
@@ -298,14 +299,8 @@ async function onSortAsync(event: DataTableSortEvent) {
 
 function create() {
   externalErrors.value = {} as Object<string[]>;
-  item.value = {
-    fundType: 1,
-    totalEquipment: 0,
-    totalMaterials: 0,
-    totalServices: 0,
-    start: new Date(),
-    end: new Date(new Date().getFullYear(), 11, 31),
-  } as FinanceSource;
+  item.value = getDefaultItem();
+  v$.value.$reset();
   itemDialog.value = true;
 }
 
@@ -314,6 +309,7 @@ function edit(selectedItem: FinanceSource) {
   item.value = { ...selectedItem };
   item.value.start = new Date(item.value.start);
   item.value.end = new Date(item.value.end);
+  v$.value.$reset();
   itemDialog.value = true;
 }
 
@@ -376,7 +372,7 @@ async function deleteItemAsync() {
   externalErrors.value = {} as Object<string[]>;
   const response = await FinanceSourcesApi.delete(item.value.id);
   if (response.success) {
-    item.value = {} as FinanceSource;
+    item.value = getDefaultItem();
     deleteItemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
@@ -385,6 +381,30 @@ async function deleteItemAsync() {
   if (response.error?.errors) {
     externalErrors.value = response.error.errors;
   }
+}
+
+function getDefaultItem(): FinanceSource {
+  return {
+    editedDate: new Date(),
+    editor: "",
+    editorId: 0,
+    id: 0,
+    kpkvk: "",
+    leftEquipment: 0,
+    leftMaterials: 0,
+    leftServices: 0,
+    name: "",
+    number: "",
+    unassignedEquipment: 0,
+    unassignedMaterials: 0,
+    unassignedServices: 0,
+    fundType: 1,
+    totalEquipment: 0,
+    totalMaterials: 0,
+    totalServices: 0,
+    start: new Date(),
+    end: new Date(new Date().getFullYear(), 11, 31)
+  };
 }
 </script>
 

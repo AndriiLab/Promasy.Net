@@ -70,7 +70,7 @@
             </template>
           </Column>
           <Column field="total" :header="t('total')" :sortable="true"
-                  headerStyle="width:15%; min-width:5rem;" style="text-align: right">
+                  headerStyle="width:15%; min-width:5rem;" class="text-right">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('total') }}</span>
               {{ currency(slotProps.data.total).format() }}
