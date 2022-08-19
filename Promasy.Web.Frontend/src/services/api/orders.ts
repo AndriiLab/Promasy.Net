@@ -50,8 +50,8 @@ export default {
 };
 
 export interface OrderPagedResponse extends PagedResponse<OrderShort> {
-  spentAmount: string;
-  leftAmount?: string;
+  spentAmount: number;
+  leftAmount?: number;
 }
 
 export interface OrderShort {
@@ -59,6 +59,8 @@ export interface OrderShort {
   description: string;
   total: number;
   status: number;
+  financeId: number;
+  subDepartmentId: number;
   editorId: number;
   editor: string;
   editedDate: Date;
@@ -79,6 +81,8 @@ export interface Order {
   cpv: string;
   financeSubDepartmentId: number;
   financeSourceNumber: string;
+  financeId: number;
+  subDepartmentId: number;
   manufacturerId: number;
   manufacturer: string;
   supplierId: number;

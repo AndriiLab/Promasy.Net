@@ -206,7 +206,7 @@
           </Message>
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
-            <span v-if="item">{{ t('deleteDialog.text') }} <b>{{ item.name }}</b>?</span>
+            <span v-if="item">{{ t('deleteDialog.text') }} <b>{{ `${item.department} - ${item.subDepartment}` }}</b>?</span>
           </div>
           <template #footer>
             <Button :label="t('no')" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>

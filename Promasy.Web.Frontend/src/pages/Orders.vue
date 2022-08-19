@@ -6,8 +6,9 @@
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"
-                      @click="create"/>
+              <router-link :to="{ name: 'FinanceSubDepartmentsOrderNew', params: { financeId: financeSourceId, subDepartmentId: subDepartmentId  }}">
+                <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2" :disabled="!financeSourceId || !subDepartmentId"/>
+              </router-link>
             </div>
           </template>
           <template v-slot:end>
@@ -97,8 +98,10 @@
           </Column>
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
-              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
-                      @click="edit(slotProps.data)"/>
+              <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                           :to="{ name: 'FinanceSubDepartmentsOrderView', params: {financeId: slotProps.data.financeId, subDepartmentId: slotProps.data.subDepartmentId, orderId: slotProps.data.id }}">
+                <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"/>
+              </router-link>
               <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
@@ -110,26 +113,6 @@
             </div>
           </template>
         </DataTable>
-
-        <Dialog v-model:visible="itemDialog" :style="{width: '450px'}" :header="t('financeSubDepartmentDetails')"
-                :modal="true"
-                class="p-fluid">
-          <div class="field">
-            <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{
-                err
-              }}
-            </Message>
-            <ErrorWrap :errors="v$.name.$errors" :external-errors="externalErrors['Name']">
-              <label for="name">{{ t('name') }}</label>
-              <InputText id="name" v-model.trim="item.name" required="true" autofocus/>
-            </ErrorWrap>
-          </div>
-
-          <template #footer>
-            <Button :label="t('cancel')" icon="pi pi-times" class="p-button-text" @click="closeItemDialog"/>
-            <Button :label="t('save')" icon="pi pi-check" class="p-button-text" @click="saveAsync"/>
-          </template>
-        </Dialog>
 
         <Dialog v-model:visible="deleteItemDialog" :style="{width: '450px'}" :header="t('deleteDialog.header')"
                 :modal="true">
@@ -166,9 +149,6 @@ import { useToast } from "primevue/usetoast";
 import { debounce } from "vue-debounce";
 import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
-import ErrorWrap from "@/components/ErrorWrap.vue";
-import useVuelidate from "@vuelidate/core";
-import { required, maxLength } from "@/i18n/validators";
 import currency from "@/utils/currency-utils";
 import YearSelector from "@/components/YearSelector.vue";
 import OrderStatusBadge from "@/components/OrderStatusBadge.vue";
@@ -183,7 +163,6 @@ const toast = useToast();
 const items = ref([] as OrderShort[]);
 const externalErrors = ref({} as Object<string[]>);
 const item = ref({} as Order);
-const itemDialog = ref(false);
 const deleteItemDialog = ref(false);
 const isLoading = ref(false);
 const typeId = ref(0);
@@ -202,14 +181,9 @@ const tableData: OrderTablePagingData = reactive({
   orderBy: undefined,
   descending: undefined,
   total: 0,
-  spentAmount: '',
+  spentAmount: 0,
   leftAmount: undefined,
 });
-
-const rules = computed(() => {
-  return {};
-});
-const v$ = useVuelidate(rules, item, { $lazy: true });
 
 onBeforeMount(async () => {
   isLoading.value = true;
@@ -234,7 +208,7 @@ watch(subDepartmentId, async () => await debouncedSetPathAsync());
 watch(financeSourceId, async () => await debouncedSetPathAsync());
 
 async function initAsync() {
-  if (!route.fullPath.includes("/orders")) {
+  if (!route.fullPath.includes("/orders/type")) {
     return;
   }
   let isSuccess = true;
@@ -388,22 +362,6 @@ async function onSortAsync(event: DataTableSortEvent) {
   await getDataAsync();
 }
 
-function create() {
-  externalErrors.value = {} as Object<string[]>;
-  item.value = {} as Order;
-  itemDialog.value = true;
-}
-
-function edit(selectedItem: Order) {
-  externalErrors.value = {} as Object<string[]>;
-  item.value = { ...selectedItem };
-  itemDialog.value = true;
-}
-
-function closeItemDialog() {
-  itemDialog.value = false;
-}
-
 function closeDeleteItemDialog() {
   deleteItemDialog.value = false;
 }
@@ -412,55 +370,6 @@ function confirmDelete(selectedItem: Order) {
   externalErrors.value = {} as Object<string[]>;
   item.value = selectedItem;
   deleteItemDialog.value = true;
-}
-
-async function saveAsync() {
-  externalErrors.value = {} as Object<string[]>;
-  const isFormCorrect = await v$.value.$validate();
-  if (!isFormCorrect) {
-    return;
-  }
-  const response = await (item.value.id
-      ? OrdersApi.update({
-        id: item.value.id,
-        amount: item.value.amount,
-        catNum: item.value.catNum,
-        cpvId: item.value.cpvId,
-        description: item.value.description,
-        financeSubDepartmentId: item.value.financeSubDepartmentId,
-        kekv: item.value.kekv,
-        manufacturerId: item.value.manufacturerId,
-        onePrice: item.value.onePrice,
-        procurementStartDate: item.value.procurementStartDate,
-        reasonId: item.value.reasonId,
-        supplierId: item.value.supplierId,
-        type: item.value.type,
-        unitId: item.value.unitId,
-      })
-      : OrdersApi.create({
-        amount: item.value.amount,
-        catNum: item.value.catNum,
-        cpvId: item.value.cpvId,
-        description: item.value.description,
-        financeSubDepartmentId: item.value.financeSubDepartmentId,
-        kekv: item.value.kekv,
-        manufacturerId: item.value.manufacturerId,
-        onePrice: item.value.onePrice,
-        procurementStartDate: item.value.procurementStartDate,
-        reasonId: item.value.reasonId,
-        supplierId: item.value.supplierId,
-        type: item.value.type,
-        unitId: item.value.unitId,
-      }));
-  if (response.success) {
-    itemDialog.value = false;
-    await getDataAsync();
-    toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
-  }
 }
 
 async function deleteItemAsync() {
@@ -483,8 +392,8 @@ function getDefaultSelectItem(): SelectItem<number> {
 }
 
 interface OrderTablePagingData extends TablePagingData {
-  spentAmount: string;
-  leftAmount?: string;
+  spentAmount: number;
+  leftAmount?: number;
 }
 </script>
 

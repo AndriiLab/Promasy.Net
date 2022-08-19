@@ -75,6 +75,7 @@ internal class OrdersRepository : IOrdersRepository
             .PaginateAsync(request,
                 o => new OrderShortDto(o.Id, o.Description, o.Total,
                     (int) o.Statuses.OrderByDescending(s => s.ModifiedDate ?? s.CreatedDate).Select(s => s.Status).FirstOrDefault(),
+                    o.FinanceSubDepartment.FinanceSourceId, o.FinanceSubDepartment.SubDepartmentId,
                     o.ModifierId ?? o.CreatorId,
                     PromasyDbFunction.GetEmployeeShortName(o.ModifierId ?? o.CreatorId),
                     o.ModifiedDate ?? o.CreatedDate));
@@ -84,8 +85,8 @@ internal class OrdersRepository : IOrdersRepository
             Collection = response.Collection,
             Page = response.Page,
             Total = response.Total,
-            SpentAmount = spentAmount.ToString("F2"),
-            LeftAmount = leftAmount?.ToString("F2"),
+            SpentAmount = spentAmount,
+            LeftAmount = leftAmount,
         };
     }
 
@@ -98,6 +99,7 @@ internal class OrdersRepository : IOrdersRepository
                 o.OnePrice, o.Amount, o.Type, o.Kekv, o.ProcurementStartDate,
                 o.UnitId, o.Unit.Name, o.CpvId, o.Cpv.Code, o.FinanceSubDepartmentId,
                 o.FinanceSubDepartment.FinanceSource.Number, 
+                o.FinanceSubDepartment.FinanceSourceId, o.FinanceSubDepartment.SubDepartmentId,
                 o.ManufacturerId, o.Manufacturer.Name, 
                 o.SupplierId, o.Supplier.Name,
                 o.ReasonId, o.Reason.Name,
