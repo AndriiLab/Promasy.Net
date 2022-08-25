@@ -23,7 +23,10 @@ public class OrganizationAssociatedTrigger : IBeforeSaveTrigger<IOrganizationAss
         if (context.ChangeType == ChangeType.Added)
         {
             var entry = _context.Entry(context.Entity);
-            entry.Entity.OrganizationId = _userContext.GetOrganizationId();
+            if (entry.Entity.OrganizationId < 1)
+            {
+                entry.Entity.OrganizationId = _userContext.GetOrganizationId(); 
+            }
         }
         
         return Task.CompletedTask;

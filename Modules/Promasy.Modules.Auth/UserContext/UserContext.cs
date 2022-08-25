@@ -21,7 +21,7 @@ public class UserContext : IUserContext
     public string GetLastName() => GetPrincipal().GetClaimOrDefault(ClaimTypes.Surname);
     public string GetEmail() => GetPrincipal().GetClaimOrDefault(ClaimTypes.Email);
     public string GetOrganization() => GetPrincipal().GetClaimOrDefault(PromasyClaims.Organization);
-    public int GetOrganizationId() => Convert.ToInt32(GetPrincipal().GetClaimOrDefault(PromasyClaims.OrganizationId));
+    public int GetOrganizationId() => Convert.ToInt32(GetPrincipal().GetClaimOrDefault(PromasyClaims.OrganizationId, "0"));
     public string GetDepartment() => GetPrincipal().GetClaimOrDefault(PromasyClaims.Department);
     public int GetDepartmentId() => Convert.ToInt32(GetPrincipal().GetClaimOrDefault(PromasyClaims.DepartmentId));
     public string GetSubDepartment() => GetPrincipal().GetClaimOrDefault(PromasyClaims.SubDepartment);

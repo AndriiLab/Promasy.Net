@@ -17,6 +17,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.8" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
@@ -26,6 +27,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Promasy.Domain\Promasy.Domain.csproj" />
+      <ProjectReference Include="..\Promasy.Security\Promasy.Security.csproj" />
     </ItemGroup>
 
     <ItemGroup>

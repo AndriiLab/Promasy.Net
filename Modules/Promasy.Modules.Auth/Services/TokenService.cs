@@ -10,11 +10,11 @@ internal class TokenService : ITokenService
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly TokenSettings _settings;
 
-    public TokenService(IOptions<TokenSettings> settings, IEmployeesRepository employeesRepository, IRefreshTokenRepository refreshTokenRepository)
+    public TokenService(IOptionsMonitor<TokenSettings> settings, IEmployeesRepository employeesRepository, IRefreshTokenRepository refreshTokenRepository)
     {
         _employeesRepository = employeesRepository;
         _refreshTokenRepository = refreshTokenRepository;
-        _settings = settings.Value;
+        _settings = settings.CurrentValue;
     }
     
     public async Task<UserTokens> GenerateTokenAsync(int employeeId)

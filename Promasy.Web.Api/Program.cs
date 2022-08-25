@@ -30,7 +30,7 @@ try
         .Enrich.FromLogContext()
         .WriteTo.Console());
 
-    builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DatabaseConnection"));
+    builder.Services.AddPersistence(builder.Configuration);
 
     // Register application modules
     builder.Services.RegisterModule<CoreModule>(builder.Configuration);

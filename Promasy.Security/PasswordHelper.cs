@@ -1,9 +1,9 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Promasy.Modules.Auth.Helpers;
+namespace Promasy.Security;
 
-internal static class PasswordHelper
+public static class PasswordHelper
 {
     public static string Hash(string password)
     {
