@@ -1,1 +1,0 @@
-﻿# Promasy .NET Core
