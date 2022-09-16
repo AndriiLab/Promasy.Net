@@ -122,14 +122,19 @@ export const routes = [
         component: () => import("./pages/Orders.vue"),
       },
       {
-        name: "FinanceSubDepartmentsOrderNew",
-        path: "/finances/:financeId(\\d+)/sub-departments/:subDepartmentId(\\d+)/orders/new",
+        name: "OrderNew",
+        path: "/orders/new",
         component: () => import("./pages/OrderView.vue"),
       },
       {
-        name: "FinanceSubDepartmentsOrderView",
-        path: "/finances/:financeId(\\d+)/sub-departments/:subDepartmentId(\\d+)/orders/:orderId(\\d+)",
+        name: "OrderView",
+        path: "/orders/:orderId(\\d+)",
         component: () => import("./pages/OrderView.vue"),
+      },
+      {
+        name: "ReasonsForSupplierChoice",
+        path: "/reasons-for-supplier-choice",
+        component: () => import("./pages/ReasonsForSupplierChoice.vue"),
       },
     ],
   },

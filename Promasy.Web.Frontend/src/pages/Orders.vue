@@ -6,8 +6,8 @@
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <router-link :to="{ name: 'FinanceSubDepartmentsOrderNew', params: { financeId: financeSourceId, subDepartmentId: subDepartmentId  }}">
-                <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2" :disabled="!financeSourceId || !subDepartmentId"/>
+              <router-link :to="{ name: 'OrderNew' }">
+                <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"/>
               </router-link>
             </div>
           </template>
@@ -99,7 +99,7 @@
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
-                           :to="{ name: 'FinanceSubDepartmentsOrderView', params: {financeId: slotProps.data.financeId, subDepartmentId: slotProps.data.subDepartmentId, orderId: slotProps.data.id }}">
+                           :to="{ name: 'OrderView', params: { orderId: slotProps.data.id }}">
                 <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"/>
               </router-link>
               <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"

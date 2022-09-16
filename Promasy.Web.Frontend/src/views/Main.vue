@@ -54,6 +54,7 @@ const menu: MenuItem[] = [
       { label: t("units"), icon: "pi pi-fw pi-arrows-h", to: { name: "Units" } },
       { label: t("manufacturers"), icon: "pi pi-fw pi-box", to: { name: "Manufacturers" } },
       { label: t("suppliers"), icon: "pi pi-fw pi-car", to: { name: "Suppliers" }},
+      { label: t("reasonsForSupplierChoice"), icon: "pi pi-fw pi-check-circle", to: { name: "ReasonsForSupplierChoice" }},
     ],
   },
   {
@@ -154,7 +155,8 @@ function onMenuItemClick(event: Event) {
   "employees": "Employees",
   "user": "User",
   "userProfile": "My Profile",
-  "logout": "Logout"
+  "logout": "Logout",
+  "reasonsForSupplierChoice": "Reasons for Supplier Choice"
 }
 </i18n>
 
@@ -175,6 +177,7 @@ function onMenuItemClick(event: Event) {
   "employees": "Працівники",
   "user": "Користувач",
   "userProfile": "Мій профіль",
-  "logout": "Вийти"
+  "logout": "Вийти",
+  "reasonsForSupplierChoice": "Причини вибору постачальника"
 }
 </i18n>

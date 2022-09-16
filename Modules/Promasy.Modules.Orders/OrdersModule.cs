@@ -18,11 +18,18 @@ namespace Promasy.Modules.Orders;
 
 public class OrdersModule : IModule
 {
+    private readonly ReasonForSupplierChoiceSubModule _rfscSubModule;
     public string Tag { get; } = "Order";
     public string RoutePrefix { get; } = "/api/orders";
     
+    public OrdersModule()
+    {
+        _rfscSubModule = new ReasonForSupplierChoiceSubModule(RoutePrefix);
+    }
+    
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
+        _rfscSubModule.RegisterServices(builder, configuration);
         return builder;
     }
 
@@ -116,6 +123,8 @@ public class OrdersModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+        
+        _rfscSubModule.MapEndpoints(endpoints);
         
         return endpoints;
     }

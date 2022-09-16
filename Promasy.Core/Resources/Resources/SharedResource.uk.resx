@@ -111,4 +111,28 @@
   <data name="Order type not exists" xml:space="preserve">
     <value>Невідома категорія замовлення</value>
   </data>
+  <data name="Unit not exists" xml:space="preserve">
+    <value>Невідома розмірність</value>
+  </data>
+  <data name="Manufacturer not exists" xml:space="preserve">
+    <value>Невідомий виробник</value>
+  </data>
+  <data name="Supplier not exists" xml:space="preserve">
+    <value>Невідомий постачальник</value>
+  </data>
+  <data name="Reason for supplier choice not exists" xml:space="preserve">
+    <value>Невідома причина вибору постачальника</value>
+  </data>
+  <data name="CPV not exists or it cannot be used" xml:space="preserve">
+    <value>Вказанного CPV не існує або він не може бути використаний</value>
+  </data>
+  <data name="Insufficient funds for the order" xml:space="preserve">
+    <value>Недостатньо коштів для замовлення</value>
+  </data>
+  <data name="Order not exists" xml:space="preserve">
+    <value>Невідоме замовлення</value>
+  </data>
+  <data name="Reason for Supplier Choice already associated with order" xml:space="preserve">
+    <value>Причина вибору постачальника вже ассоційована з замовленням</value>
+  </data>
 </root>

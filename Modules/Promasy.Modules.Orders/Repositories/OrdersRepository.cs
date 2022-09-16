@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Promasy.Core.Exceptions;
+using Promasy.Core.Resources;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Persistence;
@@ -10,15 +13,57 @@ using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Orders.Repositories;
 
-internal class OrdersRepository : IOrdersRepository
+internal class OrdersRepository : IOrderRules, IOrdersRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public OrdersRepository(IDatabase database, IUserContext userContext)
+    public OrdersRepository(IDatabase database, IUserContext userContext, IStringLocalizer<SharedResource> localizer)
     {
         _database = database;
         _userContext = userContext;
+        _localizer = localizer;
+    }
+    
+    public Task<bool> IsExistsAsync(int id, CancellationToken ct)
+    {
+        return _database.Orders.AnyAsync(o => o.Id == id, ct);
+    }
+
+    public Task<bool> IsCpvCanBeUsedAsync(int cpvId, CancellationToken ct)
+    {
+        return _database.Cpvs.AnyAsync(c => c.Id == cpvId && (c.IsTerminal || c.Level > 3), ct);
+    }
+
+    public Task<bool> IsSufficientFundsAsync(int financeSubDepartmentId, decimal total, OrderType type, CancellationToken ct)
+    {
+        return _database.FinanceSubDepartmentsWithSpendView
+            .AnyAsync(s => s.Id == financeSubDepartmentId && 
+                           (type == OrderType.Equipment
+                            ? s.LeftEquipment
+                            : type == OrderType.Material
+                                ? s.LeftMaterials
+                                : s.LeftServices) >= total,
+                ct);
+    }
+
+    public async Task<bool> IsSufficientFundsAsync(int financeSubDepartmentId, int id, decimal total, OrderType type, CancellationToken ct)
+    {
+        var oldTotal = await _database.Orders.Where(o => o.Id == id).Select(o => o.Total).FirstOrDefaultAsync(ct);
+        if (total <= oldTotal)
+        {
+            return true;
+        }
+        
+        return await _database.FinanceSubDepartmentsWithSpendView
+            .AnyAsync(s => s.Id == financeSubDepartmentId && 
+                           (type == OrderType.Equipment
+                               ? s.LeftEquipment
+                               : type == OrderType.Material
+                                   ? s.LeftMaterials
+                                   : s.LeftServices) >= (total - oldTotal),
+                ct);
     }
 
     public async Task<OrderPagedResponse> GetPagedListAsync(OrdersPagedRequest request)
@@ -99,7 +144,10 @@ internal class OrdersRepository : IOrdersRepository
                 o.OnePrice, o.Amount, o.Type, o.Kekv, o.ProcurementStartDate,
                 o.UnitId, o.Unit.Name, o.CpvId, o.Cpv.Code, o.FinanceSubDepartmentId,
                 o.FinanceSubDepartment.FinanceSource.Number, 
-                o.FinanceSubDepartment.FinanceSourceId, o.FinanceSubDepartment.SubDepartmentId,
+                o.FinanceSubDepartment.FinanceSourceId, o.FinanceSubDepartment.FinanceSource.Name,
+                o.FinanceSubDepartment.SubDepartmentId, o.FinanceSubDepartment.SubDepartment.Name,
+                o.FinanceSubDepartment.SubDepartment.DepartmentId,
+                o.FinanceSubDepartment.SubDepartment.Department.Name,
                 o.ManufacturerId, o.Manufacturer.Name, 
                 o.SupplierId, o.Supplier.Name,
                 o.ReasonId, o.Reason.Name,
@@ -111,59 +159,94 @@ internal class OrdersRepository : IOrdersRepository
 
     public async Task<int> CreateAsync(CreateOrderDto item)
     {
-        // todo: add extra validator for sum and wrap inside transaction
-        var entity = new Order
+        await using var trx = await _database.BeginTransactionAsync();
+        try
         {
-            Description = item.Description,
-            CatNum = item.CatNum,
-            OnePrice = item.OnePrice,
-            Amount = item.Amount,
-            Type = item.Type,
-            Kekv = item.Kekv,
-            ProcurementStartDate = item.ProcurementStartDate,
-            UnitId = item.UnitId,
-            CpvId = item.CpvId,
-            FinanceSubDepartmentId = item.FinanceSubDepartmentId,
-            ManufacturerId = item.ManufacturerId,
-            SupplierId = item.SupplierId,
-            ReasonId = item.ReasonId,
-            Statuses = new List<OrderStatusHistory>
+            var entity = new Order
             {
-                new() { Status = OrderStatus.Created }
-            }
-        };
-        _database.Orders.Add(entity);
+                Description = item.Description,
+                CatNum = item.CatNum,
+                OnePrice = item.OnePrice,
+                Amount = item.Amount,
+                Type = item.Type,
+                Kekv = item.Kekv,
+                ProcurementStartDate = item.ProcurementStartDate,
+                UnitId = item.UnitId,
+                CpvId = item.CpvId,
+                FinanceSubDepartmentId = item.FinanceSubDepartmentId,
+                ManufacturerId = item.ManufacturerId,
+                SupplierId = item.SupplierId,
+                ReasonId = item.ReasonId,
+                Statuses = new List<OrderStatusHistory>
+                {
+                    new() { Status = OrderStatus.Created }
+                }
+            };
+            _database.Orders.Add(entity);
         
-        await _database.SaveChangesAsync();
+            await _database.SaveChangesAsync();
 
-        return entity.Id;
+            if (await _database.FinanceSubDepartmentsWithSpendView.Where(f => f.Id == item.FinanceSubDepartmentId)
+                    .AnyAsync(f => f.LeftMaterials < 0 || f.LeftEquipment < 0 || f.LeftServices < 0))
+            {
+                await trx.RollbackAsync();
+                throw new RepositoryException(_localizer["Insufficient funds for the order"]);
+            }
+
+            await trx.CommitAsync();
+            
+            return entity.Id;
+
+        }
+        catch (Exception)
+        {
+            await trx.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task UpdateAsync(UpdateOrderDto item)
     {
-        // todo: add extra validator for sum and wrap inside transaction
-
-        var entity = await _database.Orders.FirstOrDefaultAsync(o => o.Id == item.Id);
-        if (entity is null)
+        await using var trx = await _database.BeginTransactionAsync();
+        try
         {
-            return;
+            var entity = await _database.Orders.FirstOrDefaultAsync(o => o.Id == item.Id);
+            if (entity is null)
+            {
+                await trx.RollbackAsync();
+                return;
+            }
+        
+            entity.Description = item.Description;
+            entity.CatNum = item.CatNum;
+            entity.OnePrice = item.OnePrice;
+            entity.Amount = item.Amount;
+            entity.Type = item.Type;
+            entity.Kekv = item.Kekv;
+            entity.ProcurementStartDate = item.ProcurementStartDate;
+            entity.UnitId = item.UnitId;
+            entity.CpvId = item.CpvId;
+            entity.FinanceSubDepartmentId = item.FinanceSubDepartmentId;
+            entity.ManufacturerId = item.ManufacturerId;
+            entity.SupplierId = item.SupplierId;
+            entity.ReasonId = item.ReasonId;
+        
+            await _database.SaveChangesAsync();
+
+            if (await _database.FinanceSubDepartmentsWithSpendView.Where(f => f.Id == item.FinanceSubDepartmentId)
+                    .AnyAsync(f => f.LeftMaterials < 0 || f.LeftEquipment < 0 || f.LeftServices < 0))
+            {
+                await trx.RollbackAsync();
+                throw new RepositoryException(_localizer["Insufficient funds for the order"]);
+            }
+
+            await trx.CommitAsync();
         }
-        
-        entity.Description = item.Description;
-        entity.CatNum = item.CatNum;
-        entity.OnePrice = item.OnePrice;
-        entity.Amount = item.Amount;
-        entity.Type = item.Type;
-        entity.Kekv = item.Kekv;
-        entity.ProcurementStartDate = item.ProcurementStartDate;
-        entity.UnitId = item.UnitId;
-        entity.CpvId = item.CpvId;
-        entity.FinanceSubDepartmentId = item.FinanceSubDepartmentId;
-        entity.ManufacturerId = item.ManufacturerId;
-        entity.SupplierId = item.SupplierId;
-        entity.ReasonId = item.ReasonId;
-        
-        await _database.SaveChangesAsync();
+        catch (Exception)
+        {
+            await trx.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task DeleteByIdAsync(int id)

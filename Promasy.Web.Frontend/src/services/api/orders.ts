@@ -82,14 +82,17 @@ export interface Order {
   financeSubDepartmentId: number;
   financeSourceNumber: string;
   financeId: number;
+  financeName: string;
   subDepartmentId: number;
+  subDepartment: string;
+  departmentId: number;
+  department: string;
   manufacturerId: number;
   manufacturer: string;
   supplierId: number;
   supplier: string;
   reasonId: number;
   reason: string;
-  status: number;
   editorId: number;
   editor: string;
   editedDate: Date;
