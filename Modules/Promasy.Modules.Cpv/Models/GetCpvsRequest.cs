@@ -6,32 +6,27 @@ namespace Promasy.Modules.Cpv.Models;
 
 public class GetCpvsRequest
 {
-    public int? Level { get; set; }
     public int? ParentId { get; set; }
+    public int? Id { get; set; }
     public string? Search { get; set; }
 
     public GetCpvsRequest()
     {
     }
 
-    public GetCpvsRequest(int? level, int? parentId, string? search)
+    public GetCpvsRequest(int? parentId, int? id, string? search)
     {
-        Level = level;
         ParentId = parentId;
+        Id = id;
         Search = search;
     }
 
     public static ValueTask<GetCpvsRequest?> BindAsync(HttpContext httpContext)
     {
         var result = new GetCpvsRequest(
-            int.TryParse(httpContext.Request.Query["level"], out var level) ? level : null,
             int.TryParse(httpContext.Request.Query["parentId"], out var parentId) ? parentId : null,
+            int.TryParse(httpContext.Request.Query["id"], out var id) ? id : null,
             httpContext.Request.Query["search"]);
-
-        if (result.Level is null && result.ParentId is null && string.IsNullOrEmpty(result.Search))
-        {
-            result.Level = 1;
-        }
 
         return ValueTask.FromResult<GetCpvsRequest?>(result);
     }
@@ -43,9 +38,6 @@ internal class GetCpvRequestValidator : AbstractValidator<GetCpvsRequest>
     {
         RuleFor(r => r.Search)
             .MaximumLength(PersistenceConstant.FieldMedium);
-        
-        RuleFor(r => r.Level)
-            .GreaterThan(0);
 
         RuleFor(r => r.ParentId)
             .GreaterThan(0);

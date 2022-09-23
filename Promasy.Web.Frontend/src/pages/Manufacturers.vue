@@ -132,11 +132,14 @@ import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
+import { useRoute, useRouter } from "vue-router";
 import { required, maxLength } from "@/i18n/validators";
 
 const { d, t } = useI18n();
 const { isUserAdmin } = useSessionStore();
 const toast = useToast();
+const route = useRoute();
+const Router = useRouter();
 const items = ref([] as Manufacturer[]);
 const selectedItems = ref([] as Manufacturer[]);
 const externalErrors = ref({} as Object<string[]>);
@@ -164,6 +167,9 @@ const v$ = useVuelidate(rules, item, { $lazy: true });
 
 onMounted(async () => {
   await getDataAsync();
+  if(route.path.endsWith("new")) {
+    create();
+  }
 });
 
 async function useFilterAsync() {
@@ -245,6 +251,10 @@ async function saveAsync() {
       ? ManufacturersApi.update({ id: item.value.id, name: item.value.name })
       : ManufacturersApi.create({ name: item.value.name }));
   if (response.success) {
+    if(route.path.endsWith("new")) {
+      await Router.push({ name: "Manufacturers" });
+      return;
+    }
     itemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });

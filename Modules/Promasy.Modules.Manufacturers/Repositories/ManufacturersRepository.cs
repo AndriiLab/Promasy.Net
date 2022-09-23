@@ -109,7 +109,7 @@ internal class ManufacturersRepository : IManufacturerRules, IManufacturersRepos
     public async Task MergeAsync(int targetId, int[] sourceIds)
     {
         await _database.Orders
-            .Where(o => sourceIds.Contains(o.ManufacturerId))
+            .Where(o => o.ManufacturerId.HasValue && sourceIds.Contains(o.ManufacturerId.Value))
             .UpdateAsync(o => new Order {ManufacturerId = targetId});
 
 

@@ -5,7 +5,7 @@
       <div class="card">
         <div class="p-fluid formgrid grid">
           <div class="field col-12">
-            <h4>{{ header }}</h4>
+            <h3>{{ header }}</h3>
           </div>
           <div class="field col-12">
             <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{

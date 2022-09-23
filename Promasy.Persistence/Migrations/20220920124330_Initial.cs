@@ -411,17 +411,17 @@ namespace Promasy.Persistence.Migrations
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     CatNum = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     OnePrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    Amount = table.Column<int>(type: "integer", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     Total = table.Column<decimal>(type: "numeric", nullable: false, computedColumnSql: "CASE WHEN \"Deleted\" = FALSE AND \"OnePrice\" * \"Amount\" > 0 THEN \"OnePrice\" * \"Amount\" ELSE 0 END", stored: true),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Kekv = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ProcurementStartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ProcurementStartDate = table.Column<DateOnly>(type: "date", nullable: true),
                     UnitId = table.Column<int>(type: "integer", nullable: false),
                     CpvId = table.Column<int>(type: "integer", nullable: false),
                     FinanceSubDepartmentId = table.Column<int>(type: "integer", nullable: false),
-                    ManufacturerId = table.Column<int>(type: "integer", nullable: false),
-                    SupplierId = table.Column<int>(type: "integer", nullable: false),
-                    ReasonId = table.Column<int>(type: "integer", nullable: false),
+                    ManufacturerId = table.Column<int>(type: "integer", nullable: true),
+                    SupplierId = table.Column<int>(type: "integer", nullable: true),
+                    ReasonId = table.Column<int>(type: "integer", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -451,22 +451,19 @@ namespace Promasy.Persistence.Migrations
                         column: x => x.ManufacturerId,
                         principalSchema: "PromasyCore",
                         principalTable: "Manufacturers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_ReasonForSupplierChoice_ReasonId",
                         column: x => x.ReasonId,
                         principalSchema: "PromasyCore",
                         principalTable: "ReasonForSupplierChoice",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_Suppliers_SupplierId",
                         column: x => x.SupplierId,
                         principalSchema: "PromasyCore",
                         principalTable: "Suppliers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_Units_UnitId",
                         column: x => x.UnitId,

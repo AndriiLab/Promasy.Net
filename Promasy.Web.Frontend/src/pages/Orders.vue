@@ -222,7 +222,7 @@ async function initAsync() {
     isSuccess = await setDepartmentAsync(selectedDepartmentId);
   }
   const selectedSubDepartmentId = parseInt(route.params.subDepartmentId?.toString());
-  if (!isNaN(selectedSubDepartmentId) && isSuccess) {
+  if (!isNaN(selectedDepartmentId) && !isNaN(selectedSubDepartmentId) && isSuccess) {
     isSuccess = await setSubDepartmentAsync(selectedSubDepartmentId);
   }
   const selectedFinanceSourceId = parseInt(route.params.financeId?.toString());
@@ -374,7 +374,7 @@ function confirmDelete(selectedItem: Order) {
 
 async function deleteItemAsync() {
   externalErrors.value = {} as Object<string[]>;
-  const response = await FinanceSourcesApi.delete(item.value.id);
+  const response = await OrdersApi.delete(item.value.id);
   if (response.success) {
     item.value = {} as Order;
     deleteItemDialog.value = false;

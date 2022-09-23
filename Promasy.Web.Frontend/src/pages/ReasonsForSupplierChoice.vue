@@ -128,6 +128,7 @@ import { useSessionStore } from "@/store/session";
 import { ref, reactive, onMounted, computed } from "vue";
 import ReasonsForSupplierChoiceApi, { ReasonForSupplierChoice } from "@/services/api/reasons-for-supplier-choice";
 import { useToast } from "primevue/usetoast";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "../components/ErrorWrap.vue";
@@ -137,6 +138,8 @@ import { required, maxLength } from "@/i18n/validators";
 const { d, t } = useI18n();
 const { isUserAdmin } = useSessionStore();
 const toast = useToast();
+const route = useRoute();
+const Router = useRouter();
 const items = ref([] as ReasonForSupplierChoice[]);
 const selectedItems = ref([] as ReasonForSupplierChoice[]);
 const externalErrors = ref({} as Object<string[]>);
@@ -164,6 +167,9 @@ const v$ = useVuelidate(rules, item, { $lazy: true });
 
 onMounted(async () => {
   await getDataAsync();
+  if(route.path.endsWith("new")) {
+    create();
+  }
 });
 
 async function useFilterAsync() {
@@ -273,6 +279,10 @@ async function mergeAsync() {
   externalErrors.value = {} as Object<string[]>;
   const response = await ReasonsForSupplierChoiceApi.merge({sourceIds: selectedItems.value.filter(i => i.id !== item.value.id).map(i => i.id), targetId: item.value.id});
   if (response.success) {
+    if(route.path.endsWith("new")) {
+      await Router.push({ name: "ReasonsForSupplierChoice" });
+      return;
+    }
     item.value = {} as ReasonForSupplierChoice;
     selectedItems.value = [];
     mergeDialog.value = false;

@@ -107,7 +107,7 @@ internal class ReasonForSupplierChoiceRepository : IReasonForSupplierChoiceRules
     public async Task MergeAsync(int targetId, int[] sourceIds)
     {
         await _database.Orders
-            .Where(o => sourceIds.Contains(o.ReasonId))
+            .Where(o => o.ReasonId.HasValue && sourceIds.Contains(o.ReasonId.Value))
             .UpdateAsync(o => new Order {ReasonId = targetId});
 
         var reasonsToDelete = await _database.ReasonForSupplierChoice

@@ -10,18 +10,20 @@ public class PagedRequest
     public string? Search { get; set; }
     public string? OrderBy { get; set; }
     public bool IsDescending { get; set; }
+    public int? Year { get; set; }
 
     public PagedRequest()
     {
     }
 
-    public PagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending)
+    public PagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending, int? year)
     {
         Page = page;
         Offset = offset;
         Search = search;
         OrderBy = orderBy;
         IsDescending = isDescending;
+        Year = year;
     }
 
     public static ValueTask<PagedRequest?> BindAsync(HttpContext httpContext)
@@ -31,7 +33,8 @@ public class PagedRequest
             int.TryParse(httpContext.Request.Query["offset"], out var id) ? id : 10,
             httpContext.Request.Query["search"],
             httpContext.Request.Query["order"],
-            bool.TryParse(httpContext.Request.Query["desc"], out var desc) && desc));
+            bool.TryParse(httpContext.Request.Query["desc"], out var desc) && desc,
+            int.TryParse(httpContext.Request.Query["year"], out var y) ? y : null));
     }
 }
 
@@ -50,5 +53,8 @@ public class PagedRequestValidator : AbstractValidator<PagedRequest>
         
         RuleFor(r => r.OrderBy)
             .MaximumLength(100);
+        
+        RuleFor(r => r.Year)
+            .GreaterThan(2000);
     }
 }

@@ -15,7 +15,7 @@ public class EmployeesPagedRequest : PagedRequest
 
     public EmployeesPagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending,
         int? departmentId, int? subDepartmentId)
-        : base(page, offset, search, orderBy, isDescending)
+        : base(page, offset, search, orderBy, isDescending, null)
     {
         DepartmentId = departmentId;
         SubDepartmentId = subDepartmentId;

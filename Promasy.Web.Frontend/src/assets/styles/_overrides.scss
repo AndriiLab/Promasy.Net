@@ -2,3 +2,11 @@
 .p-tooltip {
     z-index: 1005;
 }
+
+.p-dialog-mask {
+    z-index: 998;
+}
+
+.layout-sidebar {
+    z-index: 997 !important;
+}

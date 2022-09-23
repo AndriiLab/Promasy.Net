@@ -13,7 +13,7 @@ public class Order : OrganizationEntity
     public string Description { get; set; }
     public string? CatNum { get; set; }
     public decimal OnePrice { get; set; }
-    public int Amount { get; set; }
+    public decimal Amount { get; set; }
     public decimal Total { get; set; }
     public OrderType Type { get; set; }
     public string? Kekv { get; set; }
@@ -28,13 +28,13 @@ public class Order : OrganizationEntity
     public int FinanceSubDepartmentId { get; set; }
     public FinanceSubDepartment FinanceSubDepartment { get; set; }
 
-    public int ManufacturerId { get; set; }
+    public int? ManufacturerId { get; set; }
     public Manufacturer Manufacturer { get; set; }
 
-    public int SupplierId { get; set; }
+    public int? SupplierId { get; set; }
     public Supplier Supplier { get; set; }
     
-    public int ReasonId { get; set; }
+    public int? ReasonId { get; set; }
     public ReasonForSupplierChoice Reason { get; set; }
 
     public virtual ICollection<OrderStatusHistory> Statuses { get; set; }

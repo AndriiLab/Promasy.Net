@@ -113,6 +113,11 @@
                 <Button v-tooltip.left="t('sub-department', 2)" icon="pi pi-briefcase"
                         class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
+              <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                           :to="{ name: 'FinanceOrders', params: {financeId: slotProps.data.id, type: 1 }}">
+                <Button v-tooltip.left="t('order', 2)" icon="pi pi-shopping-cart"
+                        class="p-button-rounded p-button-primary mr-2"/>
+              </router-link>
               <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                       @click="edit(slotProps.data)"/>
               <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
@@ -199,7 +204,6 @@
 </template>
 
 <script lang="ts" setup>
-import { FinanceSubDepartment } from "@/services/api/finance-sub-departments";
 import { useSessionStore } from "@/store/session";
 import { formatAsDate } from "@/utils/date-utils";
 import { SelectItem } from "@/utils/fetch-utils";

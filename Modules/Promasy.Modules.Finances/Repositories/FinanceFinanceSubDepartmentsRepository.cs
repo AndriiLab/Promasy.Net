@@ -48,7 +48,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalEquipment - s.FinanceDepartments
                 .Where(d => d.Deleted == false) // todo: bug in EF Core 6
-                .Sum(d => d.TotalEquipment) - amount > 0, ct);
+                .Sum(d => d.TotalEquipment) - amount >= 0, ct);
     }
 
     public Task<bool> CanBeAssignedAsEquipmentAsync(decimal amount, int id, int financeSourceId, CancellationToken ct)
@@ -58,7 +58,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .AnyAsync(s => s.TotalEquipment - s.FinanceDepartments
                 .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Where(d => d.Id != id)
-                .Sum(d => d.TotalEquipment) - amount > 0, ct);
+                .Sum(d => d.TotalEquipment) - amount >= 0, ct);
     }
 
     public Task<bool> CanBeAssignedAsMaterialsAsync(decimal amount, int financeSourceId, CancellationToken ct)
@@ -67,7 +67,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalMaterials - s.FinanceDepartments
                 .Where(d => d.Deleted == false) // todo: bug in EF Core 6
-                .Sum(d => d.TotalMaterials) - amount > 0, ct);
+                .Sum(d => d.TotalMaterials) - amount >= 0, ct);
     }
 
     public Task<bool> CanBeAssignedAsMaterialsAsync(decimal amount, int id, int financeSourceId, CancellationToken ct)
@@ -77,7 +77,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .AnyAsync(s => s.TotalMaterials - s.FinanceDepartments
                 .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Where(d => d.Id != id)
-                .Sum(d => d.TotalMaterials) - amount > 0, ct);
+                .Sum(d => d.TotalMaterials) - amount >= 0, ct);
     }
 
     public Task<bool> CanBeAssignedAsServicesAsync(decimal amount, int financeSourceId, CancellationToken ct)
@@ -86,7 +86,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .Where(s => s.Id == financeSourceId)
             .AnyAsync(s => s.TotalServices - s.FinanceDepartments
                 .Where(d => d.Deleted == false) // todo: bug in EF Core 6
-                .Sum(d => d.TotalServices) - amount > 0, ct);
+                .Sum(d => d.TotalServices) - amount >= 0, ct);
     }
 
     public Task<bool> CanBeAssignedAsServicesAsync(decimal amount, int id, int financeSourceId, CancellationToken ct)
@@ -96,7 +96,7 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
             .AnyAsync(s => s.TotalServices - s.FinanceDepartments
                 .Where(d => d.Deleted == false) // todo: bug in EF Core 6
                 .Where(d => d.Id != id)
-                .Sum(d => d.TotalServices) - amount > 0, ct);
+                .Sum(d => d.TotalServices) - amount >= 0, ct);
     }
 
     public Task<PagedResponse<FinanceSubDepartmentDto>> GetPagedListAsync(int financeSourceId, PagedRequest request)
@@ -107,7 +107,25 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
 
         return query
             .PaginateAsync(request,
-                f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.SubDepartmentId, f.SubDepartment.Name, f.SubDepartment.DepartmentId, f.SubDepartment.Department.Name,
+                f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.FinanceSource.Name, f.FinanceSource.Number,
+                    f.SubDepartmentId, f.SubDepartment.Name, f.SubDepartment.DepartmentId, f.SubDepartment.Department.Name,
+                    f.TotalEquipment, f.TotalMaterials, f.TotalServices, 
+                    f.LeftEquipment, f.LeftMaterials, f.LeftServices, 
+                    f.ModifierId ?? f.CreatorId,
+                    PromasyDbFunction.GetEmployeeShortName(f.ModifierId ?? f.CreatorId),
+                    f.ModifiedDate ?? f.CreatedDate));
+    }
+
+    public Task<PagedResponse<FinanceSubDepartmentDto>> GetPagedListBySubDepartmentAsync(int subDepartmentId, PagedRequest request)
+    {
+        var query = _database.FinanceSubDepartmentsWithSpendView
+            .AsNoTracking()
+            .Where(f => f.SubDepartmentId == subDepartmentId && (f.FinanceSource.Start.Year == request.Year || f.FinanceSource.End.Year == request.Year));
+
+        return query
+            .PaginateAsync(request,
+                f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.FinanceSource.Name, f.FinanceSource.Number,
+                    f.SubDepartmentId, f.SubDepartment.Name, f.SubDepartment.DepartmentId, f.SubDepartment.Department.Name,
                     f.TotalEquipment, f.TotalMaterials, f.TotalServices, 
                     f.LeftEquipment, f.LeftMaterials, f.LeftServices, 
                     f.ModifierId ?? f.CreatorId,
@@ -119,7 +137,8 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
     {
         return _database.FinanceSubDepartmentsWithSpendView
             .Where(fs => fs.FinanceSourceId == financeId && fs.SubDepartmentId == subDepartmentId)
-            .Select(f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.SubDepartmentId, f.SubDepartment.Name,
+            .Select(f => new FinanceSubDepartmentDto(f.Id, f.FinanceSourceId, f.FinanceSource.Name,
+                f.FinanceSource.Number, f.SubDepartmentId, f.SubDepartment.Name,
                 f.SubDepartment.DepartmentId, f.SubDepartment.Department.Name,
                 f.TotalEquipment, f.TotalMaterials, f.TotalServices,
                 f.LeftEquipment, f.LeftMaterials, f.LeftServices, 

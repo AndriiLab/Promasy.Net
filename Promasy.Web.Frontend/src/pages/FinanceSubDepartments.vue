@@ -245,12 +245,12 @@ const sessionStore = useSessionStore();
 const toast = useToast();
 const items = ref([] as FinanceSubDepartment[]);
 const externalErrors = ref({} as Object<string[]>);
-const item = ref(getDefaultItem());
 const itemDialog = ref(false);
 const deleteItemDialog = ref(false);
 const isLoading = ref(false);
 const financeSources = ref([] as FinanceSource[]);
 const financeSource = ref({} as FinanceSource);
+const item = ref(getDefaultItem());
 const departments = ref([] as SelectItem<number>[]);
 const subDepartments = ref([] as SelectItem<number>[]);
 const tableData: TablePagingData = reactive({
@@ -423,12 +423,14 @@ async function deleteItemAsync() {
 
 function getDefaultItem(): FinanceSubDepartment {
   return {
+    financeSource: "",
+    financeSourceNumber: "",
     department: "",
     departmentId: 0,
     editedDate: new Date(),
     editor: "",
     editorId: 0,
-    financeSourceId: financeSource.value.id,
+    financeSourceId: financeSource.value?.id ?? route.params.financeId,
     id: 0,
     leftEquipment: 0,
     leftMaterials: 0,
@@ -437,7 +439,7 @@ function getDefaultItem(): FinanceSubDepartment {
     subDepartmentId: 0,
     totalEquipment: 0,
     totalMaterials: 0,
-    totalServices: 0,
+    totalServices: 0
   };
 }
 </script>

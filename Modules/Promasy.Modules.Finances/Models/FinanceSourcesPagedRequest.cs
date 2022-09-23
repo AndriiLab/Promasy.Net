@@ -6,11 +6,10 @@ namespace Promasy.Modules.Finances.Models;
 
 public class FinanceSourcesPagedRequest : PagedRequest
 {
-    public int Year { get; set; }
     public bool IncludeCalculatedAmounts { get; set; }
 
     public FinanceSourcesPagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending, int year, bool includeCalculatedAmounts)
-        : base(page, offset, search, orderBy, isDescending)
+        : base(page, offset, search, orderBy, isDescending, year)
     {
         Year = year;
         IncludeCalculatedAmounts = includeCalculatedAmounts;
@@ -46,6 +45,6 @@ public class FinanceSourcesPagedRequestValidator : AbstractValidator<FinanceSour
             .MaximumLength(100);
         
         RuleFor(r => r.Year)
-            .GreaterThan(1);
+            .GreaterThan(2000);
     }
 }

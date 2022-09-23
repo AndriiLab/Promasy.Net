@@ -129,6 +129,7 @@ import { ref, reactive, onMounted, computed } from "vue";
 import UnitsApi, { Unit } from "@/services/api/units";
 import { useToast } from "primevue/usetoast";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
@@ -137,6 +138,8 @@ import { required, maxLength } from "@/i18n/validators";
 const { d, t } = useI18n();
 const { isUserAdmin } = useSessionStore();
 const toast = useToast();
+const route = useRoute();
+const Router = useRouter();
 const items = ref([] as Unit[]);
 const selectedItems = ref([] as Unit[]);
 const externalErrors = ref({} as Object<string[]>);
@@ -164,6 +167,9 @@ const v$ = useVuelidate(rules, item, { $lazy: true });
 
 onMounted(async () => {
   await getDataAsync();
+  if(route.path.endsWith("new")) {
+    create();
+  }
 });
 
 async function useFilterAsync() {
@@ -244,6 +250,10 @@ async function saveAsync() {
       ? UnitsApi.update({ id: item.value.id, name: item.value.name })
       : UnitsApi.create({ name: item.value.name }));
   if (response.success) {
+    if(route.path.endsWith("new")) {
+      await Router.push({ name: "Units" });
+      return;
+    }
     itemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });

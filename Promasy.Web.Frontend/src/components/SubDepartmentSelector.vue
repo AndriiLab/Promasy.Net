@@ -1,5 +1,5 @@
 ﻿<template>
-  <Dropdown  :options="options" optionLabel="text"
+  <Dropdown :options="options" optionLabel="text"
             :filter="true" v-on:before-show="getListAsync"
             v-model="value"
             optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Dropdown>
@@ -31,18 +31,23 @@ const isLoading = ref(false);
 
 onMounted(() => {
   options.value.push(...props.defaultOptions);
-  if(props.includeEmpty) {
+  if (props.includeEmpty) {
     options.value.push(getDefaultItem());
   }
 });
 
 watch(() => props.defaultOptions, (o) => options.value.push(...o));
 watch(() => props.departmentId, (id, oldId) => {
-  if (id !== oldId) {
-    options.value = [];
-    if(props.includeEmpty) {
-      options.value.push(getDefaultItem());
-    }
+  if (id === oldId) {
+    return;
+  }
+  options.value = [];
+  if (props.includeEmpty) {
+    options.value.push(getDefaultItem());
+  }
+  if (id > 0 && !props.includeEmpty) {
+    preselectAsync();
+  } else {
     value.value = 0;
   }
 });
@@ -64,13 +69,22 @@ async function getListAsync() {
 
   if (response) {
     options.value = [];
-    options.value.push(getDefaultItem());
+    if (props.includeEmpty) {
+      options.value.push(getDefaultItem());
+    }
     response.data!.collection.map(d => {
       return { value: d.id, text: d.name } as SelectItem<number>;
     }).forEach(i => options.value.push(i));
   }
   isLoading.value = false;
   emit("loading", isLoading.value);
+}
+
+async function preselectAsync() {
+  await getListAsync();
+  if (options.value.length === 1) {
+    value.value = options.value[0].value;
+  }
 }
 
 function getDefaultItem(): SelectItem<number> {

@@ -43,6 +43,18 @@ internal class FinanceSubDepartmentsSubModule : SubModule
             .RequireAuthorization()
             .Produces<PagedResponse<FinanceSubDepartmentDto>>();
          
+         endpoints.MapGet("/api/departments/{departmentId:int}/sub-departments/{subDepartmentId:int}/finances", async (PagedRequest request,
+                 [FromRoute] int subDepartmentId, [FromRoute] int departmentId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
+             {
+                 var list = await repository.GetPagedListBySubDepartmentAsync(subDepartmentId, request);
+                 return Results.Json(list);
+             })
+             .WithValidator<PagedRequest>()
+             .WithTags(Tag)
+             .WithName("Get Finance sub-departments list by sub-department")
+             .RequireAuthorization()
+             .Produces<PagedResponse<FinanceSubDepartmentDto>>();
+         
          endpoints.MapGet($"{RoutePrefix}/{{subDepartmentId:int}}", async (int financeId, int subDepartmentId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
              {
                  var fs = await repository.GetByFinanceSubDepartmentIdsAsync(financeId, subDepartmentId);

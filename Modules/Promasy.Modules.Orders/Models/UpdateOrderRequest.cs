@@ -11,9 +11,9 @@ using Promasy.Modules.Orders.Interfaces;
 
 namespace Promasy.Modules.Orders.Models;
 
-public record UpdateOrderRequest(int Id, string Description, string? CatNum, decimal OnePrice, int Amount,
+public record UpdateOrderRequest(int Id, string Description, string? CatNum, decimal OnePrice, decimal Amount,
     OrderType Type, string? Kekv, DateOnly? ProcurementStartDate, int UnitId, int CpvId,
-    int FinanceSubDepartmentId, int ManufacturerId, int SupplierId, int ReasonId);
+    int FinanceSubDepartmentId, int? ManufacturerId, int? SupplierId, int? ReasonId);
     
 internal class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
 {
@@ -28,10 +28,10 @@ internal class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderReques
         RuleFor(r => r.Description)
             .NotEmpty()
             .MinimumLength(3)
-            .MinimumLength(PersistenceConstant.FieldLarge);
+            .MaximumLength(PersistenceConstant.FieldLarge);
         
         RuleFor(r => r.CatNum)
-            .MinimumLength(PersistenceConstant.FieldMedium);
+            .MaximumLength(PersistenceConstant.FieldMedium);
         
         RuleFor(r => r.OnePrice)
             .GreaterThan(0);
@@ -44,7 +44,7 @@ internal class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderReques
             .WithMessage(localizer["Order type not exists"]);
         
         RuleFor(r => r.Kekv)
-            .MinimumLength(PersistenceConstant.FieldMini);
+            .MaximumLength(PersistenceConstant.FieldMini);
         
         RuleFor(r => r.UnitId)
             .MustAsync(unitRules.IsExistsAsync)
@@ -58,17 +58,44 @@ internal class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderReques
             .MustAsync(financeSubDepartmentRules.IsExistsAsync)
             .WithMessage(localizer["Finance source not exists"]);
         
-        RuleFor(r => r.ManufacturerId)
-            .MustAsync(manufacturerRules.IsExistsAsync)
-            .WithMessage(localizer["Manufacturer not exists"]);        
+        When(r => !string.IsNullOrEmpty(r.CatNum), () =>
+        {
+            RuleFor(r => r.ManufacturerId)
+                .NotEmpty()
+                .GreaterThan(0)
+                .WithMessage(localizer["Manufacturer not exists"]);
+        });
+
+        When(r => r.ManufacturerId.HasValue, () =>
+        {
+            RuleFor(r => r.ManufacturerId!.Value)
+                .MustAsync(manufacturerRules.IsExistsAsync)
+                .WithMessage(localizer["Manufacturer not exists"]);
+        });
         
-        RuleFor(r => r.SupplierId)
-            .MustAsync(supplierRules.IsExistsAsync)
-            .WithMessage(localizer["Supplier not exists"]);
+        When(r => r.ReasonId.HasValue, () =>
+        {
+            RuleFor(r => r.ReasonId!.Value)
+                .MustAsync(reasonForSupplierChoiceRules.IsExistsAsync)
+                .WithMessage(localizer["Reason for supplier choice not exists"]);
+            
+            RuleFor(r => r.SupplierId)
+                .NotEmpty()
+                .GreaterThan(0)
+                .WithMessage(localizer["Supplier not exists"]);
+        });
         
-        RuleFor(r => r.ReasonId)
-            .MustAsync(reasonForSupplierChoiceRules.IsExistsAsync)
-            .WithMessage(localizer["Reason for supplier choice not exists"]);
+        When(r => r.SupplierId.HasValue, () =>
+        {
+            RuleFor(r => r.SupplierId!.Value)
+                .MustAsync(supplierRules.IsExistsAsync)
+                .WithMessage(localizer["Supplier not exists"]);
+            
+            RuleFor(r => r.ReasonId)
+                .NotEmpty()
+                .GreaterThan(0)
+                .WithMessage(localizer["Reason for supplier choice not exists"]);
+        });
 
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsSufficientFundsAsync(r.FinanceSubDepartmentId, r.Id, r.Amount * r.OnePrice, r.Type, t))

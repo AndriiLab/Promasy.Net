@@ -4,10 +4,12 @@ import { buildQueryParameters } from "@/utils/url-params-utils";
 export default {
   getList(
     parentId?: number,
+    id?: number,
     searchText?: string,
   ): Promise<Response<Cpv[], ErrorApiResponse>> {
     return Fetch.Get<Cpv[], ErrorApiResponse>(
       `/api/cpv${ buildQueryParameters([
+        [ "id", id?.toString() ],
         [ "parentId", parentId?.toString() ],
         [ "search", searchText ],
       ]) }`,

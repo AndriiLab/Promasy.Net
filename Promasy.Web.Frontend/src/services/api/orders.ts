@@ -75,27 +75,64 @@ export interface Order {
   type: number;
   kekv?: string;
   procurementStartDate?: Date;
-  unitId: number;
-  unit: string;
-  cpvId: number;
-  cpv: string;
-  financeSubDepartmentId: number;
-  financeSourceNumber: string;
-  financeId: number;
-  financeName: string;
-  subDepartmentId: number;
-  subDepartment: string;
-  departmentId: number;
-  department: string;
-  manufacturerId: number;
-  manufacturer: string;
-  supplierId: number;
-  supplier: string;
-  reasonId: number;
-  reason: string;
+  unit: Unit;
+  cpv: Cpv;
+  financeSubDepartment: FinanceSubDepartment;
+  subDepartment: SubDepartment;
+  department: Department;
+  manufacturer?: Manufacturer;
+  supplier?: Supplier;
+  reason?: ReasonForSupplierChoice;
   editorId: number;
   editor: string;
-  editedDate: Date;
+  editedDate: string;
+}
+
+export interface Unit {
+  id: number;
+  name: string;
+}
+
+export interface Cpv {
+  id: number;
+  code: string;
+  descriptionEnglish: string;
+  descriptionUkrainian: string;
+  level: number;
+  isTerminal: boolean;
+  parentId: number | null;
+}
+
+export interface FinanceSubDepartment {
+  id: number;
+  financeSourceId: number;
+  financeSource: string;
+  financeSourceNumber: string;
+}
+
+export interface Department {
+  id: number;
+  name: string;
+}
+
+export interface SubDepartment {
+  id: number;
+  name: string;
+}
+
+export interface Manufacturer {
+  id: number;
+  name: string;
+}
+
+export interface Supplier {
+  id: number;
+  name: string;
+}
+
+export interface ReasonForSupplierChoice {
+  id: number;
+  name: string;
 }
 
 export interface CreateOrderRequest {
@@ -105,28 +142,21 @@ export interface CreateOrderRequest {
   amount: number;
   type: number;
   kekv?: string;
-  procurementStartDate?: Date;
+  procurementStartDate?: string;
   unitId: number;
   cpvId: number;
   financeSubDepartmentId: number;
-  manufacturerId: number;
-  supplierId: number;
-  reasonId: number;
+  manufacturerId?: number;
+  supplierId?: number;
+  reasonId?: number;
 }
 
-export interface UpdateOrderRequest {
+export interface UpdateOrderRequest extends CreateOrderRequest {
   id: number;
-  description: string;
-  catNum?: string;
-  onePrice: number;
-  amount: number;
-  type: number;
-  kekv?: string;
-  procurementStartDate?: Date;
-  unitId: number;
-  cpvId: number;
-  financeSubDepartmentId: number;
-  manufacturerId: number;
-  supplierId: number;
-  reasonId: number;
+}
+
+export enum OrderType {
+  Material = 1,
+  Equipment = 2,
+  Service = 3
 }

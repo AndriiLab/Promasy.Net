@@ -22,14 +22,39 @@ export const routes = [
         component: () => import("./pages/Units.vue"),
       },
       {
+        name: "CreateUnit",
+        path: "/units/new",
+        component: () => import("./pages/Units.vue"),
+      },
+      {
         name: "Manufacturers",
         path: "/manufacturers",
+        component: () => import("./pages/Manufacturers.vue"),
+      },
+      {
+        name: "CreateManufacturer",
+        path: "/manufacturers/new",
         component: () => import("./pages/Manufacturers.vue"),
       },
       {
         name: "Suppliers",
         path: "/suppliers",
         component: () => import("./pages/Suppliers.vue"),
+      },
+      {
+        name: "CreateSupplier",
+        path: "/suppliers/new",
+        component: () => import("./pages/Suppliers.vue"),
+      },
+      {
+        name: "ReasonsForSupplierChoice",
+        path: "/reasons-for-supplier-choice",
+        component: () => import("./pages/ReasonsForSupplierChoice.vue"),
+      },
+      {
+        name: "CreateReasonForSupplierChoice",
+        path: "/reasons-for-supplier-choice/new",
+        component: () => import("./pages/ReasonsForSupplierChoice.vue"),
       },
       {
         name: "Finances",
@@ -130,11 +155,6 @@ export const routes = [
         name: "OrderView",
         path: "/orders/:orderId(\\d+)",
         component: () => import("./pages/OrderView.vue"),
-      },
-      {
-        name: "ReasonsForSupplierChoice",
-        path: "/reasons-for-supplier-choice",
-        component: () => import("./pages/ReasonsForSupplierChoice.vue"),
       },
     ],
   },

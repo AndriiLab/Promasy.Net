@@ -1,7 +1,10 @@
 <template>
   <div class="p-inputgroup">
-    <span class="p-inputgroup-addon">₴</span>
+    <slot name="prefix">
+      <span class="p-inputgroup-addon">₴</span>
+    </slot>
     <InputText :id="props.inputId" :placeholder="inputPlaceholder" v-model.number="value" min="0" step="1"/>
+    <slot name="suffix"></slot>
   </div>
 </template>
 

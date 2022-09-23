@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Promasy.Core.UserContext;
 
 public interface IUserContext
@@ -16,5 +14,6 @@ public interface IUserContext
     string GetSubDepartment();
     int GetSubDepartmentId();
     string? GetIpAddress();
+    Language GetLanguage();
     bool HasRoles(params int[] roles);
 }

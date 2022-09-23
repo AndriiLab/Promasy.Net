@@ -113,7 +113,7 @@ internal class SuppliersRepository : ISupplierRules, ISuppliersRepository
     public async Task MergeAsync(int targetId, int[] sourceIds)
     {
         await _database.Orders
-            .Where(o => sourceIds.Contains(o.SupplierId))
+            .Where(o => o.SupplierId.HasValue && sourceIds.Contains(o.SupplierId.Value))
             .UpdateAsync(o => new Order {SupplierId = targetId});
 
         var unitsToDelete = await _database.Suppliers

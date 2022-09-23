@@ -12,7 +12,6 @@ public class OrdersPagedRequest : PagedRequest
     public int? DepartmentId { get; set; }
     public int? SubDepartmentId { get; set; }
     public int? FinanceSourceId { get; set; }
-    public int? Year { get; set; }
     public OrderType Type { get; set; }
 
     public OrdersPagedRequest()
@@ -21,7 +20,7 @@ public class OrdersPagedRequest : PagedRequest
 
     public OrdersPagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending,
         int? departmentId, int? subDepartmentId, int? financeSourceId, OrderType type, int? year)
-        : base(page, offset, search, orderBy, isDescending)
+        : base(page, offset, search, orderBy, isDescending, year)
     {
         DepartmentId = departmentId;
         SubDepartmentId = subDepartmentId;

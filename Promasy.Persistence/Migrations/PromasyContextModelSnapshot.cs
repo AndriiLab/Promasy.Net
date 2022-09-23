@@ -18,7 +18,7 @@ namespace Promasy.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("PromasyCore")
-                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityAlwaysColumns(modelBuilder);
@@ -355,8 +355,8 @@ namespace Promasy.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("CatNum")
                         .HasMaxLength(300)
@@ -388,7 +388,7 @@ namespace Promasy.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int>("ManufacturerId")
+                    b.Property<int?>("ManufacturerId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -403,13 +403,13 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("ProcurementStartDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("ProcurementStartDate")
+                        .HasColumnType("date");
 
-                    b.Property<int>("ReasonId")
+                    b.Property<int?>("ReasonId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SupplierId")
+                    b.Property<int?>("SupplierId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Total")
@@ -823,15 +823,6 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("SpentEquipment")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("SpentMaterials")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("SpentServices")
-                        .HasColumnType("numeric");
-
                     b.Property<DateOnly>("Start")
                         .HasColumnType("date");
 
@@ -842,6 +833,15 @@ namespace Promasy.Persistence.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<decimal>("TotalServices")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("UnassignedEquipment")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("UnassignedMaterials")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("UnassignedServices")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
@@ -882,18 +882,6 @@ namespace Promasy.Persistence.Migrations
 
                     b.Property<int?>("ModifierId")
                         .HasColumnType("integer");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("SpentEquipment")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("SpentMaterials")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("SpentServices")
-                        .HasColumnType("numeric");
 
                     b.Property<int>("SubDepartmentId")
                         .HasColumnType("integer");
@@ -1072,21 +1060,15 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasOne("Promasy.Domain.Manufacturers.Manufacturer", "Manufacturer")
                         .WithMany()
-                        .HasForeignKey("ManufacturerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ManufacturerId");
 
                     b.HasOne("Promasy.Domain.Orders.ReasonForSupplierChoice", "Reason")
                         .WithMany()
-                        .HasForeignKey("ReasonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReasonId");
 
                     b.HasOne("Promasy.Domain.Suppliers.Supplier", "Supplier")
                         .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SupplierId");
 
                     b.HasOne("Promasy.Domain.Orders.Unit", "Unit")
                         .WithMany()
