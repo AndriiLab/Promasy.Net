@@ -6,6 +6,7 @@ using Promasy.Core.UserContext;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
+using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Orders.Dtos;
 using Promasy.Modules.Orders.Interfaces;
 using Promasy.Modules.Orders.Models;
@@ -132,6 +133,47 @@ internal class OrdersRepository : IOrderRules, IOrdersRepository
             Total = response.Total,
             SpentAmount = spentAmount,
             LeftAmount = leftAmount,
+        };
+    }
+
+    public async Task<PagedResponse<OrderSuggestionDto>> GetOrderSuggestionsPagedListAsync(OrderSuggestionPagedRequest request)
+    {
+        var query = _database.Orders
+            .AsNoTracking()
+            .AsNoFilter()
+            .Where(o => o.Deleted == false);
+
+        if (request.ExcludeId.HasValue)
+        {
+            query = query.Where(o => o.Id != request.ExcludeId);
+        }
+        
+        if (!string.IsNullOrEmpty(request.Search))
+        {
+            query = query.Where(u => EF.Functions.ToTsVector("simple", u.Description)
+                                         .Matches(EF.Functions.PlainToTsQuery("simple", request.Search)));
+        }
+
+        if (!string.IsNullOrEmpty(request.CatNum))
+        {
+            query = query.Where(u => EF.Functions.ILike(u.CatNum, $"%{request.CatNum}%"));
+        }
+        
+        var response = await query
+            .PaginateAsync(request,
+                o => new OrderSuggestionDto(o.Id, o.Description, o.CatNum,
+                    o.OnePrice, o.Type, o.Kekv,
+                    new UnitDto(o.UnitId, o.Unit.Name),
+                    new CpvDto(o.CpvId, o.Cpv.Code, o.Cpv.DescriptionEnglish, o.Cpv.DescriptionUkrainian, o.Cpv.Level, o.Cpv.IsTerminal, o.Cpv.ParentId),
+                    o.ManufacturerId.HasValue ? new ManufacturerDto(o.ManufacturerId.Value, o.Manufacturer.Name) : null,
+                    o.SupplierId.HasValue ? new SupplierDto(o.SupplierId.Value, o.Supplier.Name) : null,
+                    o.ReasonId.HasValue ? new ReasonForSupplierChoiceShortDto(o.ReasonId.Value, o.Reason.Name) : null));
+
+        return new PagedResponse<OrderSuggestionDto>
+        {
+            Collection = response.Collection,
+            Page = response.Page,
+            Total = response.Total,
         };
     }
 

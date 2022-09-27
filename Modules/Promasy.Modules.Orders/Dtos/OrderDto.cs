@@ -12,6 +12,16 @@ public record OrderDto(int Id, string Description, string? CatNum,
         DateTime EditedDate = default)
     : EntityDto(Id, EditorId, Editor, EditedDate);
 
+public record OrderShortDto(int Id, string Description, decimal Total, int Status,
+        int FinanceId, int SubDepartmentId,
+        int EditorId = default, string Editor = "", DateTime EditedDate = default)
+    : EntityDto(Id, EditorId, Editor, EditedDate);
+
+public record OrderSuggestionDto(int Id, string Description, string? CatNum,
+    decimal OnePrice, OrderType Type, string? Kekv,
+    UnitDto Unit, CpvDto Cpv, ManufacturerDto? Manufacturer,
+    SupplierDto? Supplier, ReasonForSupplierChoiceShortDto? Reason);
+
 public record UnitDto(int Id, string Name);
 
 public record CpvDto(int Id, string Code, string DescriptionEnglish, string DescriptionUkrainian, int Level,

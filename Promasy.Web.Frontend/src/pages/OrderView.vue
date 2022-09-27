@@ -39,11 +39,11 @@
             <Dropdown id="type" v-model="model.type" :options="types"
                       optionLabel="text" optionValue="value"/>
           </ErrorWrap>
-          <ErrorWrap :errors="v$.financeSubDepartmentId.$errors" class="field col-12 md:col-6"
+          <ErrorWrap :errors="v$.financeSubDepartment.$errors" class="field col-12 md:col-6"
                      :external-errors="externalErrors['FinanceSubDepartmentId']">
             <label for="financeSubDepartment">{{ t('financeSource') }}</label>
             <Dropdown id="financeSubDepartment"
-                      :modelValue="selectedFinanceSubDepartment" v-on:update:modelValue="onFinanceSubDepartmentSelected"
+                      v-model="model.financeSubDepartment"
                       :options="financeSubDepartments"
                       v-on:before-show="getFinanceSubDepartmentsListAsync"
                       :filter="true"
@@ -71,20 +71,40 @@
           <ErrorWrap class="field col-12 md:col-6" :errors="v$.catNum.$errors"
                      :external-errors="externalErrors['CatNum']">
             <label for="catNum">{{ t('catNum') }}</label>
-            <InputText id="catNum" v-model="model.catNum" :disabled="!isManufacturerSelected"
-                       :placeholder="isManufacturerSelected ? '' : t('selectManufacturerFirst')"/>
+            <div class="suggestion-group">
+              <InputText id="catNum" v-model="model.catNum" :disabled="!isManufacturerSelected"
+                         class="suggestion-input"
+                         :placeholder="isManufacturerSelected ? '' : t('selectManufacturerFirst')"
+                         v-debounce:1000="getSuggestionsByCatNumAsync"/>
+              <i v-if="suggestionsByCatNum.total"
+                 class="pi pi-copy mr-4 p-text-secondary suggestion-hint"
+                 style="font-size: 2rem"
+                 v-badge.success="suggestionsByCatNum.total"
+                 v-tooltip.left="t('suggestionsAvailable')"
+                 @click="showSuggestions(suggestionsByCatNum, $event)"></i>
+            </div>
           </ErrorWrap>
 
           <ErrorWrap class="field col-12" :errors="v$.description.$errors"
                      :external-errors="externalErrors['Description']">
             <label for="description">{{ t('description') }}</label>
-            <Textarea id="description" v-model.trim="model.description" :autoResize="true" class="w-full"/>
+            <div class="suggestion-group">
+              <Textarea id="description" v-model.trim="model.description" :autoResize="true"
+                        class="w-full suggestion-input"
+                        v-debounce:1000="getSuggestionsByDescriptionAsync"/>
+              <i v-if="suggestionsByDescription.total"
+                 class="pi pi-copy mr-4 p-text-secondary suggestion-hint"
+                 style="font-size: 2rem"
+                 v-badge.success="suggestionsByDescription.total"
+                 v-tooltip.left="t('suggestionsAvailable')"
+                 @click="showSuggestions(suggestionsByDescription, $event)"></i>
+            </div>
           </ErrorWrap>
-          <ErrorWrap class="field col-12" :errors="v$.cpvId.$errors" :external-errors="externalErrors['CpvId']">
+          <ErrorWrap class="field col-12" :errors="v$.cpv.$errors" :external-errors="externalErrors['CpvId']">
             <label for="cpv">CPV</label>
             <div class="p-inputgroup">
               <InputText id="cpv"
-                         :modelValue="selectedCpv ? `${selectedCpv.code} - ${selectedCpv.descriptionUkrainian} - ${selectedCpv.descriptionEnglish}` : ''"
+                         :modelValue="getCpvLabel(model.cpv)"
                          disabled/>
               <Button icon="pi pi-search" class="p-button-outlined p-button-info" @click="selectCpvDialog = true"/>
             </div>
@@ -206,25 +226,112 @@
 
     <Dialog v-model:visible="selectCpvDialog" :header="t('selectCpv')" :modal="true" style="z-index: 999">
       <template v-if="selectCpvDialog">
-        <CpvSelector :select-mode="true" :modelValue="selectedCpv" v-on:update:modelValue="onCpvSelected"></CpvSelector>
+        <CpvSelector :select-mode="true" :modelValue="model.cpv" v-on:update:modelValue="onCpvSelected"></CpvSelector>
       </template>
     </Dialog>
+
+    <OverlayPanel ref="suggestionsPanel" appendTo="body" :showCloseIcon="true" id="suggestions_panel"
+                  style="width: 800px" :breakpoints="{'960px': '75vw'}">
+      <DataTable v-if="selectedSuggestions" :value="selectedSuggestions.items" :lazy="true" :paginator="true"
+                 class="p-datatable-sm"
+                 :rows="selectedSuggestions.offset" :totalRecords="selectedSuggestions.total"
+                 @page="onSuggestionsPageAsync($event)"
+                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
+                 :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('suggestions') })"
+                 responsiveLayout="scroll"
+                 v-model:expandedRows="expandedSuggestionRows" dataKey="id">
+        <Column :expander="true" headerStyle="width: 3rem"/>
+        <Column field="description" :header="t('description')" style="width: 50%"></Column>
+        <Column field="manufacturer" :header="t('manufacturer')" style="width: 25%">
+          <template #body="slotProps">
+            {{ slotProps.data.manufacturer?.name }}
+          </template>
+        </Column>
+        <Column field="supplier" :header="t('supplier')" style="width: 25%">
+          <template #body="slotProps">
+            {{ slotProps.data.supplier?.name }}
+          </template>
+        </Column>
+
+        <template #expansion="slotProps">
+          <div class="p-fluid formgrid grid">
+            <CopyFieldInput class="field col-12" :label="t('description')" :text="slotProps.data.description"
+                            :enabled="model.description !== slotProps.data.description"
+                            @selected="model.description = slotProps.data.description">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12" label="CPV" :text="getCpvLabel(slotProps.data.cpv)"
+                            :enabled="model.cpv.code !== slotProps.data.cpv.code"
+                            @selected="model.cpv = slotProps.data.cpv">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('manufacturer')"
+                            :text="slotProps.data.manufacturer?.name"
+                            :enabled="model.manufacturerId !== slotProps.data.manufacturer?.id"
+                            @selected="setManufacturer(slotProps.data.manufacturer)">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('catNum')" :text="slotProps.data.catNum"
+                            :enabled="model.catNum !== slotProps.data.catNum"
+                            @selected="model.catNum = slotProps.data.catNum">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('units')" :text="slotProps.data.unit.name"
+                            :enabled="model.unitId !== slotProps.data.unit.id"
+                            @selected="setUnit(slotProps.data.unit)">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('price')"
+                            :text="currency(slotProps.data.onePrice).format()"
+                            :enabled="model.onePrice !== slotProps.data.onePrice"
+                            @selected="setOnePrice(slotProps.data.onePrice)">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('supplier')" :text="slotProps.data.supplier?.name"
+                            :enabled="model.supplierId !== slotProps.data.supplier?.id"
+                            @selected="setSupplier(slotProps.data.supplier)">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('reasonForSupplierChoice')"
+                            :text="slotProps.data.reason?.name"
+                            :enabled="model.reasonId !== slotProps.data.reason?.id"
+                            @selected="setReason(slotProps.data.reason)">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('type')"
+                            :text="types.find(t => t.value === slotProps.data.type)?.text"
+                            :enabled="model.type !== slotProps.data.type"
+                            @selected="model.type = slotProps.data.type">
+            </CopyFieldInput>
+            <CopyFieldInput class="field col-12 md:col-6" :label="t('kekv')" :text="slotProps.data.kekv ?? defaultKekv"
+                            :enabled="model.kekv !== slotProps.data.kekv"
+                            @selected="model.kekv = slotProps.data.kekv">
+            </CopyFieldInput>
+            <div>
+              <Button :label="t('all')" class="p-button-outlined" icon="pi pi-copy"
+                      @click="onCopyAllSuggested(slotProps.data)" v-tooltip.right="t('copyAll')"/>
+            </div>
+          </div>
+        </template>
+      </DataTable>
+    </OverlayPanel>
 
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Cpv } from "@/services/api/cpv";
-import OrderApi, { CreateOrderRequest, Order, OrderType, UpdateOrderRequest } from "@/services/api/orders";
+import OrdersApi, {
+  CreateOrderRequest, Manufacturer,
+  Order,
+  OrderSuggestion,
+  OrderType, ReasonForSupplierChoice, Supplier, Unit,
+  UpdateOrderRequest,
+} from "@/services/api/orders";
 import FinanceSubDepartmentsApi, { FinanceSubDepartment } from "@/services/api/finance-sub-departments";
 import ManufacturersApi from "@/services/api/manufacturers";
+import ReasonsForSupplierChoice from "@/services/api/reasons-for-supplier-choice";
 import SuppliersApi from "@/services/api/suppliers";
 import ReasonsForSupplierChoiceApi from "@/services/api/reasons-for-supplier-choice";
 import UnitsApi from "@/services/api/units";
 import { useSessionStore } from "@/store/session";
 import { formatAsDate } from "@/utils/date-utils";
+import { defaultKekv } from "@/utils/constants";
 import { SelectItem } from "@/utils/fetch-utils";
-import { ref, onMounted, computed, watch } from "vue";
+import { DataTablePageEvent } from "primevue/datatable";
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import useVuelidate from "@vuelidate/core";
@@ -236,6 +343,7 @@ import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import ErrorWrap from "@/components/ErrorWrap.vue";
 import FinanceInput from "@/components/FinanceInput.vue";
 import CpvSelector from "@/components/CpvSelector.vue";
+import CopyFieldInput from "@/components/CopyFieldInput.vue";
 
 const { t, d } = useI18n({ useScope: "local" });
 const Router = useRouter();
@@ -244,6 +352,7 @@ const session = useSessionStore();
 const user = session.user!;
 
 const header = ref("");
+const suggestionsPanel = ref();
 const loading = ref(false);
 const initializing = ref(true);
 const selectCpvDialog = ref(false);
@@ -252,25 +361,41 @@ const model = ref(getDefaultModel());
 const departments = ref([] as SelectItem<number>[]);
 const subDepartments = ref([] as SelectItem<number>[]);
 const financeSubDepartments = ref([] as FinanceSubDepartment[]);
-const selectedFinanceSubDepartment = ref({} as FinanceSubDepartment | undefined);
-const selectedCpv = ref(undefined as Cpv | undefined);
 const types = ref([] as SelectItem<number>[]);
 const units = ref([] as SelectItem<number>[]);
 const manufacturers = ref([ getDefaultSelectItem() ] as SelectItem<number>[]);
 const suppliers = ref([ getDefaultSelectItem() ] as SelectItem<number>[]);
 const reasons = ref([] as SelectItem<number>[]);
 const isKekvEdit = ref(false);
+const suggestionsByCatNum: SuggestionsTablePaging = reactive({
+  page: 1,
+  offset: 5,
+  total: 0,
+  catNum: undefined,
+  description: undefined,
+  items: [],
+});
+const suggestionsByDescription: SuggestionsTablePaging = reactive({
+  page: 1,
+  offset: 5,
+  total: 0,
+  catNum: undefined,
+  description: undefined,
+  items: [],
+});
+const selectedSuggestions = ref(undefined as SuggestionsTablePaging | undefined);
+const expandedSuggestionRows = ref([] as OrderSuggestion[]);
 
 const greaterThanZero = (v: number) => v > 0;
 const rules = computed(() => {
   return {
     departmentId: { required },
     subDepartmentId: { required },
-    financeSubDepartmentId: { required },
+    financeSubDepartment: { required },
     amount: { required: greaterThanZero },
     onePrice: { required: greaterThanZero },
     catNum: { requiredIf: requiredIf(model.value.manufacturerId > 0), maxLength: maxLength(300) },
-    cpvId: { required },
+    cpv: { required },
     description: { required, minLength: minLength(3), maxLength: maxLength(1000) },
     kekv: { maxLength: maxLength(100) },
     manufacturerId: {},
@@ -292,7 +417,7 @@ const v$ = useVuelidate(rules, model, { $lazy: true });
 onMounted(async () => {
   loading.value = true;
   let loaded = false;
-  const orderTypes = await OrderApi.getExistingOrderTypes();
+  const orderTypes = await OrdersApi.getExistingOrderTypes();
   if (orderTypes.success) {
     types.value = orderTypes.data!;
   }
@@ -305,7 +430,7 @@ onMounted(async () => {
   } else {
     header.value = t("editOrder");
     const orderId = parseInt(route.params.orderId?.toString());
-    const response = await OrderApi.getById(orderId);
+    const response = await OrdersApi.getById(orderId);
     if (response.success) {
       const data = response.data!;
       model.value = mapToModel(data);
@@ -314,17 +439,10 @@ onMounted(async () => {
       const fs = data.financeSubDepartment as FinanceSubDepartment;
       fs.subDepartmentId = data.subDepartment.id;
       financeSubDepartments.value = [ fs ];
-      units.value = [ { text: data.unit.name, value: data.unit.id } ];
-      selectedCpv.value = data.cpv as Cpv;
-      if (data.manufacturer) {
-        manufacturers.value = [ { text: data.manufacturer.name, value: data.manufacturer.id } ];
-      }
-      if (data.supplier) {
-        suppliers.value = [ { text: data.supplier.name, value: data.supplier.id } ];
-      }
-      if (data.reason) {
-        reasons.value = [ { text: data.reason.name, value: data.reason.id } ];
-      }
+      setUnit(data.unit);
+      setManufacturer(data.manufacturer);
+      setSupplier(data.supplier);
+      setReason(data.reason);
       loaded = true;
     }
   }
@@ -337,10 +455,8 @@ onMounted(async () => {
 });
 
 watch(() => model.value.subDepartmentId, (v) => {
-  if (v !== selectedFinanceSubDepartment.value?.subDepartmentId) {
-    const sd = financeSubDepartments.value.find(fs => fs.subDepartmentId == v);
-    model.value.financeSubDepartmentId = sd?.id;
-    selectedFinanceSubDepartment.value = sd;
+  if (v !== model.value?.financeSubDepartment?.subDepartmentId) {
+    model.value.financeSubDepartment = financeSubDepartments.value.find(fs => fs.subDepartmentId == v);
   }
 });
 watch(isManufacturerSelected, (newVal) => {
@@ -401,7 +517,7 @@ async function getUnitsAsync() {
 async function getFinanceSubDepartmentsListAsync() {
   if (!model.value.subDepartmentId) {
     financeSubDepartments.value = [];
-    model.value.financeSubDepartmentId = 0;
+    model.value.financeSubDepartment = undefined;
     return;
   }
   loading.value = true;
@@ -424,8 +540,8 @@ function getCreateRequest(model: OrderModel) {
     kekv: model.kekv,
     procurementStartDate: model.procurementStartDate ? formatAsDate(model.procurementStartDate) : undefined,
     unitId: model.unitId,
-    cpvId: model.cpvId,
-    financeSubDepartmentId: model.financeSubDepartmentId,
+    cpvId: model.cpv?.id,
+    financeSubDepartmentId: model.financeSubDepartment?.id,
     manufacturerId: model.manufacturerId > 0 ? model.manufacturerId : undefined,
     supplierId: model.supplierId > 0 ? model.supplierId : undefined,
     reasonId: model.reasonId > 0 ? model.reasonId : undefined,
@@ -445,11 +561,12 @@ async function saveAsync() {
     return;
   }
   loading.value = true;
-  const response = await (model.value.id ?? 0 > 0 ? OrderApi.update(getUpdateRequest(model.value)) : OrderApi.create(getCreateRequest(model.value)));
+  const response = await (model.value.id ?? 0 > 0 ? OrdersApi.update(getUpdateRequest(model.value)) : OrdersApi.create(getCreateRequest(model.value)));
   if (response.success) {
-    await Router.push({ name: "FinanceSubDepartmentsOrders",
+    await Router.push({
+      name: "FinanceSubDepartmentsOrders",
       params: {
-        financeId: selectedFinanceSubDepartment.value!.financeSourceId,
+        financeId: model.value.financeSubDepartment!.financeSourceId,
         subDepartmentId: model.value.subDepartmentId,
         type: model.value.type,
       },
@@ -463,19 +580,52 @@ async function saveAsync() {
   }
 }
 
+async function getSuggestionsByCatNumAsync() {
+  suggestionsByCatNum.catNum = model.value.catNum;
+  await getSuggestionsAsync(suggestionsByCatNum);
+}
+
+async function getSuggestionsByDescriptionAsync() {
+  suggestionsByDescription.description = model.value.description;
+  await getSuggestionsAsync(suggestionsByDescription);
+}
+
+async function getSuggestionsAsync(search: SuggestionsTablePaging) {
+  if ((search.catNum?.length ?? 0 > 2) || (search.description?.length ?? 0 > 2)) {
+    const response = await OrdersApi.getSuggestionsList(search.page, search.offset, search.description, undefined, undefined, search.catNum, model.value.id ?? 0 > 0 ? model.value.id : undefined);
+    if (response.success) {
+      search.page = response.data!.page;
+      search.total = response.data!.total;
+      search.items = response.data!.collection;
+      return;
+    }
+  }
+}
+
+function showSuggestions(selected: SuggestionsTablePaging, event: Event) {
+  selectedSuggestions.value = selected;
+  suggestionsPanel.value.toggle(event);
+}
+
+async function onSuggestionsPageAsync(event: DataTablePageEvent) {
+  selectedSuggestions.value!.page = event.page + 1;
+  selectedSuggestions.value!.offset = event.rows;
+  await getSuggestionsAsync(selectedSuggestions.value!);
+}
+
 function getDefaultModel(): OrderModel {
   return {
     id: undefined,
     departmentId: user.departmentId,
     subDepartmentId: user.subDepartmentId,
-    financeSubDepartmentId: undefined,
+    financeSubDepartment: undefined,
     amount: 0,
     onePrice: 0,
     taxIncluded: true,
     catNum: "",
-    cpvId: undefined,
+    cpv: undefined,
     description: "",
-    kekv: "2210",
+    kekv: defaultKekv,
     manufacturerId: -1,
     procurementStartDate: undefined,
     reasonId: -1,
@@ -489,12 +639,12 @@ function mapToModel(order: Order): OrderModel {
   return {
     amount: order.amount,
     catNum: order.catNum,
-    cpvId: order.cpv.id,
+    cpv: order.cpv as Cpv,
     departmentId: order.department.id,
     description: order.description,
-    financeSubDepartmentId: order.financeSubDepartment.id,
+    financeSubDepartment: order.financeSubDepartment as FinanceSubDepartment,
     id: order.id,
-    kekv: order.kekv ?? "2210",
+    kekv: order.kekv ?? defaultKekv,
     manufacturerId: order.manufacturer?.id ?? -1,
     onePrice: order.onePrice,
     taxIncluded: true,
@@ -532,14 +682,62 @@ function getFinanceLabel(fd: FinanceSubDepartment) {
 }
 
 function onCpvSelected(cpv: Cpv) {
-  selectedCpv.value = cpv;
-  model.value.cpvId = cpv.id;
+  model.value.cpv = cpv;
   selectCpvDialog.value = false;
 }
 
-function onFinanceSubDepartmentSelected(fs: FinanceSubDepartment){
-  selectedFinanceSubDepartment.value = fs;
-  model.value.financeSubDepartmentId = fs.id;
+function getCpvLabel(cpv: Cpv | undefined) {
+  return cpv ? `${ cpv.code } - ${ cpv.descriptionUkrainian } - ${ cpv.descriptionEnglish }` : "";
+}
+
+function setManufacturer(manufacturer: Manufacturer | undefined) {
+  if (!manufacturer) {
+    model.value.manufacturerId = -1;
+    return;
+  }
+  manufacturers.value = [ { text: manufacturer.name, value: manufacturer.id } as SelectItem<number> ];
+  model.value.manufacturerId = manufacturer.id;
+}
+
+function setSupplier(supplier: Supplier | undefined) {
+  if (!supplier) {
+    model.value.supplierId = -1;
+    return;
+  }
+  suppliers.value = [ { text: supplier.name, value: supplier.id } as SelectItem<number> ];
+  model.value.supplierId = supplier.id;
+}
+
+function setReason(reason: ReasonForSupplierChoice | undefined) {
+  if (!reason) {
+    model.value.reasonId = -1;
+    return;
+  }
+  reasons.value = [ { text: reason.name, value: reason.id } as SelectItem<number> ];
+  model.value.reasonId = reason.id;
+}
+
+function setUnit(unit: Unit) {
+  units.value = [ { text: unit.name, value: unit.id } as SelectItem<number> ];
+  model.value.unitId = unit.id;
+}
+
+function setOnePrice(price: number) {
+  model.value.taxIncluded = true;
+  model.value.onePrice = price;
+}
+
+function onCopyAllSuggested(suggestion: OrderSuggestion) {
+  model.value.description = suggestion.description;
+  model.value.cpv = suggestion.cpv as Cpv;
+  setManufacturer(suggestion.manufacturer);
+  model.value.catNum = suggestion.catNum;
+  model.value.type = suggestion.type;
+  setOnePrice(suggestion.onePrice);
+  setUnit(suggestion.unit);
+  model.value.kekv = suggestion.kekv;
+  setSupplier(suggestion.supplier);
+  setReason(suggestion.reason);
 }
 
 interface OrderModel {
@@ -553,8 +751,8 @@ interface OrderModel {
   kekv: string | undefined;
   procurementStartDate: Date | undefined;
   unitId: number | undefined;
-  cpvId: number | undefined;
-  financeSubDepartmentId: number | undefined;
+  cpv: Cpv | undefined;
+  financeSubDepartment: FinanceSubDepartment | undefined;
   subDepartmentId: number | undefined;
   departmentId: number | undefined;
   manufacturerId: number;
@@ -562,6 +760,12 @@ interface OrderModel {
   reasonId: number;
   editor?: string;
   editedDate?: string;
+}
+
+interface SuggestionsTablePaging extends TablePagingData {
+  items: OrderSuggestion[]
+  catNum?: string,
+  description?: string
 }
 
 </script>
@@ -595,7 +799,11 @@ interface OrderModel {
   "kekvFull": "Economic Classification Code of Expenses",
   "selectCpv": "Select CPV",
   "lastEdit": "Edited",
-  "taxIncluded": "w Tax"
+  "taxIncluded": "w Tax",
+  "suggestionsAvailable": "Similar orders found (click to autocomplete)",
+  "suggestions": "Suggestions",
+  "all": "All",
+  "copyAll": "Copy All"
 }
 </i18n>
 
@@ -628,6 +836,36 @@ interface OrderModel {
   "kekvFull": "Код Економічної Класифікації Видатків",
   "selectCpv": "Оберіть CPV",
   "lastEdit": "Редаговано",
-  "taxIncluded": "з ПДВ"
+  "taxIncluded": "з ПДВ",
+  "suggestionsAvailable": "Знайдені подібні замовлення (клікніть, щоб заповнити поля)",
+  "suggestions": "пропозицій",
+  "all": "Всі",
+  "copyAll": "Копіювати всі поля"
 }
 </i18n>
+
+<style lang="scss">
+.suggestion-group {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.suggestion-input {
+  height: 100%;
+}
+
+.suggestion-hint {
+  margin-left: 5px;
+  height: calc(100% + 5px);
+  cursor: pointer;
+}
+
+.p-overlaypanel.p-component {
+  z-index: 998;
+}
+
+.p-datatable-row-expansion {
+  background: #edf1f5 !important;
+}
+</style>

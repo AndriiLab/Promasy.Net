@@ -63,6 +63,16 @@ public class OrdersModule : IModule
             .WithName("Get Orders list")
             .RequireAuthorization()
             .Produces<OrderPagedResponse>();
+        endpoints.MapGet($"{RoutePrefix}/suggestions", async (OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
+            {
+                var list = await repository.GetOrderSuggestionsPagedListAsync(request);
+                return Results.Json(list);
+            })
+            .WithValidator<OrderSuggestionPagedRequest>()
+            .WithTags(Tag)
+            .WithName("Get Orders suggestions list")
+            .RequireAuthorization()
+            .Produces<PagedResponse<OrderSuggestionDto>>();
 
         endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IOrdersRepository repository) =>
             {

@@ -1,4 +1,5 @@
-﻿import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/utils/fetch-utils";
+﻿import { FinanceSource } from "@/services/api/finances";
+import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/utils/fetch-utils";
 import { buildQueryParameters } from "@/utils/url-params-utils";
 
 export default {
@@ -32,6 +33,27 @@ export default {
         [ "subDepartment", subDepartmentId ? subDepartmentId.toString() : undefined ],
         [ "finance", financeSourceId ? financeSourceId.toString() : undefined ],
         [ "year", !financeSourceId ? year.toString() : undefined ],
+      ]) }`,
+    );
+  },
+  getSuggestionsList(
+    page: number,
+    offset: number,
+    search?: string,
+    order?: string,
+    descending?: boolean,
+    catNum?: string,
+    excludeId?: number,
+  ): Promise<Response<PagedResponse<OrderSuggestion>, ErrorApiResponse>> {
+    return Fetch.Get<PagedResponse<OrderSuggestion>, ErrorApiResponse>(
+      `/api/orders/suggestions${ buildQueryParameters([
+        [ "offset", offset.toString() ],
+        [ "page", page.toString() ],
+        [ "exclude", excludeId?.toString() ],
+        [ "search", search ],
+        [ "cat", catNum ],
+        [ "order", order ],
+        [ "desc", descending ? "true" : undefined ],
       ]) }`,
     );
   },
@@ -86,6 +108,20 @@ export interface Order {
   editorId: number;
   editor: string;
   editedDate: string;
+}
+
+export interface OrderSuggestion {
+  id: number;
+  description: string;
+  catNum?: string;
+  onePrice: number;
+  type: number;
+  kekv?: string;
+  unit: Unit;
+  cpv: Cpv;
+  manufacturer?: Manufacturer;
+  supplier?: Supplier;
+  reason?: ReasonForSupplierChoice;
 }
 
 export interface Unit {
