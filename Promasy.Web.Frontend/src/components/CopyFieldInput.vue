@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n({ useScope: "local" });
+const { t } = useI18n();
 const emit = defineEmits([ "selected" ]);
 const props = defineProps<{
   label: string,
