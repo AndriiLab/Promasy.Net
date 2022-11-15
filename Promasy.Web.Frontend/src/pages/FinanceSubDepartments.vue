@@ -173,21 +173,21 @@
                        class="mt-3">
               <label for="totalMaterials">{{ t('totalMaterials') }}</label>
               <FinanceInputWithLimit input-id="totalMaterials" v-model="item.totalMaterials"
-                                     :limit="financeSource.unassignedMaterials"
+                                     :limit="financeSourceLimits.materials"
                                      input-placeholder=""></FinanceInputWithLimit>
             </ErrorWrap>
             <ErrorWrap :errors="v$.totalEquipment.$errors" :external-errors="externalErrors['TotalEquipment']"
                        class="mt-3">
               <label for="totalEquipment">{{ t('totalEquipment') }}</label>
               <FinanceInputWithLimit input-id="totalEquipment" v-model="item.totalEquipment"
-                                     :limit="financeSource.unassignedEquipment"
+                                     :limit="financeSourceLimits.equipment"
                                      input-placeholder=""></FinanceInputWithLimit>
             </ErrorWrap>
             <ErrorWrap :errors="v$.totalServices.$errors" :external-errors="externalErrors['TotalServices']"
                        class="mt-3">
               <label for="totalServices">{{ t('totalServices') }}</label>
               <FinanceInputWithLimit input-id="totalServices" v-model="item.totalServices"
-                                     :limit="financeSource.unassignedServices"
+                                     :limit="financeSourceLimits.services"
                                      input-placeholder=""></FinanceInputWithLimit>
             </ErrorWrap>
           </div>
@@ -206,7 +206,9 @@
           </Message>
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
-            <span v-if="item">{{ t('deleteDialog.text') }} <b>{{ `${item.department} - ${item.subDepartment}` }}</b>?</span>
+            <span v-if="item">{{ t('deleteDialog.text') }} <b>{{
+                `${item.department} - ${item.subDepartment}`
+              }}</b>?</span>
           </div>
           <template #footer>
             <Button :label="t('no')" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
@@ -250,6 +252,7 @@ const deleteItemDialog = ref(false);
 const isLoading = ref(false);
 const financeSources = ref([] as FinanceSource[]);
 const financeSource = ref({} as FinanceSource);
+const financeSourceLimits = ref({ equipment: 0, materials: 0, services: 0 } as FinanceSourceLimits);
 const item = ref(getDefaultItem());
 const departments = ref([] as SelectItem<number>[]);
 const subDepartments = ref([] as SelectItem<number>[]);
@@ -267,9 +270,9 @@ const rules = computed(() => {
     financeSourceId: { required },
     departmentId: { required },
     subDepartmentId: { required },
-    totalEquipment: { required, minValue: minValue(0), maxValue: maxValue(financeSource.value.unassignedEquipment) },
-    totalMaterials: { required, minValue: minValue(0), maxValue: maxValue(financeSource.value.unassignedMaterials) },
-    totalServices: { required, minValue: minValue(0), maxValue: maxValue(financeSource.value.unassignedServices) },
+    totalEquipment: { required, minValue: minValue(0), maxValue: maxValue(financeSourceLimits.value.equipment) },
+    totalMaterials: { required, minValue: minValue(0), maxValue: maxValue(financeSourceLimits.value.materials) },
+    totalServices: { required, minValue: minValue(0), maxValue: maxValue(financeSourceLimits.value.services) },
   };
 });
 const v$ = useVuelidate(rules, item, { $lazy: true });
@@ -342,6 +345,11 @@ async function onSortAsync(event: DataTableSortEvent) {
 }
 
 function create() {
+  financeSourceLimits.value = {
+    services: financeSource.value.unassignedServices,
+    materials: financeSource.value.unassignedMaterials,
+    equipment: financeSource.value.unassignedEquipment,
+  };
   externalErrors.value = {} as Object<string[]>;
   departments.value = [];
   subDepartments.value = [];
@@ -352,6 +360,11 @@ function create() {
 
 function edit(selectedItem: FinanceSubDepartment) {
   externalErrors.value = {} as Object<string[]>;
+  financeSourceLimits.value = {
+    services: financeSource.value.unassignedServices + selectedItem.totalServices,
+    materials: financeSource.value.unassignedMaterials + selectedItem.totalMaterials,
+    equipment: financeSource.value.unassignedEquipment + selectedItem.totalEquipment,
+  };
   item.value = { ...selectedItem };
   departments.value = [ { text: item.value.department, value: item.value.departmentId } ];
   subDepartments.value = [ { text: item.value.subDepartment, value: item.value.subDepartmentId } ];
@@ -439,8 +452,14 @@ function getDefaultItem(): FinanceSubDepartment {
     subDepartmentId: 0,
     totalEquipment: 0,
     totalMaterials: 0,
-    totalServices: 0
+    totalServices: 0,
   };
+}
+
+interface FinanceSourceLimits {
+  equipment: number;
+  materials: number;
+  services: number;
 }
 </script>
 
