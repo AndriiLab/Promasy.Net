@@ -11,13 +11,15 @@ using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Promasy.Core.Resources;
 using Promasy.Core.UserContext;
+using Promasy.Modules.Auth.Helpers;
 using Promasy.Modules.Auth.Interfaces;
 using Promasy.Modules.Auth.Models;
 using Promasy.Modules.Auth.Services;
 using Promasy.Modules.Core.Auth;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 
 namespace Promasy.Modules.Auth;
@@ -77,78 +79,56 @@ public class AuthModule : IModule
                     var id = await authService.AuthAsync(request.User, request.Password);
                     if (id is null)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect username or password"]);
+                        throw new ApiException(localizer["Incorrect username or password"]);
                     }
                     var tokens = await jwtTokenService.GenerateTokenAsync(id.Value);
-                    SetRefreshTokenCookie(response, tokens.RefreshToken, tokens.RefreshExpiryTime);
+                    RefreshTokenCookieHelper.SetCookie(response, tokens.RefreshToken, tokens.RefreshExpiryTime);
 
-                    return Results.Json(new TokenResponse(tokens.Token));
+                    return TypedResults.Ok(new TokenResponse(tokens.Token));
                 })
             .WithValidator<UserCredentialsRequest>()
-            .WithTags(Tag)
-            .WithName("Login")
-            .Produces<TokenResponse>();
+            .WithApiDescription(Tag, "Login", "Generate Token");
 
         endpoints.MapGet($"{RoutePrefix}/refresh", async (ITokenService jwtTokenService, IAuthService authService, HttpRequest request, HttpResponse response) =>
             {
-                var refreshToken = GetRefreshTokenFromCookie(request);
+                var refreshToken = RefreshTokenCookieHelper.GetFromCookie(request);
                 var id = jwtTokenService.GetEmployeeIdFromRefreshToken(refreshToken);
                 if (id is null)
                 {
-                    return Results.Unauthorized();
+                    throw new ApiException(null, StatusCodes.Status401Unauthorized);
                 }
 
                 await authService.SetUserContextAsync(id.Value);
                 var tokens = await jwtTokenService.RefreshTokenAsync(id.Value, refreshToken!);
                 if (tokens is null)
                 {
-                    return Results.Unauthorized();
+                    throw new ApiException(null, StatusCodes.Status401Unauthorized);
                 }
                 
-                SetRefreshTokenCookie(response, tokens.RefreshToken, tokens.RefreshExpiryTime);
+                RefreshTokenCookieHelper.SetCookie(response, tokens.RefreshToken, tokens.RefreshExpiryTime);
 
-                return Results.Json(new TokenResponse(tokens.Token));
+                return TypedResults.Ok(new TokenResponse(tokens.Token));
             })
-            .WithTags(Tag)
-            .WithName("Refresh Token")
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces<TokenResponse>();
+            .WithApiDescription(Tag, "RefreshToken", "Refresh Token")
+            .Produces(StatusCodes.Status401Unauthorized);
 
         endpoints.MapPost($"{RoutePrefix}/revoke", async ([FromBody] RevokeTokenRequest? tr,
                 ITokenService jwtTokenService, HttpRequest request) =>
             {
-                var token = tr?.Token ?? GetRefreshTokenFromCookie(request);
+                var token = tr?.Token ?? RefreshTokenCookieHelper.GetFromCookie(request);
                 if (string.IsNullOrEmpty(token))
                 {
-                    return Results.NoContent();
+                    return TypedResults.NoContent();
                 }
 
                 await jwtTokenService.RevokeTokenAsync(token);
 
-                return Results.NoContent();
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
             .RequireAuthorization()
-            .WithName("Revoke Token")
-            .Produces(StatusCodes.Status204NoContent);
+            .WithApiDescription(Tag, "RevokeToken", "Revoke Token");
 
         return endpoints;
     }
 
-
-    private const string RefreshTokenCookieKey = "refresh_token";
-    private static void SetRefreshTokenCookie(HttpResponse response, string token, DateTime refreshExpiryTime)
-    {
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = refreshExpiryTime
-        };
-        response.Cookies.Append(RefreshTokenCookieKey, token, cookieOptions);
-    }
-
-    private static string? GetRefreshTokenFromCookie(HttpRequest request)
-    {
-        return request.Cookies.TryGetValue(RefreshTokenCookieKey, out var rt) ? rt : null;
-    }
 }

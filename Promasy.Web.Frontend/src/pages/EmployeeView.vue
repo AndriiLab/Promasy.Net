@@ -108,6 +108,7 @@
 
 <script lang="ts" setup>
 import { email, maxLength, minLength, numeric, required, requiredIf, sameAs } from "@/i18n/validators";
+import processError from "@/utils/error-response-utils";
 import { SelectItem } from "@/utils/fetch-utils";
 import useVuelidate from "@vuelidate/core";
 import { ref, onMounted, computed } from "vue";
@@ -241,9 +242,7 @@ async function saveAsync() {
   if (response.success) {
     await Router.push({ name: "Employees" });
   } else {
-    if (response.error?.errors) {
-      externalErrors.value = response.error.errors;
-    }
+    processError(response.error, (errs) => { externalErrors.value = errs });
     loading.value = false;
   }
 }

@@ -124,6 +124,7 @@
 
 <script lang="ts" setup>
 import { useSessionStore } from "@/store/session";
+import processError from "@/utils/error-response-utils";
 import { capitalize } from "@/utils/string-utils";
 import { ref, reactive, onMounted, computed } from "vue";
 import ManufacturersApi, { Manufacturer } from "@/services/api/manufacturers";
@@ -273,10 +274,8 @@ async function deleteItemAsync() {
     deleteItemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
+  } else {
+    processError(response.error, (errs) => { externalErrors.value = errs });
   }
 }
 
@@ -289,10 +288,8 @@ async function mergeAsync() {
     mergeDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
+  } else {
+    processError(response.error, (errs) => { externalErrors.value = errs });
   }
 }
 </script>

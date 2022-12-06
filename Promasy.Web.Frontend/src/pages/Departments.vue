@@ -104,6 +104,7 @@
 </template>
 
 <script lang="ts" setup>
+import processError from "@/utils/error-response-utils";
 import { capitalize } from "@/utils/string-utils";
 import { useSessionStore } from "@/store/session";
 import { ref, reactive, onMounted, computed } from "vue";
@@ -217,10 +218,8 @@ async function saveAsync() {
     itemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
+  } else {
+    processError(response.error, (errs) => { externalErrors.value = errs });
   }
 }
 
@@ -232,10 +231,8 @@ async function deleteItemAsync() {
     deleteItemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
+  } else {
+    processError(response.error, (e) => { externalErrors.value = e });
   }
 }
 </script>

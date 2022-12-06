@@ -15,5 +15,6 @@
     <Script Include="src\utils\constants.ts" />
     <Script Include="src\utils\currency-utils.ts" />
     <Script Include="src\utils\date-utils.ts" />
+    <Script Include="src\utils\error-response-utils.ts" />
   </ItemGroup>
 </Project>

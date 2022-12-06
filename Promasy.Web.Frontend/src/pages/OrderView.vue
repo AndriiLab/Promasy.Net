@@ -322,13 +322,13 @@ import OrdersApi, {
 } from "@/services/api/orders";
 import FinanceSubDepartmentsApi, { FinanceSubDepartment } from "@/services/api/finance-sub-departments";
 import ManufacturersApi from "@/services/api/manufacturers";
-import ReasonsForSupplierChoice from "@/services/api/reasons-for-supplier-choice";
 import SuppliersApi from "@/services/api/suppliers";
 import ReasonsForSupplierChoiceApi from "@/services/api/reasons-for-supplier-choice";
 import UnitsApi from "@/services/api/units";
 import { useSessionStore } from "@/store/session";
 import { formatAsDate } from "@/utils/date-utils";
 import { defaultKekv } from "@/utils/constants";
+import processError from "@/utils/error-response-utils";
 import { SelectItem } from "@/utils/fetch-utils";
 import { DataTablePageEvent } from "primevue/datatable";
 import { ref, onMounted, computed, watch, reactive } from "vue";
@@ -573,9 +573,7 @@ async function saveAsync() {
     });
     return;
   } else {
-    if (response.error?.errors) {
-      externalErrors.value = response.error.errors;
-    }
+    processError(response.error, (errs) => { externalErrors.value = errs });
     loading.value = false;
   }
 }

@@ -17,7 +17,7 @@ public record CreateEmployeeRequest(string FirstName, string? MiddleName, string
 internal class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
 {
     public CreateEmployeeRequestValidator(IEmployeeRules employeeRules, IRules<SubDepartment> subDepartmentRules,
-         IUserContext userContext, IStringLocalizer<SharedResource> localizer)
+        IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.FirstName)
             .NotEmpty()

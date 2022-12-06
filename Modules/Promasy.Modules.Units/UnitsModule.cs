@@ -6,10 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
@@ -29,26 +30,26 @@ public class UnitsModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromServices] IUnitsRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IUnitsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<PagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Units list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<UnitDto>>();
+            .WithApiDescription(Tag, "GetUnitsList", "Get Units list")
+            .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IUnitsRepository repository) =>
             {
                 var unit = await repository.GetByIdAsync(id);
-                return unit is not null ? Results.Json(unit) : Results.NotFound();
+                if (unit is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return TypedResults.Ok(unit);
             })
-            .WithTags(Tag)
-            .WithName("Get Unit by Id")
+            .WithApiDescription(Tag, "GetUnitById", "Get Unit by Id")
             .RequireAuthorization()
-            .Produces<UnitDto>()
             .Produces(StatusCodes.Status404NotFound);
 
         endpoints.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository) =>
@@ -56,13 +57,11 @@ public class UnitsModule : IModule
                 var id = await repository.CreateAsync(new UnitDto(0, request.Name));
                 var unit = await repository.GetByIdAsync(id);
 
-                return Results.Json(unit, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateUnitRequest>()
-            .WithTags(Tag)
-            .WithName("Create Unit")
-            .RequireAuthorization()
-            .Produces<UnitDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateUnit", "Create Unit")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateUnitRequest request, [FromRoute] int id, [FromServices] IUnitsRepository repository,
@@ -70,56 +69,49 @@ public class UnitsModule : IModule
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new UnitDto(request.Id, request.Name));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
             .WithValidator<UpdateUnitRequest>()
-            .WithTags(Tag)
-            .WithName("Update Unit")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateUnit", "Update Unit")
+            .RequireAuthorization();
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IUnitsRepository repository,
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IUnitsRepository repository,
                 [FromServices] IUnitRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["You cannot perform this action"], StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError(localizer["Unit already associated with order"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["Unit already associated with order"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
 
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Unit by Id")
+            .WithApiDescription(Tag, "DeleteUnit", "Delete Unit")
             .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
         endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeUnitsRequest request, [FromServices] IUnitsRepository repository) =>
             {
                 await repository.MergeAsync(request.TargetId, request.SourceIds);
 
-                return Results.Ok();
+                return TypedResults.Ok();
             })
             .WithValidator<MergeUnitsRequest>()
-            .WithTags(Tag)
-            .WithName("Merge Units")
-            .RequireAuthorization(AdminOnlyPolicy.Name)
-            .Produces(StatusCodes.Status200OK);
+            .WithApiDescription(Tag, "MergeUnits", "Merge Units")
+            .RequireAuthorization(AdminOnlyPolicy.Name);
 
 
         return endpoints;

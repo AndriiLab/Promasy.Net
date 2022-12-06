@@ -12,6 +12,7 @@ using Promasy.Modules.Organizations;
 using Promasy.Modules.Suppliers;
 using Promasy.Modules.Units;
 using Promasy.Persistence;
+using Promasy.Web.App.ExceptionHandlers;
 using Serilog;
 
 
@@ -61,7 +62,7 @@ try
             Title = "WebAPI",
             Description = "Promasy WebAPI"
         });
-        o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+        o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Name = "Authorization",
             Type = SecuritySchemeType.ApiKey,
@@ -107,6 +108,8 @@ try
         .AllowAnyMethod()
         .AllowAnyHeader());
 
+    app.UseMiddleware<PromasyExceptionHandlerMiddleware>();
+
     // Map module endpoints
     app.MapEndpoints();
 
@@ -140,7 +143,7 @@ try
                 Log.Information("Request culture not defined. Fallback to default culture: {Culture}", requestLanguage);
             }
 
-            return Task.FromResult(new ProviderCultureResult(selectedLanguage, selectedLanguage));
+            return Task.FromResult(new ProviderCultureResult(selectedLanguage, selectedLanguage))!;
         })));
 
     app.PreparePersistence();

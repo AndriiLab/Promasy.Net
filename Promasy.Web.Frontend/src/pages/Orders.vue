@@ -140,6 +140,7 @@ import DepartmentsApi from "@/services/api/departments";
 import SubDepartmentsApi from "@/services/api/sub-departments";
 import FinanceSourcesApi from "@/services/api/finances";
 import OrdersApi, { Order, OrderShort } from "@/services/api/orders";
+import processError from "@/utils/error-response-utils";
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import { useSessionStore } from "@/store/session";
 import { SelectItem } from "@/utils/fetch-utils";
@@ -380,10 +381,8 @@ async function deleteItemAsync() {
     deleteItemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
+  } else {
+    processError(response.error, (errs) => { externalErrors.value = errs });
   }
 }
 

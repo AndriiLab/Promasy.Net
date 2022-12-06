@@ -28,7 +28,7 @@ export const Fetch = {
   },
 };
 
-const nonRetryUrls = ["/api/auth/refresh", "/api/auth/revoke"];
+const nonRetryUrls = [ "/api/auth/refresh", "/api/auth/revoke" ];
 
 async function typedFetchAsync<TOkResponse, TErrorResponse>(
   method: string,
@@ -99,7 +99,11 @@ export interface Response<TOkResponse, TErrorResponse> {
 }
 
 export interface ErrorApiResponse extends Error {
-  errors: Object<string[]>;
+  type: string,
+  title: string,
+  status: number,
+  detail: string,
+  errors?: Object<string[]>;
 }
 
 export interface PagedResponse<T> {

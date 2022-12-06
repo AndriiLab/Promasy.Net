@@ -115,6 +115,7 @@
 </template>
 
 <script lang="ts" setup>
+import processError from "@/utils/error-response-utils";
 import { SelectItem } from "@/utils/fetch-utils";
 import { capitalize } from "@/utils/string-utils";
 import { useSessionStore } from "@/store/session";
@@ -280,10 +281,8 @@ async function deleteItemAsync() {
     deleteItemDialog.value = false;
     await getDataAsync();
     toast.add({ severity: "success", summary: t("toast.success"), life: 3000 });
-    return;
-  }
-  if (response.error?.errors) {
-    externalErrors.value = response.error.errors;
+  } else {
+    processError(response.error, (errs) => { externalErrors.value = errs });
   }
 }
 </script>

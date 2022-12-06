@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Validation;
-using Promasy.Modules.Cpv.Dtos;
 using Promasy.Modules.Cpv.Interfaces;
 using Promasy.Modules.Cpv.Models;
 
@@ -24,29 +25,30 @@ public class CpvModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet(RoutePrefix, async (GetCpvsRequest request, [FromServices] ICpvsRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] GetCpvsRequest request, [FromServices] ICpvsRepository repository) =>
             {
                 var result = await repository.GetCpvsAsync(request);
-                return Results.Json(result);
+                return TypedResults.Ok(result);
             })
             .WithValidator<GetCpvsRequest>()
-            .WithTags(Tag)
-            .WithName("Get CPVs list")
-            .RequireAuthorization()
-            .Produces<ICollection<CpvDto>>();
+            .WithApiDescription(Tag, "GetCpvList", "Get CPVs list")
+            .RequireAuthorization();
 
         endpoints.MapGet($"{RoutePrefix}/{{code}}",
-                async (GetCpvByCodeRequest request, [FromServices] ICpvsRepository repository) =>
+                async ([AsParameters] GetCpvByCodeRequest request, [FromServices] ICpvsRepository repository) =>
                 {
                     var result = await repository.GetCpvByCodeAsync(request.Code);
-                    return result is not null ? Results.Json(result) : Results.NotFound();
+                    if (result is null)
+                    {
+                        throw new ApiException(null, StatusCodes.Status404NotFound);
+                    }
+
+                    return TypedResults.Ok(result);
                 })
             .WithValidator<GetCpvByCodeRequest>()
-            .WithTags(Tag)
-            .WithName("Get CPV by code")
-            .RequireAuthorization()
-            .Produces<CpvDto>()
-            .Produces(StatusCodes.Status404NotFound);
+            .WithApiDescription(Tag, "GetCpvByCode", "Get CPV by code")
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         return endpoints;
     }

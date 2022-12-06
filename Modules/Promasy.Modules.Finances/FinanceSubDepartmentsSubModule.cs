@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Requests;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Finances.Dtos;
 using Promasy.Modules.Finances.Interfaces;
@@ -32,38 +33,37 @@ internal class FinanceSubDepartmentsSubModule : SubModule
 
     public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-         endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromRoute] int financeId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
+         endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromRoute] int financeId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(financeId, request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<PagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Finance sub-departments list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<FinanceSubDepartmentDto>>();
+            .WithApiDescription(Tag, "GetFinanceSubDepartmentsList", "Get Finance sub-departments list")
+            .RequireAuthorization();
          
-         endpoints.MapGet("/api/departments/{departmentId:int}/sub-departments/{subDepartmentId:int}/finances", async (PagedRequest request,
+         endpoints.MapGet("/api/departments/{departmentId:int}/sub-departments/{subDepartmentId:int}/finances", async ([AsParameters] PagedRequest request,
                  [FromRoute] int subDepartmentId, [FromRoute] int departmentId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
              {
                  var list = await repository.GetPagedListBySubDepartmentAsync(subDepartmentId, request);
-                 return Results.Json(list);
+                 return TypedResults.Ok(list);
              })
              .WithValidator<PagedRequest>()
-             .WithTags(Tag)
-             .WithName("Get Finance sub-departments list by sub-department")
-             .RequireAuthorization()
-             .Produces<PagedResponse<FinanceSubDepartmentDto>>();
+             .WithApiDescription(Tag, "GetFinanceSubDepartmentsBySubDepartmentId", "Get Finance sub-departments list by sub-department")
+             .RequireAuthorization();
          
-         endpoints.MapGet($"{RoutePrefix}/{{subDepartmentId:int}}", async (int financeId, int subDepartmentId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
+         endpoints.MapGet($"{RoutePrefix}/{{subDepartmentId:int}}", async ([FromRoute] int financeId, [FromRoute] int subDepartmentId,
+                 [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
              {
                  var fs = await repository.GetByFinanceSubDepartmentIdsAsync(financeId, subDepartmentId);
-                 return fs is not null ? Results.Json(fs) : Results.NotFound();
+                 if (fs is null)
+                 {
+                     throw new ApiException(null, StatusCodes.Status404NotFound);
+                 }
+                 return TypedResults.Ok(fs);
              })
-             .WithTags(Tag)
-             .WithName("Get Finance sub-department by Id")
+             .WithApiDescription(Tag, "GetFinanceSubDepartmentById", "Get Finance sub-department by Id")
              .RequireAuthorization()
-             .Produces<FinanceSubDepartmentDto>()
              .Produces(StatusCodes.Status404NotFound);
 
         endpoints.MapPost(RoutePrefix, async ([FromBody]CreateFinanceSubDepartmentRequest request, [FromRoute] int financeId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
@@ -72,13 +72,11 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                     request.TotalEquipment, request.TotalMaterials, request.TotalServices));
                 var fs = await repository.GetByFinanceSubDepartmentIdsAsync(request.FinanceSourceId, request.SubDepartmentId);
 
-                return Results.Json(fs, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(fs, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateFinanceSubDepartmentRequest>()
-            .WithTags(Tag)
-            .WithName("Create Finance sub-department")
-            .RequireAuthorization()
-            .Produces<FinanceSubDepartmentDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateFinanceSubDepartment", "Create Finance sub-department")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{subDepartmentId:int}}",
                 async ([FromBody] UpdateFinanceSubDepartmentRequest request, [FromRoute] int financeId, [FromRoute] int subDepartmentId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository,
@@ -86,30 +84,25 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                 {
                     if (request.SubDepartmentId != subDepartmentId || request.FinanceSourceId != financeId)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new UpdateFinanceSubDepartmentDto(request.Id, request.FinanceSourceId, request.SubDepartmentId,
                         request.TotalEquipment, request.TotalMaterials, request.TotalServices));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted(string.Empty);
                 })
             .WithValidator<UpdateFinanceSubDepartmentRequest>()
-            .WithTags(Tag)
-            .WithName("Update Finance sub-department")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateFinanceSubDepartment", "Update Finance sub-department")
+            .RequireAuthorization();
 
         endpoints.MapDelete($"{RoutePrefix}/{{subDepartmentId:int}}", async ([FromRoute] int financeId, [FromRoute] int subDepartmentId, [FromServices] IFinanceFinanceSubDepartmentsRepository repository) =>
             {
                 await repository.DeleteByFinanceSubDepartmentIdsAsync(financeId, subDepartmentId);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Finance sub-department")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .WithApiDescription(Tag, "DeleteFinanceSubDepartment", "Delete Finance sub-department")
+            .RequireAuthorization();
         
         return endpoints;
     }

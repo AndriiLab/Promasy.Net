@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Promasy.Core.Exceptions;
 using Promasy.Core.Resources;
 using Promasy.Core.UserContext;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Persistence;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Orders.Dtos;
@@ -163,11 +163,11 @@ internal class OrdersRepository : IOrderRules, IOrdersRepository
             .PaginateAsync(request,
                 o => new OrderSuggestionDto(o.Id, o.Description, o.CatNum,
                     o.OnePrice, o.Type, o.Kekv,
-                    new UnitDto(o.UnitId, o.Unit.Name),
-                    new CpvDto(o.CpvId, o.Cpv.Code, o.Cpv.DescriptionEnglish, o.Cpv.DescriptionUkrainian, o.Cpv.Level, o.Cpv.IsTerminal, o.Cpv.ParentId),
-                    o.ManufacturerId.HasValue ? new ManufacturerDto(o.ManufacturerId.Value, o.Manufacturer.Name) : null,
-                    o.SupplierId.HasValue ? new SupplierDto(o.SupplierId.Value, o.Supplier.Name) : null,
-                    o.ReasonId.HasValue ? new ReasonForSupplierChoiceShortDto(o.ReasonId.Value, o.Reason.Name) : null));
+                    new OrderUnitDto(o.UnitId, o.Unit.Name),
+                    new OrderCpvDto(o.CpvId, o.Cpv.Code, o.Cpv.DescriptionEnglish, o.Cpv.DescriptionUkrainian, o.Cpv.Level, o.Cpv.IsTerminal, o.Cpv.ParentId),
+                    o.ManufacturerId.HasValue ? new OrderManufacturerDto(o.ManufacturerId.Value, o.Manufacturer.Name) : null,
+                    o.SupplierId.HasValue ? new OrderSupplierDto(o.SupplierId.Value, o.Supplier.Name) : null,
+                    o.ReasonId.HasValue ? new OrderReasonForSupplierChoiceShortDto(o.ReasonId.Value, o.Reason.Name) : null));
 
         return new PagedResponse<OrderSuggestionDto>
         {
@@ -184,14 +184,14 @@ internal class OrdersRepository : IOrderRules, IOrdersRepository
             .Where(o => o.Id == id)
             .Select(o => new OrderDto(o.Id, o.Description, o.CatNum,
                 o.OnePrice, o.Amount, o.Type, o.Kekv, o.ProcurementStartDate,
-                new UnitDto(o.UnitId, o.Unit.Name),
-                new CpvDto(o.CpvId, o.Cpv.Code, o.Cpv.DescriptionEnglish, o.Cpv.DescriptionUkrainian, o.Cpv.Level, o.Cpv.IsTerminal, o.Cpv.ParentId),
-                new FinanceSubDepartmentDto(o.FinanceSubDepartmentId, o.FinanceSubDepartment.FinanceSourceId, o.FinanceSubDepartment.FinanceSource.Name, o.FinanceSubDepartment.FinanceSource.Number),
-                new SubDepartmentDto(o.FinanceSubDepartment.SubDepartmentId, o.FinanceSubDepartment.SubDepartment.Name),
-                new DepartmentDto(o.FinanceSubDepartment.SubDepartment.DepartmentId, o.FinanceSubDepartment.SubDepartment.Department.Name),
-                o.ManufacturerId.HasValue ? new ManufacturerDto(o.ManufacturerId.Value, o.Manufacturer.Name) : null,
-                o.SupplierId.HasValue ? new SupplierDto(o.SupplierId.Value, o.Supplier.Name) : null,
-                o.ReasonId.HasValue ? new ReasonForSupplierChoiceShortDto(o.ReasonId.Value, o.Reason.Name) : null,
+                new OrderUnitDto(o.UnitId, o.Unit.Name),
+                new OrderCpvDto(o.CpvId, o.Cpv.Code, o.Cpv.DescriptionEnglish, o.Cpv.DescriptionUkrainian, o.Cpv.Level, o.Cpv.IsTerminal, o.Cpv.ParentId),
+                new OrderFinanceSubDepartmentDto(o.FinanceSubDepartmentId, o.FinanceSubDepartment.FinanceSourceId, o.FinanceSubDepartment.FinanceSource.Name, o.FinanceSubDepartment.FinanceSource.Number),
+                new OrderSubDepartmentDto(o.FinanceSubDepartment.SubDepartmentId, o.FinanceSubDepartment.SubDepartment.Name),
+                new OrderDepartmentDto(o.FinanceSubDepartment.SubDepartment.DepartmentId, o.FinanceSubDepartment.SubDepartment.Department.Name),
+                o.ManufacturerId.HasValue ? new OrderManufacturerDto(o.ManufacturerId.Value, o.Manufacturer.Name) : null,
+                o.SupplierId.HasValue ? new OrderSupplierDto(o.SupplierId.Value, o.Supplier.Name) : null,
+                o.ReasonId.HasValue ? new OrderReasonForSupplierChoiceShortDto(o.ReasonId.Value, o.Reason.Name) : null,
                 o.ModifierId ?? o.CreatorId,
                 PromasyDbFunction.GetEmployeeShortName(o.ModifierId ?? o.CreatorId),
                 o.ModifiedDate ?? o.CreatedDate))

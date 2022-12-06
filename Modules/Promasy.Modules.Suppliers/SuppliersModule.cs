@@ -6,10 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Suppliers.Dtos;
 using Promasy.Modules.Suppliers.Interfaces;
@@ -29,40 +30,39 @@ public class SuppliersModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromServices] ISuppliersRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] ISuppliersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<PagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Suppliers list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<SupplierDto>>();
+            .WithApiDescription(Tag, "GetSuppliersList", "Get Suppliers list")
+            .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] ISuppliersRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] ISuppliersRepository repository) =>
             {
-                var unit = await repository.GetByIdAsync(id);
-                return unit is not null ? Results.Json(unit) : Results.NotFound();
+                var supplier = await repository.GetByIdAsync(id);
+                if (supplier is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+
+                return TypedResults.Ok(supplier);
             })
-            .WithTags(Tag)
-            .WithName("Get Supplier by Id")
+            .WithApiDescription(Tag, "GetSupplierById", "Get Supplier by Id")
             .RequireAuthorization()
-            .Produces<SupplierDto>()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateSupplierRequest request, [FromServices] ISuppliersRepository repository) =>
+        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateSupplierRequest request, [FromServices] ISuppliersRepository repository) =>
             {
                 var id = await repository.CreateAsync(new SupplierDto(0, request.Name, request.Comment, request.Phone));
                 var unit = await repository.GetByIdAsync(id);
 
-                return Results.Json(unit, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateSupplierRequest>()
-            .WithTags(Tag)
-            .WithName("Create Supplier")
-            .RequireAuthorization()
-            .Produces<SupplierDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateSupplier", "Create Supplier")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateSupplierRequest request, [FromRoute] int id, [FromServices] ISuppliersRepository repository, 
@@ -70,57 +70,50 @@ public class SuppliersModule : IModule
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new SupplierDto(request.Id, request.Name, request.Comment, request.Phone));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
             .WithValidator<UpdateSupplierRequest>()
-            .WithTags(Tag)
-            .WithName("Update Supplier")
-            .RequireAuthorization()
-            .Produces<SupplierDto>(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateSupplier", "Update Supplier")
+            .RequireAuthorization();
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] ISuppliersRepository repository,
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] ISuppliersRepository repository,
                 [FromServices] ISupplierRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["You cannot perform this action"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError(localizer["Supplier already associated with order"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["Supplier already associated with order"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
 
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Supplier by Id")
+            .WithApiDescription(Tag, "DeleteSupplierById", "Delete Supplier by Id")
             .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
         endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeSuppliersRequest request, [FromServices] ISuppliersRepository repository) =>
             {
                 await repository.MergeAsync(request.TargetId, request.SourceIds);
 
-                return Results.Ok();
+                return TypedResults.Ok();
             })
             .WithValidator<MergeSuppliersRequest>()
-            .WithTags(Tag)
-            .WithName("Merge Suppliers")
-            .RequireAuthorization(AdminOnlyPolicy.Name)
-            .Produces(StatusCodes.Status200OK);
-
+            .WithApiDescription(Tag, "MergeSuppliers", "Merge Suppliers")
+            .RequireAuthorization(AdminOnlyPolicy.Name);
 
         return endpoints;
     }

@@ -51,6 +51,7 @@
 </template>
 
 <script lang="ts" setup>
+import processError from "@/utils/error-response-utils";
 import { reactive, ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSessionStore } from "@/store/session";
@@ -88,9 +89,7 @@ async function submitLogin() {
   } catch (err: any) {
     const apiErr = err as ErrorApiResponse;
     externalErrors.value = {} as Object<string[]>;
-    if (apiErr?.errors) {
-      externalErrors.value = apiErr?.errors;
-    }
+    processError(apiErr, (errs) => { externalErrors.value = errs });
   }
 }
 </script>

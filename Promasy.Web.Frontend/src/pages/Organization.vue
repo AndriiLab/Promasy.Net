@@ -107,6 +107,7 @@
 <script lang="ts" setup>
 import ErrorWrap from "@/components/ErrorWrap.vue";
 import OrganizationApi, { Organization, UpdateOrganizationRequest } from "@/services/api/organizations";
+import processError from "@/utils/error-response-utils";
 import { SelectItem } from "@/utils/fetch-utils";
 import { useToast } from "primevue/usetoast";
 import { ref, onMounted, computed } from "vue";
@@ -182,9 +183,7 @@ async function saveAsync() {
       return;
     }
   } else {
-    if (response.error?.errors) {
-      externalErrors.value = response.error.errors;
-    }
+    processError(response.error, (errs) => { externalErrors.value = errs });
     loading.value = false;
   }
 }

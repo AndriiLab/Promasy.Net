@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Finances;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Finances.Dtos;
@@ -38,49 +40,45 @@ public class FinancesModule : IModule
     {
         endpoints.MapGet($"{RoutePrefix}/all-fund-types", ([FromServices] IStringLocalizer<FinanceFundType> localizer) =>
             {
-                return Results.Json(Enum.GetValues<FinanceFundType>()
+                return TypedResults.Ok(Enum.GetValues<FinanceFundType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
-            .WithTags(Tag)
-            .WithName("Get available fund types")
-            .Produces<SelectItem<int>[]>();
+            .WithApiDescription(Tag, "GetAvailableFundTypes", "Get available fund types");
         
-        endpoints.MapGet(RoutePrefix, async (FinanceSourcesPagedRequest request, [FromServices] IFinanceSourcesRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] FinanceSourcesPagedRequest request, [FromServices] IFinanceSourcesRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<FinanceSourcesPagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Finance sources list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<FinanceSourceShortDto>>();
+            .WithApiDescription(Tag, "GetFinanceSourcesList", "Get Finance sources list")
+            .RequireAuthorization();
         
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IFinanceSourcesRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IFinanceSourcesRepository repository) =>
             {
                 var fs = await repository.GetByIdAsync(id);
-                return fs is not null ? Results.Json(fs) : Results.NotFound();
+                if (fs is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return TypedResults.Ok(fs);
             })
-            .WithTags(Tag)
-            .WithName("Get Finance source by Id")
+            .WithApiDescription(Tag, "GetFinanceSourceById", "Get Finance source by Id")
             .RequireAuthorization()
-            .Produces<FinanceSourceDto>()
             .Produces(StatusCodes.Status404NotFound);
         
         
-        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
+        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
             {
                 var id = await repository.CreateAsync(new CreateFinanceSourceDto(request.Number, request.Name, request.FundType,
                     request.Start, request.End, request.Kpkvk, request.TotalEquipment, request.TotalMaterials, request.TotalServices));
                 var fs = await repository.GetByIdAsync(id);
 
-                return Results.Json(fs, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(fs, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateFinanceSourceRequest>()
-            .WithTags(Tag)
-            .WithName("Create Finance source")
-            .RequireAuthorization()
-            .Produces<FinanceSourceDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateFinanceSource", "Create Finance source")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateFinanceSourceRequest request, [FromRoute] int id, [FromServices] IFinanceSourcesRepository repository,
@@ -88,31 +86,26 @@ public class FinancesModule : IModule
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new UpdateFinanceSourceDto(request.Id, request.Number, 
                         request.Name, request.FundType, request.Start, request.End, request.Kpkvk, 
                         request.TotalEquipment, request.TotalMaterials, request.TotalServices));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted(string.Empty);
                 })
             .WithValidator<UpdateFinanceSourceRequest>()
-            .WithTags(Tag)
-            .WithName("Update Finance source")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateFinanceSource", "Update Finance source")
+            .RequireAuthorization();
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IFinanceSourcesRepository repository) =>
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IFinanceSourcesRepository repository) =>
             {
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Finance source by Id")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .WithApiDescription(Tag, "DeleteFinanceSourceById", "Delete Finance source by Id")
+            .RequireAuthorization();
 
         _fsSubModule.MapEndpoints(endpoints);
         

@@ -6,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Requests;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Organizations.Dtos;
 using Promasy.Modules.Organizations.Interfaces;
@@ -31,27 +32,27 @@ internal class SubDepartmentsSubModule : SubModule
 
     public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromRoute] int organizationId, [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromRoute] int organizationId, [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(departmentId, request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<PagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get SubDepartments list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<SubDepartmentDto>>();
+            .WithApiDescription(Tag, "GetSubDepartmentsList", "Get SubDepartments list")
+            .RequireAuthorization();
 
         endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId, 
                 [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository) =>
             {
-                var unit = await repository.GetByIdAsync(id);
-                return unit is not null ? Results.Json(unit) : Results.NotFound();
+                var item = await repository.GetByIdAsync(id);
+                if (item is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return TypedResults.Ok(item);
             })
-            .WithTags(Tag)
-            .WithName("Get SubDepartment by Id")
+            .WithApiDescription(Tag, "GetSubDepartmentById", "Get SubDepartment by Id")
             .RequireAuthorization()
-            .Produces<SubDepartmentDto>()
             .Produces(StatusCodes.Status404NotFound);
 
         endpoints.MapPost(RoutePrefix, async ([FromBody]CreateSubDepartmentRequest request, [FromRoute] int organizationId,
@@ -60,24 +61,22 @@ internal class SubDepartmentsSubModule : SubModule
             {
                 if (organizationId != request.OrganizationId)
                 {
-                    return PromasyResults.ValidationError(localizer["Incorrect organization id"]);
+                    throw new ApiException(localizer["Incorrect organization id"]);
                 }
                 
                 if (departmentId != request.DepartmentId)
                 {
-                    return PromasyResults.ValidationError(localizer["Incorrect department id"]);
+                    throw new ApiException(localizer["Incorrect department id"]);
                 }
                 
                 var id = await repository.CreateAsync(new SubDepartmentDto(0, request.Name, request.DepartmentId));
                 var unit = await repository.GetByIdAsync(id);
 
-                return Results.Json(unit, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateSubDepartmentRequest>()
-            .WithTags(Tag)
-            .WithName("Create SubDepartment")
-            .RequireAuthorization()
-            .Produces<SubDepartmentDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateSubDepartment", "Create SubDepartment")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateSubDepartmentRequest request, [FromRoute] int id, [FromRoute] int organizationId,
@@ -86,23 +85,21 @@ internal class SubDepartmentsSubModule : SubModule
                 {
                     if (departmentId != request.DepartmentId)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect department id"]);
+                        throw new ApiException(localizer["Incorrect department id"]);
                     }
                     
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new SubDepartmentDto(request.Id, request.Name, request.DepartmentId));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted(string.Empty);
                 })
             .WithValidator<UpdateSubDepartmentRequest>()
-            .WithTags(Tag)
-            .WithName("Update SubDepartment")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateSubDepartment", "Update SubDepartment")
+            .RequireAuthorization();
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId,
                 [FromRoute] int departmentId, [FromServices] ISubDepartmentsRepository repository,
@@ -111,25 +108,23 @@ internal class SubDepartmentsSubModule : SubModule
                 var isEditable = rules.IsEditable(id);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["You cannot perform this action"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError(localizer["Unit already associated with order"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["Unit already associated with order"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
 
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete SubDepartment by Id")
+            .WithApiDescription(Tag, "DeleteSubDepartmentById", "Delete SubDepartment by Id")
             .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
         return endpoints;
     }

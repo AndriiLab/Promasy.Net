@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Orders;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Orders.Dtos;
@@ -37,52 +39,47 @@ public class OrdersModule : IModule
     {
         endpoints.MapGet($"{RoutePrefix}/all-types", ([FromServices] IStringLocalizer<OrderType> localizer) =>
             {
-                return Results.Json(Enum.GetValues<OrderType>()
+                return TypedResults.Ok(Enum.GetValues<OrderType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
-            .WithTags(Tag)
-            .WithName("Get available order types")
-            .Produces<SelectItem<int>[]>();
+            .WithApiDescription(Tag, "GetAvailableOrderTypes", "Get available order types");
         
         endpoints.MapGet($"{RoutePrefix}/all-statuses", ([FromServices] IStringLocalizer<OrderStatus> localizer) =>
             {
-                return Results.Json(Enum.GetValues<OrderStatus>()
+                return TypedResults.Ok(Enum.GetValues<OrderStatus>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
-            .WithTags(Tag)
-            .WithName("Get available order statuses")
-            .Produces<SelectItem<int>[]>();
+            .WithApiDescription(Tag, "GetAvailableOrderStatuses", "Get available order statuses");
         
-        endpoints.MapGet(RoutePrefix, async (OrdersPagedRequest request, [FromServices] IOrdersRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] OrdersPagedRequest request, [FromServices] IOrdersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<OrdersPagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Orders list")
-            .RequireAuthorization()
-            .Produces<OrderPagedResponse>();
-        endpoints.MapGet($"{RoutePrefix}/suggestions", async (OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
+            .WithApiDescription(Tag, "GetOrdersList", "Get Orders list")
+            .RequireAuthorization();
+
+        endpoints.MapGet($"{RoutePrefix}/suggestions", async ([AsParameters] OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
             {
                 var list = await repository.GetOrderSuggestionsPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<OrderSuggestionPagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Orders suggestions list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<OrderSuggestionDto>>();
+            .WithApiDescription(Tag, "GetOrdersSuggestionsList", "Get Orders suggestions list")
+            .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IOrdersRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrdersRepository repository) =>
             {
                 var order = await repository.GetByIdAsync(id);
-                return order is not null ? Results.Json(order) : Results.NotFound();
+                if (order is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return TypedResults.Ok(order);
             })
-            .WithTags(Tag)
-            .WithName("Get Order by Id")
+            .WithApiDescription(Tag, "GetOrderById", "Get Order by Id")
             .RequireAuthorization()
-            .Produces<OrderDto>()
             .Produces(StatusCodes.Status404NotFound);
 
         endpoints.MapPost(RoutePrefix, async ([FromBody]CreateOrderRequest request, [FromServices] IOrdersRepository repository) =>
@@ -91,15 +88,13 @@ public class OrdersModule : IModule
                     request.OnePrice, request.Amount, request.Type, request.Kekv, request.ProcurementStartDate,
                     request.UnitId, request.CpvId, request.FinanceSubDepartmentId, request.ManufacturerId,
                     request.SupplierId, request.ReasonId));
-                var unit = await repository.GetByIdAsync(id);
+                var order = await repository.GetByIdAsync(id);
 
-                return Results.Json(unit, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(order, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateOrderRequest>()
-            .WithTags(Tag)
-            .WithName("Create Order")
-            .RequireAuthorization()
-            .Produces<OrderDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateOrder", "Create Order")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateOrderRequest request, [FromRoute] int id, [FromServices] IOrdersRepository repository,
@@ -107,7 +102,7 @@ public class OrdersModule : IModule
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new UpdateOrderDto(request.Id, request.Description, request.CatNum,
@@ -115,24 +110,19 @@ public class OrdersModule : IModule
                         request.UnitId, request.CpvId, request.FinanceSubDepartmentId, request.ManufacturerId,
                         request.SupplierId, request.ReasonId));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted(string.Empty);
                 })
             .WithValidator<UpdateOrderRequest>()
-            .WithTags(Tag)
-            .WithName("Update Order")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateOrder", "Update Order")
+            .RequireAuthorization();
 
         endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IOrdersRepository repository) =>
             {
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Order by Id")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .WithApiDescription(Tag, "DeleteOrderById", "Delete Order by Id")
+            .RequireAuthorization();
         
         _rfscSubModule.MapEndpoints(endpoints);
         

@@ -6,10 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Requests;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Manufacturers.Dtos;
 using Promasy.Modules.Manufacturers.Interfaces;
@@ -29,96 +30,89 @@ public class ManufacturersModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromServices] IManufacturersRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IManufacturersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<PagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Manufacturers list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<ManufacturerDto>>();
+            .WithApiDescription(Tag, "GetManufacturersList", "Get Manufacturers list")
+            .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IManufacturersRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IManufacturersRepository repository) =>
             {
                 var manufacturer = await repository.GetByIdAsync(id);
-                return manufacturer is not null ? Results.Json(manufacturer) : Results.NotFound();
+                if (manufacturer is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return TypedResults.Ok(manufacturer);
             })
-            .WithTags(Tag)
-            .WithName("Get Manufacturer by Id")
+            .WithApiDescription(Tag, "GetManufacturerById", "Get Manufacturer by Id")
             .RequireAuthorization()
-            .Produces<ManufacturerDto>()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateManufacturerRequest request, [FromServices] IManufacturersRepository repository) =>
+        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateManufacturerRequest request, [FromServices] IManufacturersRepository repository) =>
             {
                 var id = await repository.CreateAsync(new ManufacturerDto(0, request.Name));
                 var manufacturer = await repository.GetByIdAsync(id);
 
-                return Results.Json(manufacturer, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(manufacturer, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateManufacturerRequest>()
-            .WithTags(Tag)
-            .WithName("Create Manufacturer")
-            .RequireAuthorization()
-            .Produces<ManufacturerDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateManufacturer", "Create Manufacturer")
+            .RequireAuthorization();
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
-                async ([FromBody] UpdateManufacturerRequest request, [FromRoute] int id, [FromServices] IManufacturersRepository repository) =>
+                async ([FromBody] UpdateManufacturerRequest request, [FromRoute] int id, [FromServices] IManufacturersRepository repository,
+                    [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError("Incorrect Id");
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new ManufacturerDto(request.Id, request.Name));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
             .WithValidator<UpdateManufacturerRequest>()
-            .WithTags(Tag)
-            .WithName("Update Manufacturer")
-            .RequireAuthorization()
-            .Produces<ManufacturerDto>(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateManufacturer", "Update Manufacturer")
+            .RequireAuthorization();
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IManufacturersRepository repository,  
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IManufacturersRepository repository,  
                 [FromServices] IManufacturerRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["You cannot perform this action"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
                 
                 var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
                 if (isUsed)
                 {
-                    return PromasyResults.ValidationError(localizer["Manufacturer already associated with order"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["Manufacturer already associated with order"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
 
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Manufacturer by Id")
+            .WithApiDescription(Tag, "DeleteManufacturerById", "Delete Manufacturer by Id")
             .RequireAuthorization()
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
         endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeManufacturersRequest request, [FromServices] IManufacturersRepository repository) =>
             {
                 await repository.MergeAsync(request.TargetId, request.SourceIds);
 
-                return Results.Ok();
+                return TypedResults.Ok();
             })
             .WithValidator<MergeManufacturersRequest>()
-            .WithTags(Tag)
-            .WithName("Merge Manufacturers")
-            .RequireAuthorization(AdminOnlyPolicy.Name)
-            .Produces(StatusCodes.Status200OK);
+            .WithApiDescription(Tag, "MergeManufacturers", "Merge Manufacturers")
+            .RequireAuthorization(AdminOnlyPolicy.Name);
 
         return endpoints;
     }

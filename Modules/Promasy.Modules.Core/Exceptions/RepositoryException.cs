@@ -1,4 +1,6 @@
-﻿namespace Promasy.Core.Exceptions;
+﻿using Promasy.Core.Exceptions;
+
+namespace Promasy.Modules.Core.Exceptions;
 
 public class RepositoryException : PromasyException
 {

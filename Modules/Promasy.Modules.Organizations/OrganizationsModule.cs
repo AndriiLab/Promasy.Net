@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -38,59 +40,53 @@ public class OrganizationsModule : IModule
     {
         endpoints.MapGet($"{RoutePrefix}/all-city-types", ([FromServices] IStringLocalizer<CityType> localizer) =>
             {
-                return Results.Json(Enum.GetValues<CityType>()
+                return TypedResults.Ok(Enum.GetValues<CityType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
-            .WithTags(Tag)
-            .WithName("Get available city types")
-            .Produces<SelectItem<int>[]>();
+            .WithApiDescription(Tag, "GetAvailableCityTypes", "Get available city types");
         
         endpoints.MapGet($"{RoutePrefix}/all-street-types", ([FromServices] IStringLocalizer<StreetType> localizer) =>
             {
-                return Results.Json(Enum.GetValues<StreetType>()
+                return TypedResults.Ok(Enum.GetValues<StreetType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
-            .WithTags(Tag)
-            .WithName("Get available street types")
-            .Produces<SelectItem<int>[]>();
+            .WithApiDescription(Tag, "GetAvailableStreetTypes", "Get available street types");
         
-        endpoints.MapGet(RoutePrefix, async (PagedRequest request, [FromServices] IOrganizationsRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IOrganizationsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<PagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Organizations list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<OrganizationShortDto>>();
+            .WithApiDescription(Tag, "GetOrganizationsLst", "Get Organizations list")
+            .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IOrganizationsRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IOrganizationsRepository repository) =>
             {
-                var unit = await repository.GetByIdAsync(id);
-                return unit is not null ? Results.Json(unit) : Results.NotFound();
+                var organization = await repository.GetByIdAsync(id);
+                if (organization is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return  TypedResults.Ok(organization);
             })
-            .WithTags(Tag)
-            .WithName("Get Organization by Id")
+            .WithApiDescription(Tag, "GetOrganizationById", "Get Organization by Id")
             .RequireAuthorization()
-            .Produces<OrganizationDto>()
             .Produces(StatusCodes.Status404NotFound);
 
-        // endpoints.MapPost(RoutePrefix, async ([FromBody]CreateOrganizationRequest request, [FromServices] IOrganizationsRepository repository) =>
+        // endpoints.MapPost(RoutePrefix, async ([FromBody] CreateOrganizationRequest request, [FromServices] IOrganizationsRepository repository) =>
         //     {
         //         var id = await repository.CreateAsync(new OrganizationDto(0, request.Name, request.Email, request.Edrpou,
         //             request.PhoneNumber, request.FaxNumber, request.Country, request.PostalCode, request.Region,
         //             request.City, request.CityType, request.Street, request.StreetType, request.BuildingNumber,
         //             request.InternalNumber));
-        //         var unit = await repository.GetByIdAsync(id);
+        //         var organization = await repository.GetByIdAsync(id);
         //
-        //         return Results.Json(unit, statusCode: StatusCodes.Status201Created);
+        //         return TypedResults.Json(organization, statusCode: StatusCodes.Status201Created);
         //     })
         //     .WithValidator<CreateOrganizationRequest>()
-        //     .WithTags(Tag)
-        //     .WithName("Create Organization")
-        //     .RequireAuthorization(AdminOnlyPolicy.Name)
-        //     .Produces<OrganizationDto>(StatusCodes.Status201Created);
+        //     .WithApiDescription(Tag, "CreateOrganization", "Create Organization")
+        //     .RequireAuthorization(AdminOnlyPolicy.Name);
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateOrganizationRequest request, [FromRoute] int id, [FromServices] IOrganizationsRepository repository,
@@ -98,7 +94,7 @@ public class OrganizationsModule : IModule
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new OrganizationDto(request.Id, request.Name, request.Email, request.Edrpou,
@@ -106,32 +102,28 @@ public class OrganizationsModule : IModule
                         request.City, request.CityType, request.Street, request.StreetType, request.BuildingNumber,
                         request.InternalNumber));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
             .WithValidator<UpdateOrganizationRequest>()
-            .WithTags(Tag)
-            .WithName("Update Organization")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateOrganization", "Update Organization")
+            .RequireAuthorization();
 
-        // endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IOrganizationsRepository repository,
+        // endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrganizationsRepository repository,
         //         [FromServices] IOrganizationsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
         //     {
         //         var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
         //         if (isUsed)
         //         {
-        //             return PromasyResults.ValidationError(localizer["Organization already has departments"],
-        //                 StatusCodes.Status409Conflict);
+        //             throw new ApiException(localizer["Organization already has departments"],
+        //                 statusCode: StatusCodes.Status409Conflict);
         //         }
         //
         //         await repository.DeleteByIdAsync(id);
-        //         return Results.Ok(StatusCodes.Status204NoContent);
+        //         return TypedResults.NoContent();
         //     })
-        //     .WithTags(Tag)
-        //     .WithName("Delete Organization by Id")
+        //     .WithApiDescription(Tag, "DeleteOrganizationById", "Delete Organization by Id")
         //     .RequireAuthorization(AdminOnlyPolicy.Name)
-        //     .Produces(StatusCodes.Status204NoContent)
-        //     .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+        //     .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
         _departmentsSubModule.MapEndpoints(endpoints);
         

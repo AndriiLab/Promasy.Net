@@ -8,7 +8,9 @@ using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Auth;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -32,52 +34,48 @@ public class EmployeesModule : IModule
     {
         endpoints.MapGet($"{RoutePrefix}/all-roles", ([FromServices] IStringLocalizer<RoleName> localizer) =>
             {
-                return Results.Json(Enum.GetValues<RoleName>()
+                return TypedResults.Ok(Enum.GetValues<RoleName>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()]))
                     .OrderBy(r => r.Value));
             })
-            .WithTags(Tag)
-            .WithName("Get available roles")
-            .Produces<SelectItem<int>[]>();
+            .WithApiDescription(Tag, "GetAvailableRoles", "Get available roles");
         
-        endpoints.MapGet(RoutePrefix, async (EmployeesPagedRequest request, [FromServices] IEmployeesRepository repository) =>
+        endpoints.MapGet(RoutePrefix, async ([AsParameters] EmployeesPagedRequest request, [FromServices] IEmployeesRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
-                return Results.Json(list);
+                return TypedResults.Ok(list);
             })
             .WithValidator<EmployeesPagedRequest>()
-            .WithTags(Tag)
-            .WithName("Get Employees list")
-            .RequireAuthorization()
-            .Produces<PagedResponse<EmployeeShortDto>>();
+            .WithApiDescription(Tag, "GetEmployeesList", "Get Employees list")
+            .RequireAuthorization();
         
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IEmployeesRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository) =>
             {
                 var unit = await repository.GetByIdAsync(id);
-                return unit is not null ? Results.Json(unit) : Results.NotFound();
+                if (unit is null)
+                {
+                    throw new ApiException(null, StatusCodes.Status404NotFound);
+                }
+                return TypedResults.Ok(unit) ;
             })
-            .WithTags(Tag)
-            .WithName("Get Employee by Id")
+            .WithApiDescription(Tag, "GetEmployeeById", "Get Employee by Id")
             .RequireAuthorization()
-            .Produces<EmployeeDto>()
             .Produces(StatusCodes.Status404NotFound);
         
-        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService) =>
+        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService) =>
             {
                 var id = await repository.CreateAsync(new CreateEmployeeDto(request.FirstName, request.MiddleName, request.LastName, request.Email,
                     request.PrimaryPhone, request.ReservePhone, request.UserName, request.SubDepartmentId, request.Roles));
 
                 await authService.SetEmployeePasswordAsync(id, request.Password);
                 
-                var unit = await repository.GetByIdAsync(id);
+                var employee = await repository.GetByIdAsync(id);
 
-                return Results.Json(unit, statusCode: StatusCodes.Status201Created);
+                return TypedResults.Json(employee, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateEmployeeRequest>()
-            .WithTags(Tag)
-            .WithName("Create Employee")
-            .RequireAuthorization(AdminOnlyPolicy.Name)
-            .Produces<EmployeeDto>(StatusCodes.Status201Created);
+            .WithApiDescription(Tag, "CreateEmployee", "Create Employee")
+            .RequireAuthorization(AdminOnlyPolicy.Name);
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateEmployeeRequest request, [FromRoute] int id, [FromServices] IEmployeesRepository repository,
@@ -85,39 +83,35 @@ public class EmployeesModule : IModule
                 {
                     if (request.Id != id)
                     {
-                        return PromasyResults.ValidationError(localizer["Incorrect Id"]);
+                        throw new ApiException(localizer["Incorrect Id"]);
                     }
 
                     await repository.UpdateAsync(new UpdateEmployeeDto(request.Id, request.FirstName, request.MiddleName,
                         request.LastName, request.Email, request.PrimaryPhone, request.ReservePhone, request.SubDepartmentId,
                         request.Roles));
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
             .WithValidator<UpdateEmployeeRequest>()
-            .WithTags(Tag)
-            .WithName("Update Employee")
-            .RequireAuthorization()
-            .Produces<EmployeeDto>(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "UpdateEmployee", "Update Employee")
+            .RequireAuthorization();
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IEmployeesRepository repository,
+        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository,
                 [FromServices] IEmployeeRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = rules.IsEditable(id);
                 if (!isEditable)
                 {
-                    return PromasyResults.ValidationError(localizer["You cannot perform this action"],
-                        StatusCodes.Status409Conflict);
+                    throw new ApiException(localizer["You cannot perform this action"],
+                        statusCode: StatusCodes.Status409Conflict);
                 }
 
                 await repository.DeleteByIdAsync(id);
-                return Results.Ok(StatusCodes.Status204NoContent);
+                return TypedResults.NoContent();
             })
-            .WithTags(Tag)
-            .WithName("Delete Employee by Id")
+            .WithApiDescription(Tag, "DeleteEmployee", "Delete Employee by Id")
             .RequireAuthorization(AdminOnlyPolicy.Name)
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces<ValidationErrorResponse>(StatusCodes.Status409Conflict);
+            .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
                 
         endpoints.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
                 async ([FromBody] PasswordChangeRequest request, [FromRoute] int id, IEmployeeRules rules, IAuthService authService, 
@@ -125,18 +119,16 @@ public class EmployeesModule : IModule
                 {
                     if (!rules.CanChangePasswordForEmployee(id))
                     {
-                        return PromasyResults.ValidationError(localizer["Unable to modify other user password"]);
+                        throw new ApiException(localizer["Unable to modify other user password"]);
                     }
 
                     await authService.SetEmployeePasswordAsync(id, request.Password);
 
-                    return Results.Ok(StatusCodes.Status202Accepted);
+                    return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
             .WithValidator<PasswordChangeRequest>()
-            .WithTags(Tag)
-            .WithName("Change password")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status202Accepted);
+            .WithApiDescription(Tag, "ChangeEmployeePassword", "Change Employee password")
+            .RequireAuthorization();
         
         return endpoints;
     }

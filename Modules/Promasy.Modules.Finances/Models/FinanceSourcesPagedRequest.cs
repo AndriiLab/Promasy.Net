@@ -1,32 +1,11 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Promasy.Modules.Core.Requests;
 
 namespace Promasy.Modules.Finances.Models;
 
-public class FinanceSourcesPagedRequest : PagedRequest
-{
-    public bool IncludeCalculatedAmounts { get; set; }
-
-    public FinanceSourcesPagedRequest(int page, int offset, string? search, string? orderBy, bool isDescending, int year, bool includeCalculatedAmounts)
-        : base(page, offset, search, orderBy, isDescending, year)
-    {
-        Year = year;
-        IncludeCalculatedAmounts = includeCalculatedAmounts;
-    }
-    
-    public static ValueTask<FinanceSourcesPagedRequest?> BindAsync(HttpContext httpContext)
-    {
-        return ValueTask.FromResult<FinanceSourcesPagedRequest?>(new FinanceSourcesPagedRequest(
-            int.TryParse(httpContext.Request.Query["page"], out var level) ? level : 1,
-            int.TryParse(httpContext.Request.Query["offset"], out var id) ? id : 10,
-            httpContext.Request.Query["search"],
-            httpContext.Request.Query["order"],
-            bool.TryParse(httpContext.Request.Query["desc"], out var desc) && desc,
-            int.TryParse(httpContext.Request.Query["year"], out var y) ? y : DateTime.UtcNow.Year,
-            bool.TryParse(httpContext.Request.Query["extended"], out var ext) && ext));
-    }
-}
+public record FinanceSourcesPagedRequest(int Page = 1, int Offset = 10, string? Search = null, string? OrderBy = null,
+        bool IsDescending = false, int? Year = null, bool IncludeCalculatedAmounts = false)
+    : PagedRequest(Page, Offset, Search, OrderBy, IsDescending, Year);
 
 public class FinanceSourcesPagedRequestValidator : AbstractValidator<FinanceSourcesPagedRequest>
 {
