@@ -33,15 +33,13 @@ const { getLastUrl } = useSessionStore();
 <i18n locale="en">
 {
     "youAreLost": "Looks like you are lost",
-    "resourceNotAvailable": "Requested resource is not available.",
-    "goBack": "Go Back",
+    "resourceNotAvailable": "Requested resource is not available."
 }
 </i18n>
 
 <i18n locale="uk">
 {
     "youAreLost": "Схоже, ви загубились",
-    "resourceNotAvailable": "Ресурс, до якого був запит, недоступний.",
-    "goBack": "Повернутись назад",
+    "resourceNotAvailable": "Ресурс, до якого був запит, недоступний."
 }
 </i18n>

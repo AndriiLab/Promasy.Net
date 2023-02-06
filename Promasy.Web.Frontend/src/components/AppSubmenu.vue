@@ -40,7 +40,7 @@
   </ul>
 </template>
 <script lang="ts" setup>
-import { MenuItem, MenuItemCommandEvent } from "@/components/interfaces/menu-item";
+import { MenuItem, MenuItemCommandEvent } from "primevue/menuitem";
 import { ref } from "vue";
 
 defineProps<{

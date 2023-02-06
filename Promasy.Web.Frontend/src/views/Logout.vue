@@ -34,13 +34,13 @@ onMounted(async () => {
 <i18n locale="en">
 {
     "loggingoutYou": "Logging you out...",
-    "pleaseWait": "Please, wait a bit",
+    "pleaseWait": "Please, wait a bit"
 }
 </i18n>
 
 <i18n locale="uk">
 {
     "loggingoutYou": "Виходимо з Вашого профілю...",
-    "pleaseWait": "Будь ласка, зачекайте",
+    "pleaseWait": "Будь ласка, зачекайте"
 }
 </i18n>

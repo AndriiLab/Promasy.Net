@@ -36,15 +36,13 @@ const { getLastUrl } = useSessionStore();
 <i18n locale="en">
 {
     "accessDenied": "Access Denied",
-    "notEnoughPermissions": "You do not have the necesary permisions. Please contact admins.",
-    "goBack": "Go Back",
+    "notEnoughPermissions": "You do not have the necessary permissions. Please contact admins."
 }
 </i18n>
 
 <i18n locale="uk">
 {
     "accessDenied": "Доступ заборонено",
-    "notEnoughPermissions": "У вас відсутні необхідні дозволи. Будь ласка, сконтактуйте з адміністратом.",
-    "goBack": "Повернутись назад",
+    "notEnoughPermissions": "У вас відсутні необхідні дозволи. Будь ласка, сконтактуйте з адміністратом."
 }
 </i18n>

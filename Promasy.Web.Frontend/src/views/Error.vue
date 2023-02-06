@@ -36,15 +36,13 @@ const { getLastUrl } = useSessionStore();
 <i18n locale="en">
 {
     "errorOccured": "Error Occured",
-    "resourceNotAvailable": "Requested resource is not available.",
-    "goBack": "Go Back",
+    "resourceNotAvailable": "Requested resource is not available."
 }
 </i18n>
 
 <i18n locale="uk">
 {
     "errorOccured": "Сталася помилка",
-    "resourceNotAvailable": "Ресурс, до якого був запит, недоступний.",
-    "goBack": "Повернутись назад",
+    "resourceNotAvailable": "Ресурс, до якого був запит, недоступний."
 }
 </i18n>

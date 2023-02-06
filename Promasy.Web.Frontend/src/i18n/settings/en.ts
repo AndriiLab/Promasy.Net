@@ -41,7 +41,7 @@ export const en: LanguageSettings = {
     startsWith: "Starts with",
     contains: "Contains",
     notContains: "Not contains",
-    endWith: "Ends with",
+    endsWith: "Ends with",
     equals: "Equals",
     notEquals: "Not equals",
     noFilter: "No Filter",

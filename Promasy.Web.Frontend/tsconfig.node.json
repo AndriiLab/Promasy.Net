@@ -2,7 +2,9 @@
   "compilerOptions": {
     "composite": true,
     "module": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "types": ["@intlify/unplugin-vue-i18n/messages", "primevue/menuitem"]
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", ".vite/vite-plugin-netcore-https.ts"]
 }

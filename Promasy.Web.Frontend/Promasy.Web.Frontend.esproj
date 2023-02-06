@@ -8,10 +8,7 @@
     <JavaScriptTestFramework>Jest</JavaScriptTestFramework>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="src\components\interfaces\menu-item.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <Script Include=".vite\vite-aspnetcore-https.ts" />
+    <Script Include=".vite\vite-plugin-netcore-https.ts" />
     <Script Include="src\utils\constants.ts" />
     <Script Include="src\utils\currency-utils.ts" />
     <Script Include="src\utils\date-utils.ts" />

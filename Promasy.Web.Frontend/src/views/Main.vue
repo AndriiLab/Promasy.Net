@@ -22,7 +22,7 @@
 import AppTopBar from "@/components/AppTopbar.vue";
 import AppMenu from "@/components/AppMenu.vue";
 import AppFooter from "@/components/AppFooter.vue";
-import { MenuItem } from "@/components/interfaces/menu-item";
+import { MenuItem, MenuItemCommandEvent } from "primevue/menuitem";
 import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSessionStore } from "@/store/session";
@@ -129,7 +129,7 @@ function onSidebarClick() {
   menuClick.value = true;
 }
 
-function onMenuItemClick(event: Event) {
+function onMenuItemClick(event: MenuItemCommandEvent) {
   if (event.item && !event.item.items) {
     overlayMenuActive.value = false;
     mobileMenuActive.value = false;

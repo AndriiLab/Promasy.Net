@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { MenuItem } from "./interfaces/menu-item";
+import { MenuItem } from "primevue/menuitem";
 import AppSubmenu from "./AppSubmenu.vue";
 
 defineProps<{

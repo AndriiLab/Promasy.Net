@@ -41,7 +41,7 @@ export const uk: LanguageSettings = {
     startsWith: "Починається з",
     contains: "Містить",
     notContains: "Не містить",
-    endWith: "Закінчуєьться на",
+    endsWith: "Закінчуєьться на",
     equals: "Рівне з",
     notEquals: "Не рівне з",
     noFilter: "Немає фільтру",
