@@ -1,4 +1,5 @@
-﻿using Promasy.Domain.Finances;
+﻿using Promasy.Application.Interfaces;
+using Promasy.Domain.Finances;
 using Promasy.Modules.Core.Modules;
 
 namespace Promasy.Modules.Finances.Interfaces;

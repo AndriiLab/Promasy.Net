@@ -22,6 +22,7 @@ public interface IDatabase
     DbSet<Unit> Units { get; }
     DbSet<OrderStatusHistory> OrderStatuses { get; }
     DbSet<Order> Orders { get; }
+    DbSet<OrderGroup> OrderGroups { get; }
     DbSet<Cpv> Cpvs { get; }
     DbSet<Department> Departments { get; }
     DbSet<FinanceSubDepartment> FinanceSubDepartments { get; }

@@ -1,4 +1,4 @@
-﻿import { FinanceSource } from "@/services/api/finances";
+﻿import { RoleEnum } from "@/constants/RoleEnum";
 import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/utils/fetch-utils";
 import { buildQueryParameters } from "@/utils/url-params-utils";
 
@@ -68,6 +68,9 @@ export default {
   },
   delete(id: number): Promise<Response<string, ErrorApiResponse>> {
     return Fetch.Delete<string, ErrorApiResponse>(`/api/orders/${ id }`);
+  },
+  exportAsPdf(request: ExportToPdfRequest): Promise<Response<ExportResponse, ErrorApiResponse>> {
+    return Fetch.Post<ExportResponse, ErrorApiResponse>("/api/orders/export/pdf", { body: JSON.stringify(request) });
   },
 };
 
@@ -195,4 +198,13 @@ export enum OrderType {
   Material = 1,
   Equipment = 2,
   Service = 3
+}
+
+export interface ExportToPdfRequest{
+  orderIds: number[],
+  signEmployees: Object<RoleEnum>
+}
+
+export interface ExportResponse {
+  fileKey: string;
 }

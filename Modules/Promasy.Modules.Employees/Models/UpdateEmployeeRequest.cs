@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
-using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
-using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Employees.Interfaces;
 
 namespace Promasy.Modules.Employees.Models;

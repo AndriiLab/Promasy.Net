@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Promasy.Core.UserContext;
+using Promasy.Application.Interfaces;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
@@ -99,6 +99,11 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
         else if(request.DepartmentId.HasValue)
         {
             query = query.Where(e => e.SubDepartment.DepartmentId == request.DepartmentId);
+        }
+
+        if (request.Roles?.Any() ?? false)
+        {
+            query = query.Where(e => e.Roles.Any(r => request.Roles.Contains(r.Name)));
         }
         
         if (!string.IsNullOrEmpty(request.Search))

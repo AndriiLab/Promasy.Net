@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Employee with required role {0} is missing" xml:space="preserve">
+        <value>Співробітник з обов'язковою роллю {0} відсутній</value>
+    </data>
+    <data name="Approved" xml:space="preserve">
+        <value>Затверджую</value>
+    </data>
+    <data name="Generated on" xml:space="preserve">
+        <value>Cформоване</value>
+    </data>
+    <data name="Phone" xml:space="preserve">
+        <value>Телефон</value>
+    </data>
+    <data name="Customer" xml:space="preserve">
+        <value>Замовник</value>
+    </data>
+    <data name="Page" xml:space="preserve">
+        <value>Аркуш</value>
+    </data>
+    <data name="of" xml:space="preserve">
+        <value>з</value>
+    </data>
+    <data name="Orders of type" xml:space="preserve">
+        <value>Замовлення за категорією</value>
+    </data>
+    <data name="Sub-department" xml:space="preserve">
+        <value>Підрозділ</value>
+    </data>
+    <data name="Fund" xml:space="preserve">
+        <value>Тема</value>
+    </data>
+    <data name="Classifier" xml:space="preserve">
+        <value>Класифікатор</value>
+    </data>
+    <data name="Order description" xml:space="preserve">
+        <value>Опис замовлення</value>
+    </data>
+    <data name="Ordered" xml:space="preserve">
+        <value>Замовлено</value>
+    </data>
+    <data name="Possible producer and cat no" xml:space="preserve">
+        <value>Можливий виробник та кат. номер</value>
+    </data>
+    <data name="Possible supplier" xml:space="preserve">
+        <value>Можливий постачальник</value>
+    </data>
+    <data name="Date" xml:space="preserve">
+        <value>Дата</value>
+    </data>
+    <data name="Code" xml:space="preserve">
+        <value>Код</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Назва</value>
+    </data>
+    <data name="Amount" xml:space="preserve">
+        <value>Кількість</value>
+    </data>
+    <data name="Price of unit" xml:space="preserve">
+        <value>Ціна одиниці</value>
+    </data>
+    <data name="Total" xml:space="preserve">
+        <value>Загальна вартість</value>
+    </data>
+    <data name="Any" xml:space="preserve">
+        <value>Будь-який</value>
+    </data>
+    <data name="Reason" xml:space="preserve">
+        <value>Причина</value>
+    </data>
+    <data name="Total by fund" xml:space="preserve">
+        <value>Вартість замовлення за темою</value>
+    </data>
+    <data name="Total by sub-department" xml:space="preserve">
+        <value>Вартість замовлення за підрозділом</value>
+    </data>
+    <data name="Total by department" xml:space="preserve">
+        <value>Вартість замовлення за відділом</value>
+    </data>
+</root>

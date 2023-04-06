@@ -1,4 +1,5 @@
-﻿import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/utils/fetch-utils";
+﻿import { RoleEnum } from "@/constants/RoleEnum";
+import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/utils/fetch-utils";
 import { buildQueryParameters } from "@/utils/url-params-utils";
 
 export default {
@@ -13,7 +14,11 @@ export default {
     search?: string,
     order?: string,
     descending?: boolean,
+    roles?: RoleEnum[],
   ): Promise<Response<PagedResponse<EmployeeShort>, ErrorApiResponse>> {
+    const rolesArray = roles ? roles.map(r => {
+      return [ "roles", r.toString() ];
+    }) : [ [ "roles", undefined ] ];
     return Fetch.Get<PagedResponse<EmployeeShort>, ErrorApiResponse>(
       `/api/employees${ buildQueryParameters([
         [ "offset", offset.toString() ],
@@ -23,6 +28,7 @@ export default {
         [ "desc", descending ? "true" : undefined ],
         [ "department", subDepartment > 0 ? undefined : department > 0 ? department.toString() : undefined ],
         [ "sub-department", subDepartment > 0 ? subDepartment.toString() : undefined ],
+        ...rolesArray,
       ]) }`,
     );
   },
@@ -48,7 +54,7 @@ export interface EmployeeShort {
   name: string;
   department: string;
   subDepartment: string;
-  roles: number[];
+  roles: RoleEnum[];
   editorId: number;
   editor: string;
   editedDate: Date;
@@ -66,7 +72,7 @@ export interface Employee {
   department: string;
   subDepartmentId: number;
   subDepartment: string;
-  roles: number[];
+  roles: RoleEnum[];
   editorId: number;
   editor: string;
   editedDate: Date;

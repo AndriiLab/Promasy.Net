@@ -1,4 +1,5 @@
-﻿using Promasy.Domain.Employees;
+﻿using Promasy.Application.Interfaces;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Modules;
 
 namespace Promasy.Modules.Employees.Interfaces;

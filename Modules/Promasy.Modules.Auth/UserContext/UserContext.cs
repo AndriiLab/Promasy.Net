@@ -1,7 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Promasy.Core.UserContext;
+using Promasy.Application.Interfaces;
+using Promasy.Core.Constants;
 using Promasy.Modules.Auth.Extensions;
 using Promasy.Modules.Core.Extensions;
 
@@ -28,9 +29,20 @@ public class UserContext : IUserContext
     public string GetSubDepartment() => GetPrincipal().GetClaimOrDefault(PromasyClaims.SubDepartment);
     public int GetSubDepartmentId()  => Convert.ToInt32(GetPrincipal().GetClaimOrDefault(PromasyClaims.SubDepartmentId));
     public string? GetIpAddress() => _httpContext?.GetIpAddress();
-    public Language GetLanguage() => _httpContext?.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name == "uk"
-        ? Language.Ukrainian
-        : Language.English;
+    public string GetLocalizationCulture() =>
+        _httpContext?.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name ??
+        LocalizationCulture.EnglishUs;
+
+    public DateTime AsUserTime(DateTime utcTime)
+    {
+        if (!(_httpContext?.Request.Headers.TryGetValue("Time-Zone", out var tzName) ?? false))
+        {
+            return utcTime;
+        }
+        
+        var tzi = TimeZoneInfo.FindSystemTimeZoneById(tzName.ToString());
+        return TimeZoneInfo.ConvertTime(utcTime, tzi);
+    }
 
     public bool HasRoles(params int[] roles) => roles.Any(r => GetPrincipal()?.IsInRole(r.ToString()) ?? false);
     

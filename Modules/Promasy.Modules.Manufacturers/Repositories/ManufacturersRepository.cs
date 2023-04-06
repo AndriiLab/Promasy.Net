@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Promasy.Core.UserContext;
+using Promasy.Application.Interfaces;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Manufacturers;
 using Promasy.Domain.Orders;

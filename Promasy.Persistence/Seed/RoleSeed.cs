@@ -14,16 +14,10 @@ internal static class RoleSeed
             return;
         }
 
-        EnsureRole(RoleName.Administrator, context);
-        EnsureRole(RoleName.Director, context);
-        EnsureRole(RoleName.DeputyDirector, context);
-        EnsureRole(RoleName.ChiefEconomist, context);
-        EnsureRole(RoleName.ChiefAccountant, context);
-        EnsureRole(RoleName.HeadOfTenderCommittee, context);
-        EnsureRole(RoleName.SecretaryOfTenderCommittee, context);
-        EnsureRole(RoleName.HeadOfDepartment, context);
-        EnsureRole(RoleName.PersonallyLiableEmployee, context);
-        EnsureRole(RoleName.User, context);
+        foreach (var role in Enum.GetValues<RoleName>().OrderBy(r => r))
+        {
+            EnsureRole(role, context);
+        }
         
         context.SaveChanges();
     }

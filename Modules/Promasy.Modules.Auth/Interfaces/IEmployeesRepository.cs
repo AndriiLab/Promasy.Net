@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Promasy.Application.Interfaces;
 using Promasy.Modules.Auth.Dtos;
 using Promasy.Modules.Core.Modules;
 

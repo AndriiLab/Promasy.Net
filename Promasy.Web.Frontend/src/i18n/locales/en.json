@@ -18,12 +18,14 @@
   "delete": "Delete",
   "merge": "Merge",
   "language": "Language",
+  "createPdfFile": "Create PDF File",
   "goBack": "Go Back",
   "queryYear": "Query Year",
   "department": "Department | Departments",
   "sub-department": "Sub-department | Sub-departments",
   "employee": "Employee | Employees",
   "order": "Order | Orders",
+  "print": "Print",
   "createDialog": {
     "addNew": "New"
   },

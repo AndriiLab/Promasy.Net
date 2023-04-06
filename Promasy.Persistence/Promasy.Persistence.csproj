@@ -10,24 +10,24 @@
         <PackageReference Include="EntityFrameworkCore.Triggered" Version="3.2.2" />
         <PackageReference Include="EntityFrameworkCore.Triggered.Extensions" Version="3.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.2">
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.4" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
-        <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="7.18.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
+        <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="7.20.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Promasy.Application\Promasy.Application.csproj" />
       <ProjectReference Include="..\Promasy.Domain\Promasy.Domain.csproj" />
-      <ProjectReference Include="..\Promasy.Security\Promasy.Security.csproj" />
     </ItemGroup>
 
     <ItemGroup>

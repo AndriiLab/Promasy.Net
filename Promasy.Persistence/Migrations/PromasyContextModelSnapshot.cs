@@ -18,7 +18,7 @@ namespace Promasy.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("PromasyCore")
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityAlwaysColumns(modelBuilder);
@@ -36,6 +36,21 @@ namespace Promasy.Persistence.Migrations
                     b.HasIndex("RolesId");
 
                     b.ToTable("EmployeeRoles", "PromasyCore");
+                });
+
+            modelBuilder.Entity("OrderOrderGroup", b =>
+                {
+                    b.Property<int>("GroupsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrdersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("GroupsId", "OrdersId");
+
+                    b.HasIndex("OrdersId");
+
+                    b.ToTable("OrderOrderGroups", "PromasyCore");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Employees.Employee", b =>
@@ -445,6 +460,91 @@ namespace Promasy.Persistence.Migrations
                     b.ToTable("Orders", "PromasyCore");
                 });
 
+            modelBuilder.Entity("Promasy.Domain.Orders.OrderGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FileKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ModifierId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileKey")
+                        .IsUnique();
+
+                    b.ToTable("OrderGroups", "PromasyCore");
+                });
+
+            modelBuilder.Entity("Promasy.Domain.Orders.OrderGroupEmployee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ModifierId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("OrderGroupId");
+
+                    b.ToTable("OrderGroupEmployees", "PromasyCore");
+                });
+
             modelBuilder.Entity("Promasy.Domain.Orders.OrderStatusHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -776,8 +876,6 @@ namespace Promasy.Persistence.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -846,15 +944,15 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToView("VW_FinanceSources");
+                    b.ToTable((string)null);
+
+                    b.ToView("VW_FinanceSources", "PromasyCore");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Persistence.Views.FinanceSubDepartmentsView", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -901,7 +999,9 @@ namespace Promasy.Persistence.Migrations
 
                     b.HasIndex("SubDepartmentId");
 
-                    b.ToView("VW_FinanceSubDepartments");
+                    b.ToTable((string)null);
+
+                    b.ToView("VW_FinanceSubDepartments", "PromasyCore");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Suppliers.Supplier", b =>
@@ -1014,6 +1114,21 @@ namespace Promasy.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OrderOrderGroup", b =>
+                {
+                    b.HasOne("Promasy.Domain.Orders.OrderGroup", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Promasy.Domain.Orders.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrdersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Promasy.Domain.Employees.Employee", b =>
                 {
                     b.HasOne("Promasy.Domain.Organizations.SubDepartment", "SubDepartment")
@@ -1087,6 +1202,25 @@ namespace Promasy.Persistence.Migrations
                     b.Navigation("Supplier");
 
                     b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("Promasy.Domain.Orders.OrderGroupEmployee", b =>
+                {
+                    b.HasOne("Promasy.Domain.Employees.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Promasy.Domain.Orders.OrderGroup", "OrderGroup")
+                        .WithMany("Employees")
+                        .HasForeignKey("OrderGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("OrderGroup");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Orders.OrderStatusHistory", b =>
@@ -1174,6 +1308,11 @@ namespace Promasy.Persistence.Migrations
             modelBuilder.Entity("Promasy.Domain.Orders.Order", b =>
                 {
                     b.Navigation("Statuses");
+                });
+
+            modelBuilder.Entity("Promasy.Domain.Orders.OrderGroup", b =>
+                {
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("Promasy.Domain.Organizations.Department", b =>

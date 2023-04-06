@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.OpenApi.Models;
+using Promasy.Core.Constants;
 using Promasy.Modules.Auth;
 using Promasy.Modules.Core;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Cpv;
 using Promasy.Modules.Employees;
+using Promasy.Modules.Files;
 using Promasy.Modules.Finances;
 using Promasy.Modules.Manufacturers;
 using Promasy.Modules.Orders;
@@ -37,6 +39,7 @@ try
     builder.Services.RegisterModule<CoreModule>(builder.Configuration);
     builder.Services.RegisterModule<AuthModule>(builder.Configuration);
     builder.Services.RegisterModule<CpvModule>(builder.Configuration);
+    builder.Services.RegisterModule<FilesModule>(builder.Configuration);
     builder.Services.RegisterModule<UnitsModule>(builder.Configuration);
     builder.Services.RegisterModule<EmployeesModule>(builder.Configuration);
     builder.Services.RegisterModule<ManufacturersModule>(builder.Configuration);
@@ -91,12 +94,11 @@ try
     builder.Services.AddCors();
 
     // Supported localization cultures
-    var supportedCultures = new[] {"en", "uk"};
     builder.Services.Configure<RequestLocalizationOptions>(options =>
     {
-        options.SetDefaultCulture(supportedCultures[0])
-            .AddSupportedCultures(supportedCultures)
-            .AddSupportedUICultures(supportedCultures);
+        options.SetDefaultCulture(LocalizationCulture.EnglishUs)
+            .AddSupportedCultures(LocalizationCulture.SupportedCultures)
+            .AddSupportedUICultures(LocalizationCulture.SupportedCultures);
     });
 
     var app = builder.Build();
@@ -124,22 +126,22 @@ try
 
     // Configure parse localization from request 
     app.UseRequestLocalization(new RequestLocalizationOptions()
-        .SetDefaultCulture(supportedCultures[0])
-        .AddSupportedCultures(supportedCultures)
-        .AddSupportedUICultures(supportedCultures)
+        .SetDefaultCulture(LocalizationCulture.EnglishUs)
+        .AddSupportedCultures(LocalizationCulture.SupportedCultures)
+        .AddSupportedUICultures(LocalizationCulture.SupportedCultures)
         .AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
         {
             var requestLanguages = context.Request.Headers["Accept-Language"].ToString();
             var requestLanguage = requestLanguages.Split(',').FirstOrDefault() ?? string.Empty;
             string selectedLanguage;
-            if (supportedCultures.Contains(requestLanguage))
+            if (LocalizationCulture.SupportedCultures.Contains(requestLanguage))
             {
                 selectedLanguage = requestLanguage;
                 Log.Information("Request culture: {Culture}", requestLanguage);
             }
             else
             {
-                selectedLanguage = supportedCultures[0];
+                selectedLanguage = LocalizationCulture.EnglishUs;
                 Log.Information("Request culture not defined. Fallback to default culture: {Culture}", requestLanguage);
             }
 

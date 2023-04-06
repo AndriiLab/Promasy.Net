@@ -18,12 +18,14 @@
   "copy": "Копіювати",
   "delete": "Видалити",
   "language": "Мова",
+  "createPdfFile": "Створити PDF файл",
   "goBack": "Повернутись назад",
   "queryYear": "Рік запитів",
   "department": "Відділ | Відділи",
   "sub-department": "Підрозділ | Підрозділи",
   "employee": "Працівник | Працівники",
   "order": "Замовлення",
+  "print": "Друк",
   "createDialog": {
     "addNew": "Створити"
   },

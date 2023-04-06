@@ -1,4 +1,5 @@
-﻿using Promasy.Domain.Manufacturers;
+﻿using Promasy.Application.Interfaces;
+using Promasy.Domain.Manufacturers;
 using Promasy.Modules.Core.Modules;
 
 namespace Promasy.Modules.Manufacturers.Interfaces;

@@ -9,6 +9,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Script Include=".vite\vite-plugin-netcore-https.ts" />
+    <Script Include="src\constants\RoleEnum.ts" />
+    <Script Include="src\services\api\files.ts" />
     <Script Include="src\utils\constants.ts" />
     <Script Include="src\utils\currency-utils.ts" />
     <Script Include="src\utils\date-utils.ts" />

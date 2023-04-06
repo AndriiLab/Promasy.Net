@@ -42,6 +42,17 @@ export const availableLanguages: SelectObject<string>[] = [
 ];
 
 type PrimeVue = ReturnType<typeof usePrimeVue>;
+
+export function getCultureName(key: string){
+  switch (key) {
+    case uk.key:
+      return uk.cultureName;
+    case en.key:
+      return en.cultureName;
+    default:
+      return en.cultureName;
+  }
+}
 export function setPrimeVueLocale(primeVue: PrimeVue, locale: string) {
   let pvl;
   switch (locale) {

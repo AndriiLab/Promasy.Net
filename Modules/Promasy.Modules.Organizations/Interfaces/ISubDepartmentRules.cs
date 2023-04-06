@@ -1,4 +1,5 @@
-﻿using Promasy.Domain.Organizations;
+﻿using Promasy.Application.Interfaces;
+using Promasy.Domain.Organizations;
 using Promasy.Modules.Core.Modules;
 
 namespace Promasy.Modules.Organizations.Interfaces;

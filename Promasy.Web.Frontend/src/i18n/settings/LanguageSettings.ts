@@ -4,6 +4,7 @@ type PrimeVueLocaleOptions = ReturnType<typeof usePrimeVue>['config']['locale'];
 export interface LanguageSettings {
   name: string;
   key: string;
+  cultureName: string;
   datetimeFormat: AnyObject;
   numberFormat: AnyObject;
   primeVue: PrimeVueLocaleOptions;

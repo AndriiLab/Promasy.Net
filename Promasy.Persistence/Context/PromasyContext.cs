@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
-using Promasy.Core.UserContext;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Finances;
 using Promasy.Domain.Manufacturers;
@@ -36,6 +36,8 @@ namespace Promasy.Persistence.Context
         public DbSet<Unit> Units { get; set; }
         public DbSet<OrderStatusHistory> OrderStatuses { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderGroup> OrderGroups { get; set; }
+        public DbSet<OrderGroupEmployee> OrderGroupEmployees { get; set; }
         public DbSet<Cpv> Cpvs { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<FinanceSubDepartment> FinanceSubDepartments { get; set; }

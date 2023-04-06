@@ -129,8 +129,8 @@ $$ LANGUAGE plpgsql;
 INSERT INTO "PromasyCore"."Addresses" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "BuildingNumber", "City",
                                        "CityType", "InternalNumber", "Country", "PostalCode", "Region", "Street",
                                        "StreetType", "CreatorId")
-SELECT created_date,
-       modified_date,
+SELECT created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        active = FALSE,
        id,
        building_number,
@@ -147,8 +147,8 @@ FROM promasy.addresses;
 
 INSERT INTO "PromasyCore"."Organizations" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "Email", "Edrpou",
                                            "FaxNumber", "PhoneNumber", "AddressId", "CreatorId")
-SELECT I.created_date,
-       I.modified_date,
+SELECT I.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       I.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        I.active = FALSE,
        I.id,
        I.inst_name,
@@ -163,14 +163,20 @@ FROM promasy.institutes I
 
 INSERT INTO "PromasyCore"."Departments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "OrganizationId",
                                          "CreatorId")
-SELECT D.created_date, D.modified_date, D.active = FALSE, D.id, D.dep_name, I."Id", 0
+SELECT D.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       D.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       D.active = FALSE,
+       D.id,
+       D.dep_name,
+       I."Id",
+       0
 FROM promasy.departments D
          JOIN "PromasyCore"."Organizations" I ON I.OldId = D.inst_id;
 
 INSERT INTO "PromasyCore"."SubDepartments" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "Name", "DepartmentId",
                                             "CreatorId", "OrganizationId")
-SELECT S.created_date,
-       S.modified_date,
+SELECT S.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       S.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        S.active = FALSE,
        S.id,
        S.subdep_name,
@@ -183,8 +189,8 @@ FROM promasy.subdepartments S
 INSERT INTO "PromasyCore"."Employees" ("CreatedDate", "ModifiedDate", "Deleted", oldid, "FirstName", "MiddleName",
                                        "LastName", "PrimaryPhone", "ReservePhone", "SubDepartmentId", "UserName",
                                        "Email", "CreatorId", "Password", "Salt", "OrganizationId")
-SELECT E.created_date,
-       E.modified_date,
+SELECT E.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       E.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        E.active = FALSE,
        E.id,
        TRIM(E.emp_fname),
@@ -246,9 +252,9 @@ BEGIN
             THEN role_name = 4;
         WHEN 'SECRETARY_OF_TENDER_COMMITTEE'
             THEN role_name = 5;
-        WHEN 'ECONOMIST'
-            THEN role_name = 6;
         WHEN 'ACCOUNTANT'
+            THEN role_name = 6;
+        WHEN 'ECONOMIST'
             THEN role_name = 7;
         WHEN 'HEAD_OF_DEPARTMENT'
             THEN role_name = 8;
@@ -287,8 +293,8 @@ WHERE EO.id = EN.OldId
 INSERT INTO "PromasyCore"."Units"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
                                   "ModifierId", oldid, "OrganizationId")
 SELECT TRIM(A.amount_unit_desc),
-       A.created_date,
-       A.modified_date,
+       A.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       A.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        A.active = FALSE,
        CR."Id",
        ED."Id",
@@ -303,8 +309,8 @@ FROM promasy.amount_units A
 INSERT INTO "PromasyCore"."Manufacturers"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId", "ModifierId",
                                           OldId, "OrganizationId")
 SELECT TRIM(P.brand_name),
-       P.created_date,
-       P.modified_date,
+       P.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       P.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        P.active = FALSE,
        CR."Id",
        ED."Id",
@@ -321,8 +327,8 @@ INSERT INTO "PromasyCore"."Suppliers"("Name", "Comment", "Phone", "CreatedDate",
 SELECT TRIM(S.supplier_name),
        TRIM(NULLIF(S.supplier_comments, '')),
        TRANSLATE(TRIM(NULLIF(S.supplier_tel, '')), '- ()', ''),
-       S.created_date,
-       S.modified_date,
+       S.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       S.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        S.active = FALSE,
        CR."Id",
        ED."Id",
@@ -337,8 +343,8 @@ FROM promasy.suppliers S
 INSERT INTO "PromasyCore"."ReasonForSupplierChoice"("Name", "CreatedDate", "ModifiedDate", "Deleted", "CreatorId",
                                                     "ModifierId", oldid, "OrganizationId")
 SELECT TRIM(R.reason_name),
-       R.created_date,
-       R.modified_date,
+       R.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       R.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        R.active = FALSE,
        CR."Id",
        ED."Id",
@@ -377,8 +383,8 @@ SELECT TRIM(F.name),
        F.total_equpment,
        F.total_materials,
        F.total_services,
-       F.created_date,
-       F.modified_date,
+       F.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       F.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        F.active = false,
        CR."Id",
        ED."Id",
@@ -398,8 +404,8 @@ SELECT COALESCE(FD.total_eqipment, 0),
        COALESCE(FD.total_services, 0),
        COALESCE(F."Id", 1),
        COALESCE(S."Id", 1),
-       COALESCE(FD.created_date, NOW()),
-       FD.modified_date,
+       COALESCE(FD.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC'),
+       FD.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        CASE FD.created_date IS NOT NULL WHEN TRUE THEN FD.active = FALSE ELSE FALSE END,
        COALESCE(CR."Id", 1),
        ED."Id",
@@ -445,8 +451,8 @@ SELECT B.amount,
        COALESCE(PR."Id", 1),
        COALESCE(RS."Id", 1),
        COALESCE(SUP."Id", 1),
-       B.created_date,
-       B.modified_date,
+       B.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       B.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        B.active = FALSE,
        CR."Id",
        ED."Id",
@@ -490,8 +496,8 @@ INSERT INTO "PromasyCore"."OrderStatuses" ("Status", "OrderId", "CreatedDate", "
                                            "ModifierId", oldid)
 SELECT FN_BidStatusConverter(BS.status),
        B."Id",
-       BS.created_date,
-       BS.modified_date,
+       BS.created_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
+       BS.modified_date AT TIME ZONE 'Europe/Kiev' AT TIME ZONE 'UTC',
        BS.active = FALSE,
        CR."Id",
        ED."Id",

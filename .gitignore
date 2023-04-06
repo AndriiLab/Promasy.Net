@@ -574,3 +574,4 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/node,vuejs,dotnetcore,visualstudio,jetbrains+all,visualstudiocode
 
 **/appsettings.Development.json
+**/Reports/

@@ -6,7 +6,7 @@ public class Role
 {
     public int Id { get; set; }
     public RoleName Name { get; set; }
-    
+
     public ICollection<Employee> Employees = new List<Employee>();
 
     private Role()

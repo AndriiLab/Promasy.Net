@@ -1,4 +1,5 @@
-﻿using Promasy.Modules.Core.Modules;
+﻿using Promasy.Application.Interfaces;
+using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Organizations.Dtos;

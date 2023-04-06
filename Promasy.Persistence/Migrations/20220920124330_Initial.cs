@@ -499,6 +499,89 @@ namespace Promasy.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+            
+                        migrationBuilder.CreateTable(
+                name: "OrderGroups",
+                schema: "PromasyCore",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    FileKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    OrganizationId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderGroupEmployees",
+                schema: "PromasyCore",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    EmployeeId = table.Column<int>(type: "integer", nullable: false),
+                    OrderGroupId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifierId = table.Column<int>(type: "integer", nullable: true),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderGroupEmployees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderGroupEmployees_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "PromasyCore",
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderGroupEmployees_OrderGroups_OrderGroupId",
+                        column: x => x.OrderGroupId,
+                        principalSchema: "PromasyCore",
+                        principalTable: "OrderGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderOrderGroups",
+                schema: "PromasyCore",
+                columns: table => new
+                {
+                    GroupsId = table.Column<int>(type: "integer", nullable: false),
+                    OrdersId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderOrderGroups", x => new { x.GroupsId, x.OrdersId });
+                    table.ForeignKey(
+                        name: "FK_OrderOrderGroups_OrderGroups_GroupsId",
+                        column: x => x.GroupsId,
+                        principalSchema: "PromasyCore",
+                        principalTable: "OrderGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderOrderGroups_Orders_OrdersId",
+                        column: x => x.OrdersId,
+                        principalSchema: "PromasyCore",
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cpvs_DescriptionEnglish",
@@ -613,6 +696,31 @@ namespace Promasy.Persistence.Migrations
                 schema: "PromasyCore",
                 table: "SubDepartments",
                 column: "DepartmentId");
+            
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderGroupEmployees_EmployeeId",
+                schema: "PromasyCore",
+                table: "OrderGroupEmployees",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderGroupEmployees_OrderGroupId",
+                schema: "PromasyCore",
+                table: "OrderGroupEmployees",
+                column: "OrderGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderGroups_FileKey",
+                schema: "PromasyCore",
+                table: "OrderGroups",
+                column: "FileKey",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderOrderGroups_OrdersId",
+                schema: "PromasyCore",
+                table: "OrderOrderGroups",
+                column: "OrdersId");
 
             migrationBuilder.Sql(@"
 CREATE OR REPLACE FUNCTION ""PromasyCore"".""FN_Sum"" (numeric, pg_catalog.anyelement, numeric)
@@ -672,6 +780,18 @@ CREATE VIEW ""PromasyCore"".""VW_FinanceSubDepartments"" AS
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "OrderGroupEmployees",
+                schema: "PromasyCore");
+
+            migrationBuilder.DropTable(
+                name: "OrderOrderGroups",
+                schema: "PromasyCore");
+
+            migrationBuilder.DropTable(
+                name: "OrderGroups",
+                schema: "PromasyCore");
+
             migrationBuilder.DropTable(
                 name: "EmployeeRoles",
                 schema: "PromasyCore");

@@ -3,6 +3,7 @@ import { LanguageSettings } from "./LanguageSettings";
 export const uk: LanguageSettings = {
   name: "Українська",
   key: "uk",
+  cultureName: "uk-UA",
   datetimeFormat: {
     short: {
       year: "numeric",

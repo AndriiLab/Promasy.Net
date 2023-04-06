@@ -135,4 +135,16 @@
   <data name="Reason for Supplier Choice already associated with order" xml:space="preserve">
     <value>Причина вибору постачальника вже ассоційована з замовленням</value>
   </data>
+  <data name="Order {0} not exist" xml:space="preserve">
+    <value>Замовлення {0} не існує</value>
+  </data>
+  <data name="Employee {0} not exist or not have role {1}" xml:space="preserve">
+    <value>Робітник {0} не існує або не має ролі {1}</value>
+  </data>
+  <data name="File name incorrect" xml:space="preserve">
+    <value>Неправильне ім'я файлу</value>
+  </data>
+  <data name="File {0} not found" xml:space="preserve">
+    <value>Файл {0} не знайдено</value>
+  </data>
 </root>

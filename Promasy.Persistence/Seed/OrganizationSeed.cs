@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Promasy.Application.Security;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
 using Promasy.Persistence.Context;
-using Promasy.Security;
 
 namespace Promasy.Persistence.Seed;
 

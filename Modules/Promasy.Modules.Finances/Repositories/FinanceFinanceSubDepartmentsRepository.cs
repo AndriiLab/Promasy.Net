@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Promasy.Core.UserContext;
+using Promasy.Application.Interfaces;
 using Promasy.Domain.Finances;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Persistence;

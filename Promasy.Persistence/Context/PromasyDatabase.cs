@@ -30,6 +30,7 @@ internal class PromasyDatabase : IDatabase
     public DbSet<Unit> Units => _ctx.Units;
     public DbSet<OrderStatusHistory> OrderStatuses => _ctx.OrderStatuses;
     public DbSet<Order> Orders => _ctx.Orders;
+    public DbSet<OrderGroup> OrderGroups => _ctx.OrderGroups;
     public DbSet<Cpv> Cpvs => _ctx.Cpvs;
     public DbSet<Department> Departments => _ctx.Departments;
     public DbSet<FinanceSubDepartment> FinanceSubDepartments => _ctx.FinanceSubDepartments;

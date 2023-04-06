@@ -37,5 +37,6 @@ public class Order : OrganizationEntity
     public int? ReasonId { get; set; }
     public ReasonForSupplierChoice Reason { get; set; }
 
-    public virtual ICollection<OrderStatusHistory> Statuses { get; set; }
+    public virtual ICollection<OrderStatusHistory> Statuses { get; set; } = new List<OrderStatusHistory>();
+    public virtual ICollection<OrderGroup> Groups { get; set; } = new List<OrderGroup>();
 }

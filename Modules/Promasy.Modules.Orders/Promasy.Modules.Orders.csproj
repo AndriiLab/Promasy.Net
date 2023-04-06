@@ -10,4 +10,15 @@
       <ProjectReference Include="..\Promasy.Modules.Core\Promasy.Modules.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="QuestPDF" Version="2022.12.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Services\OrderExporter.uk.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrderExporterResource.uk.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

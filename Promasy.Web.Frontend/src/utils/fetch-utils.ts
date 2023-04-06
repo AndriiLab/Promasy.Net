@@ -1,3 +1,4 @@
+import { getCultureName } from "@/i18n";
 import { useSessionStore, SessionUser } from "@/store/session";
 import { Router } from "@/router";
 
@@ -69,7 +70,8 @@ async function typedFetchAsync<TOkResponse, TErrorResponse>(
 function buildHeaders(ri: RequestInit, user: SessionUser | undefined): Headers {
   const headers = (ri.headers as Headers) ?? (new Headers());
   const { locale } = useSessionStore();
-  headers.append("Accept-Language", locale);
+  headers.append("Accept-Language", getCultureName(locale));
+  headers.append("Time-Zone", Intl.DateTimeFormat().resolvedOptions().timeZone);
 
   const token = user?.token;
   if (token) {

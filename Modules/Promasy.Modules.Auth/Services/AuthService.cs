@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Promasy.Application.Interfaces;
+using Promasy.Application.Security;
 using Promasy.Modules.Auth.Interfaces;
-using Promasy.Modules.Core.Auth;
-using Promasy.Security;
 
 namespace Promasy.Modules.Auth.Services;
 

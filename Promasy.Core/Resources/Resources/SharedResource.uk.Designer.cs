@@ -123,11 +123,38 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Робітник {0} не існує або не має ролі {1}.
+        /// </summary>
+        internal static string Employee__0__not_exist_or_not_have_role__1_ {
+            get {
+                return ResourceManager.GetString("Employee {0} not exist or not have role {1}", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Робітник повинен мати одну роль.
         /// </summary>
         internal static string Employee_must_have_one_role {
             get {
                 return ResourceManager.GetString("Employee must have one role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Файл {0} не знайдено.
+        /// </summary>
+        internal static string File__0__not_found {
+            get {
+                return ResourceManager.GetString("File {0} not found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Неправильне ім&apos;я файлу.
+        /// </summary>
+        internal static string File_name_incorrect {
+            get {
+                return ResourceManager.GetString("File name incorrect", resourceCulture);
             }
         }
         
@@ -236,6 +263,15 @@ namespace Promasy.Core.Resources {
         internal static string Number_already_defined_in_this_year {
             get {
                 return ResourceManager.GetString("Number already defined in this year", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Замовлення {0} не існує.
+        /// </summary>
+        internal static string Order__0__not_exist {
+            get {
+                return ResourceManager.GetString("Order {0} not exist", resourceCulture);
             }
         }
         

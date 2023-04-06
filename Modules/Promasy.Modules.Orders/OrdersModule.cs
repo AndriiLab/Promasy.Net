@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
@@ -15,6 +16,8 @@ using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Orders.Dtos;
 using Promasy.Modules.Orders.Interfaces;
 using Promasy.Modules.Orders.Models;
+using Promasy.Modules.Orders.Repositories;
+using Promasy.Modules.Orders.Services;
 
 namespace Promasy.Modules.Orders;
 
@@ -31,7 +34,12 @@ public class OrdersModule : IModule
     
     public IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
+        builder.AddTransient<IOrderExporter, OrderExporter>();
+        builder.AddTransient<IEmployeeRules, EmployeeRepository>();
+        builder.AddTransient<IEmployeesRepository, EmployeeRepository>();
+
         _rfscSubModule.RegisterServices(builder, configuration);
+        
         return builder;
     }
 
@@ -125,6 +133,21 @@ public class OrdersModule : IModule
             .RequireAuthorization();
         
         _rfscSubModule.MapEndpoints(endpoints);
+        
+        endpoints.MapPost($"{RoutePrefix}/export/pdf", async ([FromBody] ExportToPdfRequest request,
+                [FromServices] IOrderGroupRepository repository, [FromServices] IOrderExporter exporter) =>
+            {
+
+                var fileName = await repository.CreateOrderGroupAsync(request.OrderIds,
+                    request.SignEmployees.Select(kv => new Tuple<int, RoleName>(kv.Value, kv.Key)),
+                    FileType.Pdf);
+                
+                await exporter.ExportToPdfFileAsync(fileName);
+                return TypedResults.Ok(new ExportResponse(fileName));
+            })
+        .WithValidator<ExportToPdfRequest>()
+        .WithApiDescription(Tag, "ExportAsPdf", "Export as PDF")
+        .RequireAuthorization();
         
         return endpoints;
     }

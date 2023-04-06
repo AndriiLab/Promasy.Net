@@ -4,7 +4,7 @@ using Promasy.Modules.Core.Dtos;
 namespace Promasy.Modules.Orders.Dtos;
 
 public record OrderDto(int Id, string Description, string? CatNum,
-        decimal OnePrice, decimal Amount, OrderType Type, string? Kekv, DateOnly? ProcurementStartDate,
+        decimal OnePrice, decimal Amount, decimal Total, OrderType Type, string? Kekv, DateOnly? ProcurementStartDate,
         OrderUnitDto Unit, OrderCpvDto Cpv, OrderFinanceSubDepartmentDto FinanceSubDepartment,
         OrderSubDepartmentDto SubDepartment, OrderDepartmentDto Department,
         OrderManufacturerDto? Manufacturer, OrderSupplierDto? Supplier,

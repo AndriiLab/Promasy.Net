@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using EntityFrameworkCore.Triggered;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
-using Promasy.Core.UserContext;
 using Promasy.Persistence.Context;
 
 namespace Promasy.Persistence.Triggers;
