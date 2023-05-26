@@ -1,0 +1,14 @@
+version: 2
+updates:
+
+  # Maintain dependencies for .NET
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/Promasy.Web.Frontend"
+    schedule:
+      interval: "weekly"
