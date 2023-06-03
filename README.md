@@ -14,7 +14,7 @@ Vue.js as frontend.
 
 ## Requirements
 
-- .NET Core 6
+- .NET Core 7
 - PostgreSQL 14
 
 ## How to run
@@ -38,5 +38,5 @@ Vue.js as frontend.
 
 ## TODO
 
-- Reports generation as PDF and CSV/XLSX
+- Reports generation as CSV/XLSX
 - Dashboard
