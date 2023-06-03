@@ -61,7 +61,7 @@ public class OrganizationsModule : IModule
             .WithApiDescription(Tag, "GetOrganizationsLst", "Get Organizations list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IOrganizationsRepository repository) =>
+        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrganizationsRepository repository) =>
             {
                 var organization = await repository.GetByIdAsync(id);
                 if (organization is null)
