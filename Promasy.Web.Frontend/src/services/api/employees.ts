@@ -68,6 +68,8 @@ export interface Employee {
   email: string;
   primaryPhone: string;
   reservePhone?: string;
+  organizationId: number;
+  organization: string;
   departmentId: number;
   department: string;
   subDepartmentId: number;

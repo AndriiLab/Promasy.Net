@@ -51,12 +51,12 @@ public class EmployeesModule : IModule
         
         endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository) =>
             {
-                var unit = await repository.GetByIdAsync(id);
-                if (unit is null)
+                var employee = await repository.GetByIdAsync(id);
+                if (employee is null)
                 {
                     throw new ApiException(null, StatusCodes.Status404NotFound);
                 }
-                return TypedResults.Ok(unit) ;
+                return TypedResults.Ok(employee) ;
             })
             .WithApiDescription(Tag, "GetEmployeeById", "Get Employee by Id")
             .RequireAuthorization()

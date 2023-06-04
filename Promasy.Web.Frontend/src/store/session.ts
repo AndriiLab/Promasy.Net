@@ -114,7 +114,7 @@ export interface SessionUser {
   token: string;
 }
 const claims = {
-  id: 'name',
+  id: 'unique_name',
   firstName: 'given_name',
   middleName: 'middleName',
   lastName: 'family_name',

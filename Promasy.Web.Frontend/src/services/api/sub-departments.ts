@@ -58,3 +58,5 @@ export interface SubDepartment {
   editor: string;
   editedDate: Date;
 }
+
+export const EmptySubDepartmentName = "<відсутній>";

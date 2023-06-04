@@ -43,7 +43,7 @@
           <Column field="editor" :header="t('table.columns.editor')" headerStyle="width:25%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('table.columns.editor') }}</span>
-              <Chip :label="slotProps.data.editor" icon="pi pi-user" />
+              <UserChip :user-id="slotProps.data.editorId" :user-name="slotProps.data.editor"/>
             </template>
           </Column>
           <Column field="editedDate" :header="t('table.columns.editDate')" headerStyle="width:25%; min-width:10rem;">
@@ -135,6 +135,7 @@ import { DataTableSortEvent, DataTablePageEvent } from "primevue/datatable";
 import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@/i18n/validators";
+import UserChip from "@/components/UserChip.vue";
 
 const { d, t } = useI18n();
 const { isUserAdmin } = useSessionStore();

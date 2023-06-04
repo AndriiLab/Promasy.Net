@@ -48,7 +48,7 @@
           <Column field="editor" :header="t('table.columns.editor')" headerStyle="width:25%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('table.columns.editor') }}</span>
-              <Chip :label="slotProps.data.editor" icon="pi pi-user"/>
+              <UserChip :user-id="slotProps.data.editorId" :user-name="slotProps.data.editor"/>
             </template>
           </Column>
           <Column field="editedDate" :header="t('table.columns.editDate')" headerStyle="width:25%; min-width:10rem;">
@@ -130,6 +130,7 @@ import DepartmentsApi from "@/services/api/departments";
 import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
+import UserChip from "@/components/UserChip.vue";
 
 const Router = useRouter();
 const route = useRoute();

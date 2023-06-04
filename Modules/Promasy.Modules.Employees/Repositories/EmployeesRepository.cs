@@ -134,7 +134,8 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
             .AsNoTracking()
             .Where(e => e.Id == id)
             .Select(e => new EmployeeDto(e.Id, e.FirstName, e.MiddleName, e.LastName, e.Email, e.PrimaryPhone,
-                e.ReservePhone, e.SubDepartment.DepartmentId, e.SubDepartment.Department.Name, e.SubDepartmentId,
+                e.ReservePhone, e.SubDepartment.Department.OrganizationId, e.SubDepartment.Department.Organization.Name,
+                e.SubDepartment.DepartmentId, e.SubDepartment.Department.Name, e.SubDepartmentId,
                 e.SubDepartment.Name, e.Roles.Select(r => r.Name).ToArray(), e.ModifierId ?? e.CreatorId,
                 PromasyDbFunction.GetEmployeeShortName(e.ModifierId ?? e.CreatorId), e.ModifiedDate ?? e.CreatedDate))
             .FirstOrDefaultAsync();

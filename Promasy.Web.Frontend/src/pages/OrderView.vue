@@ -216,7 +216,7 @@
 
         <div class="flex justify-content-between flex-wrap mt-5">
           <div v-if="model.editedDate">{{ t('lastEdit') }}:
-            <Chip :label="model.editor" icon="pi pi-user"/>
+            <UserChip :user-id="model.editorId" :user-name="model.editor"/>
             {{ d(new Date(model.editedDate), 'long') }}
           </div>
           <Button :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
@@ -344,6 +344,7 @@ import ErrorWrap from "@/components/ErrorWrap.vue";
 import FinanceInput from "@/components/FinanceInput.vue";
 import CpvSelector from "@/components/CpvSelector.vue";
 import CopyFieldInput from "@/components/CopyFieldInput.vue";
+import UserChip from "@/components/UserChip.vue";
 
 const { t, d } = useI18n({ useScope: "local" });
 const Router = useRouter();
@@ -654,7 +655,8 @@ function mapToModel(order: Order): OrderModel {
     unitId: order.unit.id,
     editor: order.editor,
     editedDate: order.editedDate,
-  };
+    editorId: order.editorId,
+  } as OrderModel;
 }
 
 function getDefaultSelectItem(): SelectItem<number> {
@@ -758,6 +760,7 @@ interface OrderModel {
   reasonId: number;
   editor?: string;
   editedDate?: string;
+  editorId?: number;
 }
 
 interface SuggestionsTablePaging extends TablePagingData {

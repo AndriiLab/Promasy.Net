@@ -95,7 +95,7 @@
                             headerStyle="width:15%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">{{ t("table.columns.editor") }}</span>
-                            <Chip :label="slotProps.data.editor" icon="pi pi-user"/>
+                            <UserChip :user-id="slotProps.data.editorId" :user-name="slotProps.data.editor"/>
                         </template>
                     </Column>
                     <Column field="editedDate" :header="t('table.columns.editDate')"
@@ -258,6 +258,7 @@ import OrderStatusBadge from "@/components/OrderStatusBadge.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import YearSelector from "@/components/YearSelector.vue";
 import ErrorWrap from "@/components/ErrorWrap.vue";
+import UserChip from "@/components/UserChip.vue";
 import { RoleEnum } from "@/constants/RoleEnum";
 import DepartmentsApi from "@/services/api/departments";
 import EmployeesApi, { EmployeeShort } from "@/services/api/employees";

@@ -33,6 +33,8 @@ import Toolbar from "primevue/toolbar";
 import Menu from "primevue/menu";
 import Dialog from "primevue/dialog";
 import Chip from "primevue/chip";
+import Avatar from "primevue/avatar";
+import Skeleton from "primevue/skeleton";
 import Calendar from "primevue/calendar";
 import ToastService from "primevue/toastservice";
 import BadgeDirective from 'primevue/badgedirective';
@@ -73,6 +75,8 @@ app.component("Toolbar", Toolbar);
 app.component("Menu", Menu);
 app.component("Dialog", Dialog);
 app.component("Chip", Chip);
+app.component("Avatar", Avatar);
+app.component("Skeleton", Skeleton);
 app.component("Calendar", Calendar);
 
 app.mount("#app");

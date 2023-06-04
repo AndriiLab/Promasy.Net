@@ -77,7 +77,7 @@
           <Column field="editor" :header="t('table.columns.editor')" headerStyle="width:15%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('table.columns.editor') }}</span>
-              <Chip :label="slotProps.data.editor" icon="pi pi-user"/>
+              <UserChip :user-id="slotProps.data.editorId" :user-name="slotProps.data.editor"/>
             </template>
           </Column>
           <Column field="editedDate" :header="t('table.columns.editDate')" headerStyle="width:15%; min-width:10rem;">
@@ -136,6 +136,7 @@ import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import RoleBadge from "@/components/RoleBadge.vue";
 import { debounce } from "vue-debounce";
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
+import UserChip from "@/components/UserChip.vue";
 
 const { d, t } = useI18n();
 const { user } = useSessionStore();

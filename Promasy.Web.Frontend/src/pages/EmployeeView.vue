@@ -96,7 +96,7 @@
 
         <div class="flex justify-content-between flex-wrap mt-5">
           <div v-if="model.editedDate">{{ t('lastEdit') }}:
-            <Chip :label="model.editor" icon="pi pi-user"/>
+            <UserChip :user-id="model.editorId" :user-name="model.editor"/>
             {{ d(new Date(model.editedDate), 'long') }}
           </div>
           <Button :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
@@ -121,6 +121,7 @@ import ErrorWrap from "@/components/ErrorWrap.vue";
 import Loader from "@/components/Loader.vue";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
+import UserChip from "@/components/UserChip.vue";
 
 const { t, d } = useI18n({ useScope: "local" });
 const route = useRoute();
@@ -206,6 +207,7 @@ function getDefaultModel(): EmployeeModel {
     role: roles[roles.length - 1].value,
     editedDate: undefined,
     editor: undefined,
+    editorId: undefined,
   };
 }
 
@@ -228,6 +230,7 @@ function mapToModel(e: Employee): EmployeeModel {
     role: e.roles[0],
     editor: e.editor,
     editedDate: e.editedDate,
+    editorId: e.editorId
   };
 }
 
@@ -294,6 +297,7 @@ interface EmployeeModel {
   role: number;
   editedDate: Date | undefined,
   editor: string | undefined
+  editorId: number | undefined
 }
 </script>
 
