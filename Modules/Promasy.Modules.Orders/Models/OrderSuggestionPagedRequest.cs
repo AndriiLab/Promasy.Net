@@ -1,10 +1,17 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Promasy.Modules.Core.Requests;
 
 namespace Promasy.Modules.Orders.Models;
 
-public record OrderSuggestionPagedRequest(int Page = 1, int Offset = 10, string? Search = null, string? OrderBy = null,
-        bool IsDescending = false, string? CatNum = null, int? ExcludeId = null)
+public record OrderSuggestionPagedRequest(
+        int Page = 1,
+        int Offset = 10,
+        string? Search = null,
+        [FromQuery(Name = "order")] string? OrderBy = null,
+        [FromQuery(Name = "desc")] bool IsDescending = false,
+        [FromQuery(Name = "cat")] string? CatNum = null,
+        [FromQuery(Name = "exclude")] int?ExcludeId = null)
     : PagedRequest(Page, Offset, Search, OrderBy, IsDescending);
 
 public class OrderSuggestionPagedRequestValidator : AbstractValidator<OrderSuggestionPagedRequest>
