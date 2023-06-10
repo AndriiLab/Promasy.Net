@@ -1,32 +1,33 @@
 ﻿<template>
-  <Tag :value="getRoleName(role)" :severity="getColor()"></Tag>
+  <Tag class="role-tag" :value="getRoleName(role)" :style="{ 'background-color': backgroundColor, color: color }"></Tag>
 </template>
 
 <script lang="ts" setup>
-import { useRolesStore } from "@/store/roles";
+import {defineProps, ref, watch} from "vue";
+import {RoleEnum, getRoleName} from "@/constants/RoleEnum";
+import {getColorPair} from "@/utils/color-utils";
 
-const { getRoleName } = useRolesStore();
 const props = defineProps<{
-  role: number,
+  role: RoleEnum,
 }>();
 
-function getColor(){
-  switch (props.role){
-    case 1:
-      return 'danger';
-    case 2:
-    case 3:
-      return 'success';
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-      return 'warning';
-    case 8:
-    case 9:
-      return 'success';
-    default:
-      return undefined;
-  }
-}
+
+let pair = getColorPair(props.role + 200);
+const backgroundColor = ref(pair.backgroundColor);
+const color = ref(pair.foregroundColor);
+
+watch(() => props.role, (val) => {
+  pair = getColorPair(val + 200);
+  backgroundColor.value = pair.backgroundColor;
+  color.value = pair.foregroundColor
+});
 </script>
+
+<style lang="scss">
+.role-tag {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+</style>
+

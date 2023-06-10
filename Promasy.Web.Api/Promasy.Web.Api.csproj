@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Modules\Promasy.Modules.Auth\Promasy.Modules.Auth.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Core\Promasy.Modules.Core.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Cpv\Promasy.Modules.Cpv.csproj" />
+    <ProjectReference Include="..\Modules\Promasy.Modules.Dashboard\Promasy.Modules.Dashboard.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Employees\Promasy.Modules.Employees.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Files\Promasy.Modules.Files.csproj" />
     <ProjectReference Include="..\Modules\Promasy.Modules.Finances\Promasy.Modules.Finances.csproj" />

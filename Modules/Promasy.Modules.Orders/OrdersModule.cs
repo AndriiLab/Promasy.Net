@@ -7,11 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
-using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Orders.Dtos;
 using Promasy.Modules.Orders.Interfaces;
@@ -45,20 +43,6 @@ public class OrdersModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet($"{RoutePrefix}/all-types", ([FromServices] IStringLocalizer<OrderType> localizer) =>
-            {
-                return TypedResults.Ok(Enum.GetValues<OrderType>()
-                    .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
-            })
-            .WithApiDescription(Tag, "GetAvailableOrderTypes", "Get available order types");
-        
-        endpoints.MapGet($"{RoutePrefix}/all-statuses", ([FromServices] IStringLocalizer<OrderStatus> localizer) =>
-            {
-                return TypedResults.Ok(Enum.GetValues<OrderStatus>()
-                    .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
-            })
-            .WithApiDescription(Tag, "GetAvailableOrderStatuses", "Get available order statuses");
-        
         endpoints.MapGet(RoutePrefix, async ([AsParameters] OrdersPagedRequest request, [FromServices] IOrdersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);

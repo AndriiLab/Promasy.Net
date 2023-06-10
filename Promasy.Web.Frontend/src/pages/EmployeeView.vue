@@ -114,7 +114,6 @@ import useVuelidate from "@vuelidate/core";
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-import { useRolesStore } from "@/store/roles";
 import { useSessionStore } from "@/store/session";
 import EmployeesApi, { Employee } from "@/services/api/employees";
 import ErrorWrap from "@/components/ErrorWrap.vue";
@@ -122,13 +121,14 @@ import Loader from "@/components/Loader.vue";
 import DepartmentSelector from "@/components/DepartmentSelector.vue";
 import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import UserChip from "@/components/UserChip.vue";
+import {getRolesAsSelectItems} from "@/constants/RoleEnum";
 
 const { t, d } = useI18n({ useScope: "local" });
 const route = useRoute();
 const Router = useRouter();
 const { user } = useSessionStore();
-const { roles } = useRolesStore();
 
+const roles = ref(getRolesAsSelectItems())
 const externalErrors = ref({} as Object<string[]>);
 const departments = ref([] as SelectItem<number>[]);
 const subDepartments = ref([] as SelectItem<number>[]);

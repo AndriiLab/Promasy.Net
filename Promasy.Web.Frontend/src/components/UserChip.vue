@@ -1,6 +1,7 @@
 ﻿<template>
   <div style="display: inline">
     <Avatar
+        class="user-avatar"
         :label="initials"
         :style="{ 'background-color': backgroundColor, color: color }"
         @click="togglePopupAsync($event, true)"/>
@@ -15,10 +16,10 @@
 
 <script setup lang="ts">
 import {watch, ref, defineProps} from "vue";
-import tinycolor from "tinycolor2";
 import {useI18n} from 'vue-i18n';
 import UserInfoSection, {UserInfoSectionConfig} from "@/components/UserInfoSection.vue";
 import EmployeesApi, {Employee} from "@/services/api/employees";
+import {getColorPair} from "@/utils/color-utils";
 
 const {t} = useI18n({useScope: "local"});
 const userChipDetailsPanel = ref(null);
@@ -39,21 +40,19 @@ const props = defineProps<{
 }>();
 
 const initials = ref(getInitials(props.userName));
-const backgroundColor = ref(generateBackgroundColor(props.userId));
-const color = ref(generateForegroundColor(backgroundColor.value));
+let pair = getColorPair(props.userId);
+const backgroundColor = ref(pair.backgroundColor);
+const color = ref(pair.foregroundColor);
 
 watch(() => props.userName, (val) => {
   initials.value = getInitials(val);
 });
 
 watch(() => props.userId, (val) => {
-  backgroundColor.value = generateBackgroundColor(val);
-  color.value = generateForegroundColor(backgroundColor.value)
+  pair = getColorPair(props.userId);
+  backgroundColor.value = pair.backgroundColor;
+  color.value = pair.foregroundColor
 });
-
-function generateBackgroundColor(num: number) {
-  return `hsl(${num * 137.508},50%,75%)`;
-}
 
 function getInitials(name: string) {
   {
@@ -66,13 +65,9 @@ function getInitials(name: string) {
   }
 }
 
-function generateForegroundColor(bgColor: string) {
-  return tinycolor(bgColor).getLuminance() > 0.179 ? '#000' : '#fff';
-}
-
 async function togglePopupAsync(ev: Event, loadData: boolean) {
   userChipDetailsPanel.value?.toggle(ev);
-  if(!loadData) {
+  if (!loadData) {
     showDetails.value = false;
     return;
   }
@@ -88,8 +83,13 @@ async function togglePopupAsync(ev: Event, loadData: boolean) {
 
 </script>
 
-<style scoped lang="scss">
-
+<style lang="scss">
+.user-avatar {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 </style>
 
 <i18n locale="en">

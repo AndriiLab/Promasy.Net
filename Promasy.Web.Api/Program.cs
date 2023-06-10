@@ -5,6 +5,7 @@ using Promasy.Modules.Auth;
 using Promasy.Modules.Core;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Cpv;
+using Promasy.Modules.Dashboard;
 using Promasy.Modules.Employees;
 using Promasy.Modules.Files;
 using Promasy.Modules.Finances;
@@ -39,6 +40,7 @@ try
     builder.Services.RegisterModule<CoreModule>(builder.Configuration);
     builder.Services.RegisterModule<AuthModule>(builder.Configuration);
     builder.Services.RegisterModule<CpvModule>(builder.Configuration);
+    builder.Services.RegisterModule<DashboardModule>(builder.Configuration);
     builder.Services.RegisterModule<FilesModule>(builder.Configuration);
     builder.Services.RegisterModule<UnitsModule>(builder.Configuration);
     builder.Services.RegisterModule<EmployeesModule>(builder.Configuration);

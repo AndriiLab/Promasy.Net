@@ -51,5 +51,32 @@
     "loadError": "Unable to obtain table data",
     "paginationFooter": "Showing {'{'}first{'}'} to {'{'}last{'}'} of {'{'}totalRecords{'}'} {itemName}",
     "search": "Search"
+  },
+  "enums": {
+    "roles": {
+      "1": "Administrator",
+      "2": "Director",
+      "3": "Deputy Director",
+      "4": "Head of Tender Committee",
+      "5": "Secretary of Tender Committee",
+      "6": "Chief Accountant",
+      "7": "Chief Economist",
+      "8": "Head of Department",
+      "9": "Personally Liable Employee",
+      "10": "User"
+    },
+    "orderTypes": {
+      "1": "Material",
+      "2": "Equipment",
+      "3": "Service"
+    },
+    "orderStatuses": {
+      "1": "Created",
+      "2": "Submitted",
+      "3": "Posted to Auction",
+      "4": "Received",
+      "10": "Not Received",
+      "20": "Declined"
+    }
   }
 }

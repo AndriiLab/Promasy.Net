@@ -7,12 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
-using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
-using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
@@ -32,14 +30,6 @@ public class EmployeesModule : IModule
 
     public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet($"{RoutePrefix}/all-roles", ([FromServices] IStringLocalizer<RoleName> localizer) =>
-            {
-                return TypedResults.Ok(Enum.GetValues<RoleName>()
-                    .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()]))
-                    .OrderBy(r => r.Value));
-            })
-            .WithApiDescription(Tag, "GetAvailableRoles", "Get available roles");
-        
         endpoints.MapGet(RoutePrefix, async ([AsParameters] EmployeesPagedRequest request, [FromServices] IEmployeesRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);

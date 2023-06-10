@@ -1,5 +1,4 @@
 ﻿using Promasy.Application.Interfaces;
-using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Cpv.Dtos;
 using Promasy.Modules.Cpv.Models;
 

@@ -3,9 +3,6 @@ import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/
 import { buildQueryParameters } from "@/utils/url-params-utils";
 
 export default {
-  getRolesList(): Promise<Response<SelectItem<number>[], ErrorApiResponse>> {
-    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/employees/all-roles");
-  },
   getList(
     department: number,
     subDepartment: number,

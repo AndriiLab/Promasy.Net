@@ -4,13 +4,13 @@
 
 <script lang="ts" setup>
 import { useSessionStore } from "@/store/session";
-import { ref, watch } from "vue";
+import { ref, watch, defineProps } from "vue";
 
 const sessionStore = useSessionStore();
 const selectedYear = ref(sessionStore.year);
 const hasError = ref(false);
 const years = ref(Array(11).fill(0).map((_, i) => {
-  return sessionStore.year - 5 + i;
+  return sessionStore.year - 9 + i;
 }));
 
 defineProps<{

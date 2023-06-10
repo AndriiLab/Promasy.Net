@@ -317,7 +317,7 @@ import OrdersApi, {
   CreateOrderRequest, Manufacturer,
   Order,
   OrderSuggestion,
-  OrderType, ReasonForSupplierChoice, Supplier, Unit,
+  ReasonForSupplierChoice, Supplier, Unit,
   UpdateOrderRequest,
 } from "@/services/api/orders";
 import FinanceSubDepartmentsApi, { FinanceSubDepartment } from "@/services/api/finance-sub-departments";
@@ -345,6 +345,7 @@ import FinanceInput from "@/components/FinanceInput.vue";
 import CpvSelector from "@/components/CpvSelector.vue";
 import CopyFieldInput from "@/components/CopyFieldInput.vue";
 import UserChip from "@/components/UserChip.vue";
+import {getOrderTypesAsSelectItems, OrderTypeEnum} from "@/constants/OrderTypeEnum";
 
 const { t, d } = useI18n({ useScope: "local" });
 const Router = useRouter();
@@ -362,7 +363,7 @@ const model = ref(getDefaultModel());
 const departments = ref([] as SelectItem<number>[]);
 const subDepartments = ref([] as SelectItem<number>[]);
 const financeSubDepartments = ref([] as FinanceSubDepartment[]);
-const types = ref([] as SelectItem<number>[]);
+const types = ref(getOrderTypesAsSelectItems());
 const units = ref([] as SelectItem<number>[]);
 const manufacturers = ref([ getDefaultSelectItem() ] as SelectItem<number>[]);
 const suppliers = ref([ getDefaultSelectItem() ] as SelectItem<number>[]);
@@ -418,10 +419,6 @@ const v$ = useVuelidate(rules, model, { $lazy: true });
 onMounted(async () => {
   loading.value = true;
   let loaded = false;
-  const orderTypes = await OrdersApi.getExistingOrderTypes();
-  if (orderTypes.success) {
-    types.value = orderTypes.data!;
-  }
   if (route.path.endsWith("new")) {
     header.value = t("createOrder");
     model.value = getDefaultModel();
@@ -666,13 +663,13 @@ function getDefaultSelectItem(): SelectItem<number> {
 function getFinanceLabel(fd: FinanceSubDepartment) {
   let amount = 0;
   switch (model.value.type) {
-    case OrderType.Equipment:
+    case OrderTypeEnum.Equipment:
       amount = fd.leftEquipment;
       break;
-    case OrderType.Material:
+    case OrderTypeEnum.Material:
       amount = fd.leftMaterials;
       break;
-    case OrderType.Service:
+    case OrderTypeEnum.Service:
       amount = fd.leftServices;
       break;
     default:

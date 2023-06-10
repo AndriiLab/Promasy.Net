@@ -17,24 +17,21 @@ import { useI18n } from "vue-i18n";
 initStores();
 
 const sessionStore = useSessionStore();
-const rolesStore = useRolesStore();
 const { locale } = useI18n();
 const primeVue = usePrimeVue();
 
 initLocale();
 onMounted(async () => {
   initUser();
-  await rolesStore.setRolesAsync();
 });
 
 function initLocale() {
   locale.value = sessionStore.locale;
   setPrimeVueLocale(primeVue, locale.value);
-  sessionStore.$subscribe(async (mutation, state) => {
+  sessionStore.$subscribe((mutation, state) => {
     if (state.locale !== locale.value) {
       locale.value = state.locale;
       setPrimeVueLocale(primeVue, locale.value);
-      await rolesStore.setRolesAsync();
     }
   });
 }

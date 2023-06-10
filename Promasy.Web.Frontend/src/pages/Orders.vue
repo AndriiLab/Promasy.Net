@@ -259,14 +259,13 @@ import SubDepartmentSelector from "@/components/SubDepartmentSelector.vue";
 import YearSelector from "@/components/YearSelector.vue";
 import ErrorWrap from "@/components/ErrorWrap.vue";
 import UserChip from "@/components/UserChip.vue";
-import { RoleEnum } from "@/constants/RoleEnum";
+import {getRolesAsSelectItems, RoleEnum} from "@/constants/RoleEnum";
 import DepartmentsApi from "@/services/api/departments";
 import EmployeesApi, { EmployeeShort } from "@/services/api/employees";
 import FinanceSourcesApi from "@/services/api/finances";
 import OrdersApi, { ExportToPdfRequest, Order, OrderShort } from "@/services/api/orders";
 import SubDepartmentsApi from "@/services/api/sub-departments";
 import FilesApi from "@/services/api/files";
-import { useRolesStore } from "@/store/roles";
 import { useSessionStore } from "@/store/session";
 import currency from "@/utils/currency-utils";
 import processError from "@/utils/error-response-utils";
@@ -280,14 +279,15 @@ import { useI18n } from "vue-i18n";
 import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { minLength, required } from "@/i18n/validators";
+import {getOrderTypesAsSelectItems} from "@/constants/OrderTypeEnum";
+import {getOrderStatusesAsSelectItems} from "@/constants/OrderStatusEnum";
 
 
 const Router = useRouter();
 const route = useRoute();
 const { t, d } = useI18n();
 const sessionStore = useSessionStore();
-const rolesStore = useRolesStore();
-const roles = ref(rolesStore.roles);
+const roles = ref(getRolesAsSelectItems());
 const toast = useToast();
 const items = ref([] as OrderShort[]);
 const selectedItems = ref([] as OrderShort[]);
@@ -297,8 +297,8 @@ const deleteItemDialog = ref(false);
 const exportOrdersDialog = ref(false);
 const isLoading = ref(false);
 const typeId = ref(0);
-const types = ref([] as SelectItem<number>[]);
-const availableStatuses = ref([] as SelectItem<number>[]);
+const types = ref(getOrderTypesAsSelectItems());
+const availableStatuses = ref(getOrderStatusesAsSelectItems());
 const financeSourceId = ref(0);
 const financeSources = ref([ getDefaultSelectItem() ] as SelectItem<number>[]);
 const departmentId = ref(0);
@@ -334,8 +334,6 @@ const v$ = useVuelidate(exportPdfRules, exportPdfModel, { $lazy: true });
 
 onBeforeMount(async () => {
   isLoading.value = true;
-  await setAvailableStatusesAsync();
-  await setTypesAsync();
   await debouncedInitAsync();
 });
 
@@ -349,7 +347,6 @@ watch(() => route.params, async (n, o) => {
 });
 
 watch(() => sessionStore.year, async () => await debouncedInitAsync());
-watch(() => rolesStore.roles, async () => roles.value = rolesStore.roles);
 watch(typeId, async () => await debouncedSetPathAsync());
 watch(departmentId, async () => await debouncedSetPathAsync());
 watch(subDepartmentId, async () => await debouncedSetPathAsync());
@@ -389,20 +386,6 @@ const debouncedInitAsync =
 
 const debouncedSetPathAsync =
   debounce(async () => await setPathAsync(), 400);
-
-async function setTypesAsync() {
-  const response = await OrdersApi.getExistingOrderTypes();
-  if (response.success) {
-    types.value = response.data!;
-  }
-}
-
-async function setAvailableStatusesAsync() {
-  const response = await OrdersApi.getExistingOrderStatuses();
-  if (response.success) {
-    availableStatuses.value = response.data!;
-  }
-}
 
 async function setDepartmentAsync(id: number) {
   const response = await DepartmentsApi.getById(id, sessionStore.user!.organizationId);

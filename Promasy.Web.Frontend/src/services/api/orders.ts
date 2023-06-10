@@ -1,14 +1,8 @@
-﻿import { RoleEnum } from "@/constants/RoleEnum";
-import { ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem } from "@/utils/fetch-utils";
-import { buildQueryParameters } from "@/utils/url-params-utils";
+﻿import {RoleEnum} from "@/constants/RoleEnum";
+import {ErrorApiResponse, Fetch, PagedResponse, Response, SelectItem} from "@/utils/fetch-utils";
+import {buildQueryParameters} from "@/utils/url-params-utils";
 
 export default {
-  getExistingOrderTypes(): Promise<Response<SelectItem<number>[], ErrorApiResponse>> {
-    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/orders/all-types");
-  },
-  getExistingOrderStatuses(): Promise<Response<SelectItem<number>[], ErrorApiResponse>> {
-    return Fetch.Get<SelectItem<number>[], ErrorApiResponse>("/api/orders/all-statuses");
-  },
   getList(
     type: number,
     year: number,
@@ -192,12 +186,6 @@ export interface CreateOrderRequest {
 
 export interface UpdateOrderRequest extends CreateOrderRequest {
   id: number;
-}
-
-export enum OrderType {
-  Material = 1,
-  Equipment = 2,
-  Service = 3
 }
 
 export interface ExportToPdfRequest{
