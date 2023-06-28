@@ -123,7 +123,7 @@ public class OrdersModule : IModule
             {
 
                 var fileName = await repository.CreateOrderGroupAsync(request.OrderIds,
-                    request.SignEmployees.Select(kv => new Tuple<int, RoleName>(kv.Value, kv.Key)),
+                    request.SignEmployees.Select(kv => (kv.Value, kv.Key)),
                     FileType.Pdf);
                 
                 await exporter.ExportToPdfFileAsync(fileName);

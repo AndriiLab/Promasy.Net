@@ -7,7 +7,7 @@ namespace Promasy.Modules.Orders.Interfaces;
 
 public interface IOrderGroupRepository : IRepository
 {
-    Task<string> CreateOrderGroupAsync(IEnumerable<int> orderIds, IEnumerable<Tuple<int, RoleName>> employeesWithRoles, FileType fileType);
+    Task<string> CreateOrderGroupAsync(IEnumerable<int> orderIds, IEnumerable<(int, RoleName)> employeesWithRoles, FileType fileType);
     Task<OrderGroupDto?> GetOrderGroupByKeyAsync(string fileKey);
     Task SetGroupStatusAsync(string fileKey, OrderGroupStatus status);
 }

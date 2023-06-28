@@ -17,7 +17,7 @@ public class OrderGroupRepository : IOrderGroupRepository
     }
 
     public async Task<string> CreateOrderGroupAsync(IEnumerable<int> orderIds,
-        IEnumerable<Tuple<int, RoleName>> employeesWithRoles, FileType fileType)
+        IEnumerable<(int, RoleName)> employeesWithRoles, FileType fileType)
     {
         var orders = await _database.Orders.Where(o => orderIds.Contains(o.Id)).ToListAsync();
         var og = new OrderGroup

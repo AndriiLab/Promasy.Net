@@ -20,21 +20,19 @@ internal class EmployeeRepository : IEmployeeRules, IEmployeesRepository
         return _database.Employees.AnyAsync(e => e.Id == id && e.Roles.Any(r => r.Name == role), ct);
     }
 
-    public async Task<List<EmployeeDto>> GetByIdsAndRolesAsync(IEnumerable<Tuple<int, RoleName>> idRoles)
+    public async Task<List<EmployeeDto>> GetByIdsAndRolesAsync(IEnumerable<(int, RoleName)> idRoles)
     {
         var idRolesList = idRoles.ToList();
         var employees = await _database.Employees
             .AsNoTracking()
             .Where(e => idRolesList.Select(t => t.Item1).Contains(e.Id))
-            .Select(e => new EmployeeDto(e.Id, e.ShortName, e.PrimaryPhone, e.SubDepartment.DepartmentId))
+            .Select(e => new { e.Id, e.ShortName, e.PrimaryPhone, e.SubDepartment.DepartmentId })
             .ToListAsync();
 
-        foreach (var employee in employees)
-        {
-            employee.Role = idRolesList.First(r => r.Item1 == employee.Id).Item2;
-        }
-
-        return employees;
+        return employees.Select(e =>
+                new EmployeeDto(e.Id, e.ShortName, e.PrimaryPhone, e.DepartmentId,
+                    idRolesList.First(r => r.Item1 == e.Id).Item2))
+            .ToList();
     }
 
     public Task<List<EmployeeDto>> GetEmployeesForDepartmentIdAsync(int departmentId, params RoleName[] roles)
@@ -42,7 +40,8 @@ internal class EmployeeRepository : IEmployeeRules, IEmployeesRepository
         return _database.Employees
             .AsNoTracking()
             .Where(e => e.SubDepartment.DepartmentId == departmentId && e.Roles.Any(r => roles.Contains(r.Name)))
-            .Select(e => new EmployeeDto(e.Id, e.ShortName, e.PrimaryPhone, e.SubDepartment.DepartmentId, e.Roles.Where(r => roles.Contains(r.Name)).Select(r => r.Name).First()))
+            .Select(e => new EmployeeDto(e.Id, e.ShortName, e.PrimaryPhone, e.SubDepartment.DepartmentId,
+                e.Roles.Where(r => roles.Contains(r.Name)).Select(r => r.Name).First()))
             .ToListAsync();
     }
 }

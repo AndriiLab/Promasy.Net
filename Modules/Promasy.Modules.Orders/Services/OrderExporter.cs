@@ -50,8 +50,8 @@ internal class OrderExporter : IOrderExporter
             return;
         }
         
-        var roles = group.Employees.Select(e => new Tuple<int, RoleName>(e.EmployeeId, e.Role))
-            .Concat(new [] { new Tuple<int, RoleName>(group.EditorId, RoleName.User) });
+        var roles = group.Employees.Select(e => (e.EmployeeId, e.Role))
+            .Concat(new [] { (group.EditorId, RoleName.User) });
         
         var employees = await _employeesRepository.GetByIdsAndRolesAsync(roles);
         var orders = await _ordersRepository.GetByIdsAsync(group.OrderIds);
@@ -182,7 +182,7 @@ internal class OrderExporter : IOrderExporter
 
                 table.ExtendLastCellsToTableBottom();
 
-                foreach (var (typeGroup, typeGroupIndex) in orders.GroupBy(o => o.Type).Select((g, i) => Tuple.Create(g, i)))
+                foreach (var (typeGroup, typeGroupIndex) in orders.GroupBy(o => o.Type).Select((g, i) => (g, i)))
                 {
                     if (typeGroupIndex > 0)
                     {
@@ -199,7 +199,7 @@ internal class OrderExporter : IOrderExporter
                             text.Span("'").Style(StyleMedium);
                         });
 
-                    foreach (var (departmentGroup, departmentGroupIndex) in typeGroup.GroupBy(o => o.Department).Select((g, i) => Tuple.Create(g, i)))
+                    foreach (var (departmentGroup, departmentGroupIndex) in typeGroup.GroupBy(o => o.Department).Select((g, i) => (g, i)))
                     {
                         if (departmentGroupIndex > 0)
                         {
