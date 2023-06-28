@@ -13,10 +13,10 @@ public static class FluentValidationExtensions
         builder.AddEndpointFilter(async (context, next) =>
             {
                 var validator = context.HttpContext.RequestServices.GetService<IValidator<TModel>>();
-                ArgumentNullException.ThrowIfNull(validator, nameof(validator));
+                ArgumentNullException.ThrowIfNull(validator);
 
                 var model = context.GetArgument<TModel>(0);
-                ArgumentNullException.ThrowIfNull(model, nameof(model));
+                ArgumentNullException.ThrowIfNull(model);
 
                 var result = await validator.ValidateAsync(model);
                 if (result.IsValid)

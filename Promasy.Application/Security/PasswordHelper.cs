@@ -7,10 +7,7 @@ public static class PasswordHelper
 {
     public static string Hash(string password)
     {
-        if (password == null)
-        {
-            throw new ArgumentNullException(nameof(password));
-        }
+        ArgumentNullException.ThrowIfNull(password);
 
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
