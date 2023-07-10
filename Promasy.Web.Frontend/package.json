@@ -19,7 +19,7 @@
     "vue": "^3.3.4",
     "vue-debounce": "^4.0.0",
     "vue-i18n": "^9.2.2",
-    "vue-router": "^4.2.2"
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
