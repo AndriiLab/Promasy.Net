@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Promasy.Application.Interfaces;
+using Promasy.Application.Persistence;
 using Promasy.Core.Exceptions;
 using Promasy.Core.Resources;
 using Promasy.Domain.Orders;
-using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Orders.Dtos;

@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Interfaces;
+using Promasy.Application.Persistence.Views;
 using Promasy.Domain.Orders;
-using Promasy.Domain.Persistence;
-using Promasy.Domain.Persistence.Views;
 using Promasy.Modules.Dashboard.Dtos;
 using Promasy.Modules.Dashboard.Interfaces;
 

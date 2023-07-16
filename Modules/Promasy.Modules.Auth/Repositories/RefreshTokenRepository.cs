@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Promasy.Application.Interfaces;
 using Promasy.Domain.Employees;
-using Promasy.Domain.Persistence;
 using Promasy.Modules.Auth.Interfaces;
 using Z.EntityFramework.Plus;
 

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
-using Promasy.Domain.Persistence;
+using Promasy.Application.Interfaces;
 using Promasy.Modules.Auth.Dtos;
 using Promasy.Modules.Auth.Helpers;
 using Promasy.Modules.Auth.Interfaces;

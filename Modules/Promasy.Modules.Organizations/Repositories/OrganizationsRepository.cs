@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Application.Interfaces;
+using Promasy.Application.Persistence;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
-using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;

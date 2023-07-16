@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Application.Interfaces;
+using Promasy.Application.Persistence;
 using Promasy.Domain.Finances;
 using Promasy.Domain.Orders;
-using Promasy.Domain.Persistence;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Finances.Dtos;

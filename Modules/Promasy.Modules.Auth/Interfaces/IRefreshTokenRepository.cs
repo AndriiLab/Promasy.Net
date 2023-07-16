@@ -1,5 +1,4 @@
 ﻿using Promasy.Application.Interfaces;
-using Promasy.Modules.Core.Modules;
 
 namespace Promasy.Modules.Auth.Interfaces;
 

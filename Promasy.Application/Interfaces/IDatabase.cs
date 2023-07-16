@@ -1,17 +1,15 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Promasy.Application.Persistence.Views;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Finances;
 using Promasy.Domain.Manufacturers;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Organizations;
-using Promasy.Domain.Persistence.Views;
 using Promasy.Domain.Suppliers;
 using Promasy.Domain.Vocabulary;
 
-namespace Promasy.Domain.Persistence;
+namespace Promasy.Application.Interfaces;
 
 public interface IDatabase
 {

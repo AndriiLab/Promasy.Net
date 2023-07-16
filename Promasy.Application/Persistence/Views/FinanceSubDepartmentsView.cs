@@ -2,7 +2,7 @@
 using Promasy.Domain.Finances;
 using Promasy.Domain.Organizations;
 
-namespace Promasy.Domain.Persistence.Views;
+namespace Promasy.Application.Persistence.Views;
 
 public class FinanceSubDepartmentsView : Entity
 {

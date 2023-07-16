@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Promasy.Domain.Persistence.Views;
+using Promasy.Application.Persistence.Views;
 
 namespace Promasy.Persistence.Configurations;
 

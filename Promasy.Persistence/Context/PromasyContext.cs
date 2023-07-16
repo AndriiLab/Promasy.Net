@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Promasy.Application.Interfaces;
+using Promasy.Application.Persistence;
+using Promasy.Application.Persistence.Views;
 using Promasy.Core.Persistence;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Finances;
 using Promasy.Domain.Manufacturers;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Organizations;
-using Promasy.Domain.Persistence;
-using Promasy.Domain.Persistence.Views;
 using Promasy.Domain.Suppliers;
 using Promasy.Domain.Vocabulary;
 using Z.EntityFramework.Plus;
@@ -17,17 +17,6 @@ namespace Promasy.Persistence.Context
 {
     public class PromasyContext : DbContext
     {
-
-        public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext userContext) : base(options)
-        {
-            this.Filter<ISoftDeletable>(q => q.Where(i => !i.Deleted));
-            if (userContext?.IsAuthenticated() ?? false)
-            {
-                this.Filter<Organization>(q => q.Where(o => o.Id == userContext.GetOrganizationId()));
-                this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.GetOrganizationId()));
-            }
-        }
-
         public DbSet<Role> Roles { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -50,14 +39,38 @@ namespace Promasy.Persistence.Context
         
         public DbSet<FinanceSubDepartmentsView> FinanceDepartmentsWithSpendView { get; set; }
         public DbSet<FinanceSourceView> FinanceSourceWithSpendView { get; set; }
+        
+        
+#pragma warning disable CS8618
+        public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext userContext) : base(options)
+        {
+            this.Filter<ISoftDeletable>(q => q.Where(i => !i.Deleted));
+            if (userContext?.IsAuthenticated() ?? false)
+            {
+                this.Filter<Organization>(q => q.Where(o => o.Id == userContext.GetOrganizationId()));
+                this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.GetOrganizationId()));
+            }
+        }
+#pragma warning restore CS8618
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(PromasyContext).Assembly);
             modelBuilder.UseIdentityAlwaysColumns();
-            modelBuilder.ConfigureCustomFunctions();
+            ConfigureCustomFunctions(modelBuilder);
             modelBuilder.HasDefaultSchema("PromasyCore");
+        }
+
+        private static void ConfigureCustomFunctions(ModelBuilder modelBuilder)
+        {
+#pragma warning disable CS8604
+
+            modelBuilder.HasDbFunction(
+                    typeof(PromasyDbFunction).GetMethod(nameof(PromasyDbFunction.GetEmployeeShortName), new[] {typeof(int)}))
+                .HasName("FN_GetEmployeeShortName");
+
+#pragma warning restore CS8604
         }
     }
 }

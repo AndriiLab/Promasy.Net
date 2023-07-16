@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Promasy.Domain.Persistence;
+using Promasy.Application.Interfaces;
 using Promasy.Modules.Cpv.Dtos;
 using Promasy.Modules.Cpv.Interfaces;
 using Promasy.Modules.Cpv.Models;

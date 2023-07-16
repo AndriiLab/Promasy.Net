@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Promasy.Domain.Persistence;
+using Promasy.Application.Interfaces;
 using Promasy.Persistence.Context;
 using Promasy.Persistence.Seed;
 using Z.EntityFramework.Extensions;

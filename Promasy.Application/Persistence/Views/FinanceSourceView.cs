@@ -1,8 +1,7 @@
-﻿using System;
-using Promasy.Core.Persistence;
+﻿using Promasy.Core.Persistence;
 using Promasy.Domain.Finances;
 
-namespace Promasy.Domain.Persistence.Views;
+namespace Promasy.Application.Persistence.Views;
 
 public class FinanceSourceView : OrganizationEntity
 {
