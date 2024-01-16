@@ -35,7 +35,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import {Employee} from "@/services/api/employees";
 import RoleBadge from "@/components/RoleBadge.vue";
 import {useI18n} from 'vue-i18n';

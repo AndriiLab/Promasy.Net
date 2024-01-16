@@ -22,7 +22,9 @@ public static class PasswordHelper
         if (salt.HasValue)
         {
             // fallback to old validation scheme
+#pragma warning disable CS0618 // Type or member is obsolete
             var calculatedHash = CalculateOldHash(password, salt.Value);
+#pragma warning restore CS0618 // Type or member is obsolete
             return string.Equals(calculatedHash, hash);
         }
 

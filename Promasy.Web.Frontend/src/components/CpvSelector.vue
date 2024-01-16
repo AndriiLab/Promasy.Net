@@ -35,7 +35,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import CpvApi, { Cpv } from "@/services/api/cpv";
-import { TreeNode } from "primevue/tree";
+import TreeNode from "primevue/tree";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{

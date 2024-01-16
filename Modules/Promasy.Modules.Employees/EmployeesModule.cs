@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
 using Promasy.Modules.Core.Exceptions;
+using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Policies;
@@ -52,10 +53,9 @@ public class EmployeesModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
         
-        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService) =>
+        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService,  [FromServices] IMapper<CreateEmployeeRequest, CreateEmployeeDto> mapper) =>
             {
-                var id = await repository.CreateAsync(new CreateEmployeeDto(request.FirstName, request.MiddleName, request.LastName, request.Email,
-                    request.PrimaryPhone, request.ReservePhone, request.UserName, request.SubDepartmentId, request.Roles));
+                var id = await repository.CreateAsync(mapper.MapFromSource(request));
 
                 await authService.SetEmployeePasswordAsync(id, request.Password);
                 
@@ -69,16 +69,14 @@ public class EmployeesModule : IModule
 
         endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateEmployeeRequest request, [FromRoute] int id, [FromServices] IEmployeesRepository repository,
-            [FromServices] IStringLocalizer<SharedResource> localizer) =>
+            [FromServices] IStringLocalizer<SharedResource> localizer, [FromServices] IMapper<UpdateEmployeeRequest, UpdateEmployeeDto> mapper) =>
                 {
                     if (request.Id != id)
                     {
                         throw new ApiException(localizer["Incorrect Id"]);
                     }
 
-                    await repository.UpdateAsync(new UpdateEmployeeDto(request.Id, request.FirstName, request.MiddleName,
-                        request.LastName, request.Email, request.PrimaryPhone, request.ReservePhone, request.SubDepartmentId,
-                        request.Roles));
+                    await repository.UpdateAsync(mapper.MapFromSource(request));
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })

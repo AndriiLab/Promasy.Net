@@ -6,5 +6,6 @@
     "allowSyntheticDefaultImports": true,
     "types": ["@intlify/unplugin-vue-i18n/messages", "primevue/menuitem"]
   },
-  "include": ["vite.config.ts", ".vite/vite-plugin-netcore-https.ts"]
+  "include": [
+    "vite.config.mts", ".vite/vite-plugin-netcore-https.ts"]
 }

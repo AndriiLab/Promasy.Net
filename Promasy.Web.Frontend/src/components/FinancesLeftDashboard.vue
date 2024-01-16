@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch, onMounted, onUnmounted, defineProps} from "vue";
+import {ref, watch, onMounted, onUnmounted} from "vue";
 import currency from "@/utils/currency-utils";
 import {useI18n} from 'vue-i18n';
 import {useSessionStore} from "@/store/session";
@@ -45,7 +45,7 @@ const props = defineProps<{
   icon: string
 }>();
 const pair = getColorPair(props.type);
-let timer;
+let timer : any;
 
 
 onMounted(async () => {

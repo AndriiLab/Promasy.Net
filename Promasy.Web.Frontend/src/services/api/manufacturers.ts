@@ -1,4 +1,3 @@
-import { MergeUnitsRequest } from "@/services/api/units";
 import {
   ErrorApiResponse,
   Fetch,

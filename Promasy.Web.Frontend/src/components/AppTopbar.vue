@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineEmits } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useSessionStore } from "@/store/session";
 import LanguageSelector from "./LanguageSelector.vue";

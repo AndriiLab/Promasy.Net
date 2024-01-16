@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import {defineProps, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {RoleEnum, getRoleName} from "@/constants/RoleEnum";
 import {getColorPair} from "@/utils/color-utils";
 

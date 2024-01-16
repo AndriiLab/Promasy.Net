@@ -5,13 +5,22 @@ using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Mapper;
+using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
+using Riok.Mapperly.Abstractions;
 
 namespace Promasy.Modules.Employees.Models;
 
 public record CreateEmployeeRequest(string FirstName, string? MiddleName, string LastName,
     string Email, string PrimaryPhone, string? ReservePhone, string UserName, string Password,
     int SubDepartmentId, RoleName[] Roles);
+
+[Mapper]
+internal partial class CreateEmployeeRequestMapper : IMapper<CreateEmployeeRequest, CreateEmployeeDto>
+{
+    public partial CreateEmployeeDto MapFromSource(CreateEmployeeRequest src);
+}
 
 internal class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
 {

@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { useSessionStore } from "@/store/session";
-import { ref, watch, defineProps } from "vue";
+import { ref, watch } from "vue";
 
 const sessionStore = useSessionStore();
 const selectedYear = ref(sessionStore.year);

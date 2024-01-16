@@ -11,7 +11,7 @@ internal interface IUnitsRepository : IRepository
     Task<PagedResponse<UnitDto>> GetPagedListAsync(PagedRequest request);
     Task<UnitDto?> GetByIdAsync(int id);
     Task DeleteByIdAsync(int id);
-    Task<int> CreateAsync(UnitDto unit);
-    Task UpdateAsync(UnitDto unit);
+    Task<int> CreateAsync(CreateUnitDto unit);
+    Task UpdateAsync(UpdateUnitDto unit);
     Task MergeAsync(int targetId, int[] sourceIds);
 }

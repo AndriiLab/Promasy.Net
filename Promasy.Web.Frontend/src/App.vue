@@ -10,7 +10,6 @@ import { onMounted } from "vue";
 import Toast from "primevue/toast";
 import { initStores } from "./store";
 import { useSessionStore } from "./store/session";
-import { useRolesStore } from "./store/roles";
 import LocalStore, { keys } from "./services/local-store";
 import { useI18n } from "vue-i18n";
 

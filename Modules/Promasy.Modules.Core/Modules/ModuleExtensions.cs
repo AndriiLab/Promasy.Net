@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Promasy.Application.Interfaces;
+using Promasy.Modules.Core.Mapper;
 
 namespace Promasy.Modules.Core.Modules;
 
@@ -27,7 +28,10 @@ public static class ModuleExtensions
             .WithScopedLifetime()
             .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)))
             .AsImplementedInterfaces()
-            .WithScopedLifetime());
+            .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IMapper<,>)))
+            .AsImplementedInterfaces()
+            .WithSingletonLifetime());
         
         // register additional module services
         var module = Activator.CreateInstance<TModule>();

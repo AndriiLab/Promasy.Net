@@ -38,7 +38,7 @@ const isLoading = ref(true);
 const total = ref(0);
 const countByPeriod = ref(0);
 const pair = getColorPair(5);
-let timer;
+let timer : any;
 
 onMounted(async () => {
   await getDataAsync(sessionStore.year);

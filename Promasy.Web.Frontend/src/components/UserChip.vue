@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import {watch, ref, defineProps} from "vue";
+import {watch, ref} from "vue";
 import {useI18n} from 'vue-i18n';
 import UserInfoSection, {UserInfoSectionConfig} from "@/components/UserInfoSection.vue";
 import EmployeesApi, {Employee} from "@/services/api/employees";

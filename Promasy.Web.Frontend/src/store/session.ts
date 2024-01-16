@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { en } from "@/i18n/settings/en";
 import AuthApi from "@/services/api/auth";
 import LocalStore, { keys } from "@/services/local-store";

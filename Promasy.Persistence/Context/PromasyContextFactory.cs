@@ -14,7 +14,9 @@ namespace Promasy.Persistence.Context
         public PromasyContext CreateDbContext(string[] args)
         {
             var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Promasy.Web.Api");
-            return Create(basePath, Environment.GetEnvironmentVariable(AspNetCoreEnvironment));
+            var envName = Environment.GetEnvironmentVariable(AspNetCoreEnvironment);
+            ArgumentException.ThrowIfNullOrEmpty(envName);
+            return Create(basePath, envName);
         }
 
         public static PromasyContext CreateNewInstance(DbContextOptions<PromasyContext> options) =>

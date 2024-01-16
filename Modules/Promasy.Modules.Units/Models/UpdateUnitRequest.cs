@@ -1,13 +1,21 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
-using Promasy.Core;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Mapper;
+using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
+using Riok.Mapperly.Abstractions;
 
 namespace Promasy.Modules.Units.Models;
 
 public record UpdateUnitRequest(int Id, string Name);
+
+[Mapper]
+internal partial class UpdateUnitRequestMapper : IMapper<UpdateUnitRequest, UpdateUnitDto>
+{
+    public partial UpdateUnitDto MapFromSource(UpdateUnitRequest src);
+}
 
 internal class UpdateUnitRequestValidator : AbstractValidator<UpdateUnitRequest>
 {
