@@ -22,6 +22,6 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
       <PackageReference Include="Riok.Mapperly" Version="3.4.0" />
       <PackageReference Include="Scrutor" Version="4.2.2" />
-      <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.102.1" />
+      <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.102.1.1" />
     </ItemGroup>
 </Project>
