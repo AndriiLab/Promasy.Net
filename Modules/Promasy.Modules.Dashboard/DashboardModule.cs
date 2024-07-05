@@ -22,9 +22,9 @@ public class DashboardModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet($"{RoutePrefix}/orders-count", async ([FromQuery, BindRequired] int year, [FromServices] IDashboardRepository repository) =>
+        app.MapGet($"{RoutePrefix}/orders-count", async ([FromQuery, BindRequired] int year, [FromServices] IDashboardRepository repository) =>
             {
                 var result = await repository.GetOrdersCountAsync(year);
                 return TypedResults.Ok(result);
@@ -32,7 +32,7 @@ public class DashboardModule : IModule
             .WithApiDescription(Tag, "GetOrdersCount", "Get Orders count")
             .RequireAuthorization();
         
-        endpoints.MapGet($"{RoutePrefix}/funding-left", async ([FromQuery, BindRequired] int year, 
+        app.MapGet($"{RoutePrefix}/funding-left", async ([FromQuery, BindRequired] int year, 
                 [FromQuery, BindRequired] OrderType type, [FromServices] IDashboardRepository repository) =>
             {
                 var result = await repository.GetFundingLeftAsync(type, year);
@@ -41,6 +41,6 @@ public class DashboardModule : IModule
             .WithApiDescription(Tag, "GetFundingLeft", "Get funding left by type")
             .RequireAuthorization();
         
-        return endpoints;
+        return app;
     }
 }

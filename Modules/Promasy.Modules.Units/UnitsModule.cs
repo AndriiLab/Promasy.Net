@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
-using Promasy.Modules.Core.Policies;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Units.Dtos;
@@ -29,9 +29,9 @@ public class UnitsModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IUnitsRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IUnitsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -40,7 +40,7 @@ public class UnitsModule : IModule
             .WithApiDescription(Tag, "GetUnitsList", "Get Units list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IUnitsRepository repository) =>
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IUnitsRepository repository) =>
             {
                 var unit = await repository.GetByIdAsync(id);
                 if (unit is null)
@@ -53,7 +53,7 @@ public class UnitsModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository,
+        app.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository,
             [FromServices] IMapper<CreateUnitRequest, CreateUnitDto> mapper) =>
             {
                 var id = await repository.CreateAsync(mapper.MapFromSource(request));
@@ -65,7 +65,7 @@ public class UnitsModule : IModule
             .WithApiDescription(Tag, "CreateUnit", "Create Unit")
             .RequireAuthorization();
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateUnitRequest request, [FromRoute] int id, [FromServices] IUnitsRepository repository,
             [FromServices] IStringLocalizer<SharedResource> localizer, [FromServices] IMapper<UpdateUnitRequest, UpdateUnitDto> mapper) =>
                 {
@@ -78,44 +78,42 @@ public class UnitsModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithValidator<UpdateUnitRequest>()
-            .WithApiDescription(Tag, "UpdateUnit", "Update Unit")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateUnitRequest>(app, Tag, "Update Unit", PermissionTag.Update, 
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray());
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromQuery] int id, [FromServices] IUnitsRepository repository,
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteUnitRequest model, [FromServices] IUnitsRepository repository,
                 [FromServices] IUnitRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
+                var isEditable = await rules.IsEditableAsync(model.Id, CancellationToken.None);
                 if (!isEditable)
                 {
                     throw new ApiException(localizer["You cannot perform this action"], StatusCodes.Status409Conflict);
                 }
                 
-                var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
+                var isUsed = await rules.IsUsedAsync(model.Id, CancellationToken.None);
                 if (isUsed)
                 {
                     throw new ApiException(localizer["Unit already associated with order"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
 
-                await repository.DeleteByIdAsync(id);
+                await repository.DeleteByIdAsync(model.Id);
                 return TypedResults.NoContent();
             })
-            .WithApiDescription(Tag, "DeleteUnit", "Delete Unit")
-            .RequireAuthorization()
+            .WithAuthorizationAndValidation<DeleteUnitRequest>(app, Tag, "Delete Unit", PermissionTag.Delete, 
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray())
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
-        
-        endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeUnitsRequest request, [FromServices] IUnitsRepository repository) =>
-            {
-                await repository.MergeAsync(request.TargetId, request.SourceIds);
 
-                return TypedResults.Ok();
-            })
+        app.MapPost($"{RoutePrefix}/merge",
+                async ([FromBody] MergeUnitsRequest request, [FromServices] IUnitsRepository repository) =>
+                {
+                    await repository.MergeAsync(request.TargetId, request.SourceIds);
+
+                    return TypedResults.Ok();
+                })
             .WithValidator<MergeUnitsRequest>()
-            .WithApiDescription(Tag, "MergeUnits", "Merge Units")
-            .RequireAuthorization(AdminOnlyPolicy.Name);
+            .WithAuthorization(app, Tag, "Merge Units", PermissionTag.Merge, RoleName.Administrator);
 
-
-        return endpoints;
+        return app;
     }
 }

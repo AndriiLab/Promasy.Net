@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -18,7 +17,6 @@ using Promasy.Modules.Auth.Services;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
-using Promasy.Modules.Core.Policies;
 using Promasy.Modules.Core.Validation;
 
 namespace Promasy.Modules.Auth;
@@ -34,12 +32,10 @@ public class AuthModule : IModule
         builder.Configure<TokenSettings>(jwtSection);
 
         var jwtSettings = jwtSection.Get<TokenSettings>();
-        builder.AddAuthorization(o =>
-        {
-            o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                .RequireAuthenticatedUser().Build();
-            o.AddPolicy(AdminOnlyPolicy.Name, new AdminOnlyPolicy().GetPolicy()); // todo: add by interface
-        });
+        ArgumentNullException.ThrowIfNull(jwtSettings);
+        builder.AddAuthorizationBuilder()
+            .SetDefaultPolicy(new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser().Build());
         builder.AddAuthentication(o =>
             {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -65,13 +61,12 @@ public class AuthModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        var app = (WebApplication) endpoints;
         app.UseAuthentication();
         app.UseAuthorization();
 
-        endpoints.MapPost(RoutePrefix,
+        app.MapPost(RoutePrefix,
                 async ([FromBody] UserCredentialsRequest request, IAuthService authService,
                     ITokenService jwtTokenService, HttpResponse response, IStringLocalizer<SharedResource> localizer) =>
                 {
@@ -88,7 +83,7 @@ public class AuthModule : IModule
             .WithValidator<UserCredentialsRequest>()
             .WithApiDescription(Tag, "Login", "Generate Token");
 
-        endpoints.MapGet($"{RoutePrefix}/refresh", async (ITokenService jwtTokenService, IAuthService authService, HttpRequest request, HttpResponse response) =>
+        app.MapGet($"{RoutePrefix}/refresh", async (ITokenService jwtTokenService, IAuthService authService, HttpRequest request, HttpResponse response) =>
             {
                 var refreshToken = RefreshTokenCookieHelper.GetFromCookie(request);
                 var id = jwtTokenService.GetEmployeeIdFromRefreshToken(refreshToken);
@@ -111,7 +106,7 @@ public class AuthModule : IModule
             .WithApiDescription(Tag, "RefreshToken", "Refresh Token")
             .Produces(StatusCodes.Status401Unauthorized);
 
-        endpoints.MapPost($"{RoutePrefix}/revoke", async ([FromBody] RevokeTokenRequest? tr,
+        app.MapPost($"{RoutePrefix}/revoke", async ([FromBody] RevokeTokenRequest? tr,
                 ITokenService jwtTokenService, HttpRequest request) =>
             {
                 var token = tr?.Token ?? RefreshTokenCookieHelper.GetFromCookie(request);
@@ -127,7 +122,7 @@ public class AuthModule : IModule
             .RequireAuthorization()
             .WithApiDescription(Tag, "RevokeToken", "Revoke Token");
 
-        return endpoints;
+        return app;
     }
 
 }

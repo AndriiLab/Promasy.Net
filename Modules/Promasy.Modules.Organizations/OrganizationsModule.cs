@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Core.Validation;
@@ -36,23 +37,23 @@ public class OrganizationsModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet($"{RoutePrefix}/all-city-types", ([FromServices] IStringLocalizer<CityType> localizer) =>
+        app.MapGet($"{RoutePrefix}/all-city-types", ([FromServices] IStringLocalizer<CityType> localizer) =>
             {
                 return TypedResults.Ok(Enum.GetValues<CityType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
             .WithApiDescription(Tag, "GetAvailableCityTypes", "Get available city types");
         
-        endpoints.MapGet($"{RoutePrefix}/all-street-types", ([FromServices] IStringLocalizer<StreetType> localizer) =>
+        app.MapGet($"{RoutePrefix}/all-street-types", ([FromServices] IStringLocalizer<StreetType> localizer) =>
             {
                 return TypedResults.Ok(Enum.GetValues<StreetType>()
                     .Select(r => new SelectItem<int>((int) r, localizer[r.ToString()])));
             })
             .WithApiDescription(Tag, "GetAvailableStreetTypes", "Get available street types");
         
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IOrganizationsRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IOrganizationsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -61,7 +62,7 @@ public class OrganizationsModule : IModule
             .WithApiDescription(Tag, "GetOrganizationsLst", "Get Organizations list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrganizationsRepository repository) =>
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrganizationsRepository repository) =>
             {
                 var organization = await repository.GetByIdAsync(id);
                 if (organization is null)
@@ -88,7 +89,7 @@ public class OrganizationsModule : IModule
         //     .WithApiDescription(Tag, "CreateOrganization", "Create Organization")
         //     .RequireAuthorization(AdminOnlyPolicy.Name);
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateOrganizationRequest request, [FromRoute] int id, [FromServices] IOrganizationsRepository repository,
             [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
@@ -104,9 +105,10 @@ public class OrganizationsModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
-            .WithValidator<UpdateOrganizationRequest>()
-            .WithApiDescription(Tag, "UpdateOrganization", "Update Organization")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateOrganizationRequest>(app, Tag, "Update Organization", PermissionTag.Update,
+                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Director, PermissionCondition.SameOrganization),
+                (RoleName.DeputyDirector, PermissionCondition.SameOrganization));
 
         // endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrganizationsRepository repository,
         //         [FromServices] IOrganizationsRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
@@ -125,8 +127,8 @@ public class OrganizationsModule : IModule
         //     .RequireAuthorization(AdminOnlyPolicy.Name)
         //     .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
-        _departmentsSubModule.MapEndpoints(endpoints);
+        _departmentsSubModule.MapEndpoints(app);
         
-        return endpoints;
+        return app;
     }
 }

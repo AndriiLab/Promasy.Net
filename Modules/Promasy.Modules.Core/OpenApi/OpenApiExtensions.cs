@@ -6,7 +6,7 @@ namespace Promasy.Modules.Core.OpenApi;
 public static class OpenApiExtensions
 {
     public static RouteHandlerBuilder WithApiDescription(this RouteHandlerBuilder builder, string tag, string id,
-        string? summary = null, string? description = null)
+        string summary, string? description = null)
     {
         builder.WithOpenApi(o => new OpenApiOperation(o)
         {

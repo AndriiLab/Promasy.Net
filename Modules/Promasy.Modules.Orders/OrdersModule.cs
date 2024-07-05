@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -10,6 +9,7 @@ using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Orders.Dtos;
 using Promasy.Modules.Orders.Interfaces;
@@ -41,18 +41,24 @@ public class OrdersModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] OrdersPagedRequest request, [FromServices] IOrdersRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] OrdersPagedRequest request, [FromServices] IOrdersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
             })
-            .WithValidator<OrdersPagedRequest>()
-            .WithApiDescription(Tag, "GetOrdersList", "Get Orders list")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<OrdersPagedRequest>(app, Tag, "Get Orders list", PermissionTag.List,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameDepartment,
+                        RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
+                        RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
+                        _ => PermissionCondition.None
+                    })).ToArray());
 
-        endpoints.MapGet($"{RoutePrefix}/suggestions", async ([AsParameters] OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
+        app.MapGet($"{RoutePrefix}/suggestions", async ([AsParameters] OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
             {
                 var list = await repository.GetOrderSuggestionsPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -61,20 +67,27 @@ public class OrdersModule : IModule
             .WithApiDescription(Tag, "GetOrdersSuggestionsList", "Get Orders suggestions list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IOrdersRepository repository) =>
+
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([AsParameters] GetOrderRequest request, [FromServices] IOrdersRepository repository) =>
             {
-                var order = await repository.GetByIdAsync(id);
+                var order = await repository.GetByIdAsync(request.Id);
                 if (order is null)
                 {
                     throw new ApiException(null, StatusCodes.Status404NotFound);
                 }
                 return TypedResults.Ok(order);
             })
-            .WithApiDescription(Tag, "GetOrderById", "Get Order by Id")
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status404NotFound);
+            .WithAuthorizationAndValidation<GetOrderRequest>(app, Tag, "Get Order by Id", PermissionTag.Get,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameDepartment,
+                        RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
+                        RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
+                        _ => PermissionCondition.None
+                    })).ToArray());
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody]CreateOrderRequest request, [FromServices] IOrdersRepository repository) =>
+        app.MapPost(RoutePrefix, async ([FromBody]CreateOrderRequest request, [FromServices] IOrdersRepository repository) =>
             {
                 var id = await repository.CreateAsync(new CreateOrderDto(request.Description, request.CatNum,
                     request.OnePrice, request.Amount, request.Type, request.Kekv, request.ProcurementStartDate,
@@ -84,11 +97,17 @@ public class OrdersModule : IModule
 
                 return TypedResults.Json(order, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateOrderRequest>()
-            .WithApiDescription(Tag, "CreateOrder", "Create Order")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<CreateOrderRequest>(app, Tag, "Create Order", PermissionTag.Create,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameSubDepartment,
+                        RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
+                        RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
+                        _ => PermissionCondition.None
+                    })).ToArray());
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateOrderRequest request, [FromRoute] int id, [FromServices] IOrdersRepository repository,
             [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
@@ -104,21 +123,34 @@ public class OrdersModule : IModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithValidator<UpdateOrderRequest>()
-            .WithApiDescription(Tag, "UpdateOrder", "Update Order")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateOrderRequest>(app, Tag, "Update Order", PermissionTag.Update,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameUser,
+                        RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
+                        RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
+                        _ => PermissionCondition.None
+                    })).ToArray());
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async (int id, [FromServices] IOrdersRepository repository) =>
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteOrderRequest request, [FromServices] IOrdersRepository repository) =>
             {
-                await repository.DeleteByIdAsync(id);
+                await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithApiDescription(Tag, "DeleteOrderById", "Delete Order by Id")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<DeleteOrderRequest>(app, Tag, "Delete Order by Id", PermissionTag.Delete,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameUser,
+                        RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
+                        RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
+                        _ => PermissionCondition.None
+                    })).ToArray());
         
-        _rfscSubModule.MapEndpoints(endpoints);
+        _rfscSubModule.MapEndpoints(app);
         
-        endpoints.MapPost($"{RoutePrefix}/export/pdf", async ([FromBody] ExportToPdfRequest request,
+        app.MapPost($"{RoutePrefix}/export/pdf", async ([FromBody] ExportToPdfRequest request,
                 [FromServices] IOrderGroupRepository repository, [FromServices] IOrderExporter exporter) =>
             {
 
@@ -129,10 +161,16 @@ public class OrdersModule : IModule
                 await exporter.ExportToPdfFileAsync(fileName);
                 return TypedResults.Ok(new ExportResponse(fileName));
             })
-        .WithValidator<ExportToPdfRequest>()
-        .WithApiDescription(Tag, "ExportAsPdf", "Export as PDF")
-        .RequireAuthorization();
+            .WithAuthorizationAndValidation<ExportToPdfRequest>(app, Tag, "Export as PDF", s => PermissionTag.Export($"{s}/PDF"),
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameDepartment,
+                        RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
+                        RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
+                        _ => PermissionCondition.None
+                    })).ToArray());
         
-        return endpoints;
+        return app;
     }
 }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
-using Promasy.Modules.Core.Policies;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Suppliers.Dtos;
@@ -28,9 +28,9 @@ public class SuppliersModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] ISuppliersRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] ISuppliersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -39,7 +39,7 @@ public class SuppliersModule : IModule
             .WithApiDescription(Tag, "GetSuppliersList", "Get Suppliers list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] ISuppliersRepository repository) =>
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] ISuppliersRepository repository) =>
             {
                 var supplier = await repository.GetByIdAsync(id);
                 if (supplier is null)
@@ -53,7 +53,7 @@ public class SuppliersModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateSupplierRequest request, [FromServices] ISuppliersRepository repository) =>
+        app.MapPost(RoutePrefix, async ([FromBody] CreateSupplierRequest request, [FromServices] ISuppliersRepository repository) =>
             {
                 var id = await repository.CreateAsync(new SupplierDto(0, request.Name, request.Comment, request.Phone));
                 var unit = await repository.GetByIdAsync(id);
@@ -64,7 +64,7 @@ public class SuppliersModule : IModule
             .WithApiDescription(Tag, "CreateSupplier", "Create Supplier")
             .RequireAuthorization();
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateSupplierRequest request, [FromRoute] int id, [FromServices] ISuppliersRepository repository, 
         [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
@@ -77,44 +77,42 @@ public class SuppliersModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
-            .WithValidator<UpdateSupplierRequest>()
-            .WithApiDescription(Tag, "UpdateSupplier", "Update Supplier")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateSupplierRequest>(app, Tag, "Update Supplier", PermissionTag.Update,
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray());
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] ISuppliersRepository repository,
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteSupplierRequest model, [FromServices] ISuppliersRepository repository,
                 [FromServices] ISupplierRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
+                var isEditable = await rules.IsEditableAsync(model.Id, CancellationToken.None);
                 if (!isEditable)
                 {
                     throw new ApiException(localizer["You cannot perform this action"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
                 
-                var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
+                var isUsed = await rules.IsUsedAsync(model.Id, CancellationToken.None);
                 if (isUsed)
                 {
                     throw new ApiException(localizer["Supplier already associated with order"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
 
-                await repository.DeleteByIdAsync(id);
+                await repository.DeleteByIdAsync(model.Id);
                 return TypedResults.NoContent();
             })
-            .WithApiDescription(Tag, "DeleteSupplierById", "Delete Supplier by Id")
-            .RequireAuthorization()
+            .WithAuthorizationAndValidation<DeleteSupplierRequest>(app, Tag, "Delete Supplier by Id", PermissionTag.Delete,
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray())
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
-        endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeSuppliersRequest request, [FromServices] ISuppliersRepository repository) =>
+        app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeSuppliersRequest request, [FromServices] ISuppliersRepository repository) =>
             {
                 await repository.MergeAsync(request.TargetId, request.SourceIds);
 
                 return TypedResults.Ok();
             })
             .WithValidator<MergeSuppliersRequest>()
-            .WithApiDescription(Tag, "MergeSuppliers", "Merge Suppliers")
-            .RequireAuthorization(AdminOnlyPolicy.Name);
+            .WithAuthorization(app, Tag, "Merge Suppliers", PermissionTag.Merge, RoleName.Administrator);
 
-        return endpoints;
+        return app;
     }
 }

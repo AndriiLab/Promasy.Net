@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
-using Promasy.Modules.Core.Policies;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Manufacturers.Dtos;
@@ -28,9 +28,9 @@ public class ManufacturersModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IManufacturersRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromServices] IManufacturersRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -39,7 +39,7 @@ public class ManufacturersModule : IModule
             .WithApiDescription(Tag, "GetManufacturersList", "Get Manufacturers list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IManufacturersRepository repository) =>
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IManufacturersRepository repository) =>
             {
                 var manufacturer = await repository.GetByIdAsync(id);
                 if (manufacturer is null)
@@ -52,7 +52,7 @@ public class ManufacturersModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateManufacturerRequest request, [FromServices] IManufacturersRepository repository) =>
+        app.MapPost(RoutePrefix, async ([FromBody] CreateManufacturerRequest request, [FromServices] IManufacturersRepository repository) =>
             {
                 var id = await repository.CreateAsync(new ManufacturerDto(0, request.Name));
                 var manufacturer = await repository.GetByIdAsync(id);
@@ -63,7 +63,7 @@ public class ManufacturersModule : IModule
             .WithApiDescription(Tag, "CreateManufacturer", "Create Manufacturer")
             .RequireAuthorization();
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateManufacturerRequest request, [FromRoute] int id, [FromServices] IManufacturersRepository repository,
                     [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
@@ -76,44 +76,53 @@ public class ManufacturersModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithValidator<UpdateManufacturerRequest>()
-            .WithApiDescription(Tag, "UpdateManufacturer", "Update Manufacturer")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateManufacturerRequest>(app, Tag, "Update Manufacturer", PermissionTag.Update,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameUser,
+                        _ => PermissionCondition.None
+                    })).ToArray());
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IManufacturersRepository repository,  
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteManufacturerRequest request, [FromServices] IManufacturersRepository repository,  
                 [FromServices] IManufacturerRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = await rules.IsEditableAsync(id, CancellationToken.None);
+                var isEditable = await rules.IsEditableAsync(request.Id, CancellationToken.None);
                 if (!isEditable)
                 {
                     throw new ApiException(localizer["You cannot perform this action"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
                 
-                var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
+                var isUsed = await rules.IsUsedAsync(request.Id, CancellationToken.None);
                 if (isUsed)
                 {
                     throw new ApiException(localizer["Manufacturer already associated with order"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
 
-                await repository.DeleteByIdAsync(id);
+                await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithApiDescription(Tag, "DeleteManufacturerById", "Delete Manufacturer by Id")
-            .RequireAuthorization()
-            .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
-        
-        endpoints.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeManufacturersRequest request, [FromServices] IManufacturersRepository repository) =>
+            .Produces<ProblemDetails>(StatusCodes.Status409Conflict)           
+            .WithAuthorizationAndValidation<DeleteManufacturerRequest>(app, Tag, "Delete Manufacturer by Id", PermissionTag.Delete,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.User => PermissionCondition.SameUser,
+                        _ => PermissionCondition.None
+                    })).ToArray());
+
+        app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeManufacturersRequest request,
+                [FromServices] IManufacturersRepository repository) =>
             {
                 await repository.MergeAsync(request.TargetId, request.SourceIds);
 
                 return TypedResults.Ok();
             })
             .WithValidator<MergeManufacturersRequest>()
-            .WithApiDescription(Tag, "MergeManufacturers", "Merge Manufacturers")
-            .RequireAuthorization(AdminOnlyPolicy.Name);
+            .WithAuthorization(app, Tag, "Merge Manufacturers", PermissionTag.Merge, RoleName.Administrator);
 
-        return endpoints;
+        return app;
     }
 }

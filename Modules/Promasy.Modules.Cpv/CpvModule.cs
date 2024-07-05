@@ -23,9 +23,9 @@ public class CpvModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] GetCpvsRequest request, [FromServices] ICpvsRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] GetCpvsRequest request, [FromServices] ICpvsRepository repository) =>
             {
                 var result = await repository.GetCpvsAsync(request);
                 return TypedResults.Ok(result);
@@ -34,7 +34,7 @@ public class CpvModule : IModule
             .WithApiDescription(Tag, "GetCpvList", "Get CPVs list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{code}}",
+        app.MapGet($"{RoutePrefix}/{{code}}",
                 async ([AsParameters] GetCpvByCodeRequest request, [FromServices] ICpvsRepository repository) =>
                 {
                     var result = await repository.GetCpvByCodeAsync(request.Code);
@@ -50,6 +50,6 @@ public class CpvModule : IModule
             .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();
 
-        return endpoints;
+        return app;
     }
 }

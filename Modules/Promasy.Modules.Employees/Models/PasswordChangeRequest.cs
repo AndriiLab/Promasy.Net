@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Promasy.Core.Persistence;
 
 namespace Promasy.Modules.Employees.Models;
 
-public record PasswordChangeRequest(string Password);
+public record PasswordChangeRequest(string Password, [FromRoute] int Id);
 
 
 internal class PasswordChangeRequestValidator : AbstractValidator<PasswordChangeRequest>

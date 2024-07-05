@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,5 +15,5 @@ public abstract class SubModule : IModule
     }
     public abstract IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration);
 
-    public abstract IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints);
+    public abstract WebApplication MapEndpoints(WebApplication app);
 }

@@ -13,3 +13,14 @@ public enum RoleName
     PersonallyLiableEmployee = 9,
     User = 10
 }
+
+public static class RoleNames
+{
+    public static readonly RoleName[] AllExceptUser =
+    [
+        RoleName.Administrator, RoleName.Director, RoleName.DeputyDirector, RoleName.HeadOfTenderCommittee,
+        RoleName.SecretaryOfTenderCommittee, RoleName.ChiefAccountant, RoleName.ChiefEconomist,
+        RoleName.HeadOfDepartment,
+        RoleName.PersonallyLiableEmployee
+    ];
+}

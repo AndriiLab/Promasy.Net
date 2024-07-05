@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
-using Promasy.Modules.Core.Policies;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
@@ -29,9 +29,9 @@ public class EmployeesModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] EmployeesPagedRequest request, [FromServices] IEmployeesRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] EmployeesPagedRequest request, [FromServices] IEmployeesRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -40,7 +40,7 @@ public class EmployeesModule : IModule
             .WithApiDescription(Tag, "GetEmployeesList", "Get Employees list")
             .RequireAuthorization();
         
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository) =>
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository) =>
             {
                 var employee = await repository.GetByIdAsync(id);
                 if (employee is null)
@@ -53,7 +53,7 @@ public class EmployeesModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
         
-        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService,  [FromServices] IMapper<CreateEmployeeRequest, CreateEmployeeDto> mapper) =>
+        app.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService,  [FromServices] IMapper<CreateEmployeeRequest, CreateEmployeeDto> mapper) =>
             {
                 var id = await repository.CreateAsync(mapper.MapFromSource(request));
 
@@ -64,10 +64,9 @@ public class EmployeesModule : IModule
                 return TypedResults.Json(employee, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateEmployeeRequest>()
-            .WithApiDescription(Tag, "CreateEmployee", "Create Employee")
-            .RequireAuthorization(AdminOnlyPolicy.Name);
+            .WithAuthorization(app, Tag, "Create Employee", PermissionTag.Create, RoleName.Administrator);
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateEmployeeRequest request, [FromRoute] int id, [FromServices] IEmployeesRepository repository,
             [FromServices] IStringLocalizer<SharedResource> localizer, [FromServices] IMapper<UpdateEmployeeRequest, UpdateEmployeeDto> mapper) =>
                 {
@@ -80,11 +79,16 @@ public class EmployeesModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithValidator<UpdateEmployeeRequest>()
-            .WithApiDescription(Tag, "UpdateEmployee", "Update Employee")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateEmployeeRequest>(app, Tag, "Update Employee", PermissionTag.Update,
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                    {
+                        RoleName.Administrator => PermissionCondition.None,
+                        _ => PermissionCondition.SameUser
+                    })).ToArray());
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository,
+
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository,
                 [FromServices] IEmployeeRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var isEditable = rules.IsEditable(id);
@@ -97,27 +101,30 @@ public class EmployeesModule : IModule
                 await repository.DeleteByIdAsync(id);
                 return TypedResults.NoContent();
             })
-            .WithApiDescription(Tag, "DeleteEmployee", "Delete Employee by Id")
-            .RequireAuthorization(AdminOnlyPolicy.Name)
+            .WithAuthorization(app, Tag, "Delete Employee by Id", PermissionTag.Delete, RoleName.Administrator)
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
                 
-        endpoints.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
-                async ([FromBody] PasswordChangeRequest request, [FromRoute] int id, IEmployeeRules rules, IAuthService authService, 
+        app.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
+                async ([AsParameters] PasswordChangeRequest request, IEmployeeRules rules, IAuthService authService, 
                     IStringLocalizer<SharedResource> localizer) =>
                 {
-                    if (!rules.CanChangePasswordForEmployee(id))
+                    if (!rules.CanChangePasswordForEmployee(request.Id))
                     {
                         throw new ApiException(localizer["Unable to modify other user password"]);
                     }
 
-                    await authService.SetEmployeePasswordAsync(id, request.Password);
+                    await authService.SetEmployeePasswordAsync(request.Id, request.Password);
 
-                    return TypedResults.Accepted($"{RoutePrefix}/{id}");
+                    return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithValidator<PasswordChangeRequest>()
-            .WithApiDescription(Tag, "ChangeEmployeePassword", "Change Employee password")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<PasswordChangeRequest>(app, Tag, "Change Employee password", s => PermissionTag.Update($"{s}/Password"),
+                Enum.GetValues<RoleName>().Select(r =>
+                (r, r switch
+                {
+                    RoleName.Administrator => PermissionCondition.None,
+                    _ => PermissionCondition.SameUser
+                })).ToArray());
         
-        return endpoints;
+        return app;
     }
 }

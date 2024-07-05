@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Organizations.Dtos;
@@ -32,9 +33,9 @@ internal class DepartmentsSubModule : SubModule
         return builder;
     }
 
-    public override IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public override WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository) =>
+        app.MapGet(RoutePrefix, async ([AsParameters] PagedRequest request, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository) =>
             {
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
@@ -43,7 +44,7 @@ internal class DepartmentsSubModule : SubModule
             .WithApiDescription(Tag, "GetDepartmentsList", "Get Departments list")
             .RequireAuthorization();
 
-        endpoints.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository) =>
+        app.MapGet($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository) =>
             {
                 var item = await repository.GetByIdAsync(id);
                 if (item is null)
@@ -56,7 +57,7 @@ internal class DepartmentsSubModule : SubModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
 
-        endpoints.MapPost(RoutePrefix, async ([FromBody] CreateDepartmentRequest request, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository,
+        app.MapPost(RoutePrefix, async ([FromBody] CreateDepartmentRequest request, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository,
                 [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 if (organizationId != request.OrganizationId)
@@ -69,11 +70,12 @@ internal class DepartmentsSubModule : SubModule
 
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateDepartmentRequest>()
-            .WithApiDescription(Tag, "CreateDepartment", "Create Department")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<CreateDepartmentRequest>(app, Tag, "Create Department", PermissionTag.Create,
+                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Director, PermissionCondition.SameOrganization),
+                (RoleName.DeputyDirector, PermissionCondition.SameOrganization));
 
-        endpoints.MapPut($"{RoutePrefix}/{{id:int}}",
+        app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateDepartmentRequest request, [FromRoute] int id, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository,
             [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
@@ -91,36 +93,41 @@ internal class DepartmentsSubModule : SubModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithValidator<UpdateDepartmentRequest>()
-            .WithApiDescription(Tag, "UpdateDepartment", "Update Department")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<UpdateDepartmentRequest>(app, Tag, "Update Department", PermissionTag.Update, 
+                (RoleName.Administrator, PermissionCondition.None),
+                (RoleName.Director, PermissionCondition.SameOrganization),
+                (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
+                (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
+                (RoleName.PersonallyLiableEmployee, PermissionCondition.SameDepartment));
 
-        endpoints.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromRoute] int organizationId, [FromServices] IDepartmentsRepository repository,
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteDepartmentRequest request, [FromServices] IDepartmentsRepository repository,
                 [FromServices] IDepartmentRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = rules.IsEditable(id);
+                var isEditable = rules.IsEditable(request.Id);
                 if (!isEditable)
                 {
                     throw new ApiException(localizer["You cannot perform this action"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
                 
-                var isUsed = await rules.IsUsedAsync(id, CancellationToken.None);
+                var isUsed = await rules.IsUsedAsync(request.Id, CancellationToken.None);
                 if (isUsed)
                 {
                     throw new ApiException(localizer["Department has subdepartments"],
                         statusCode: StatusCodes.Status409Conflict);
                 }
 
-                await repository.DeleteByIdAsync(id);
+                await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithApiDescription(Tag, "DeleteDepartmentById", "Delete Department by Id")
-            .RequireAuthorization()
+            .WithAuthorizationAndValidation<DeleteDepartmentRequest>(app, Tag, "Delete Department by Id", PermissionTag.Delete,
+                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Director, PermissionCondition.SameOrganization),
+                (RoleName.DeputyDirector, PermissionCondition.SameOrganization))
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
-        _subDepartmentsSubModule.MapEndpoints(endpoints);
+        _subDepartmentsSubModule.MapEndpoints(app);
         
-        return endpoints;
+        return app;
     }
 }

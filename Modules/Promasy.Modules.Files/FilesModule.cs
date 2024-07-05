@@ -28,9 +28,10 @@ public class FilesModule : IModule
         return builder;
     }
 
-    public IEndpointRouteBuilder MapEndpoints(IEndpointRouteBuilder endpoints)
+    public WebApplication MapEndpoints(WebApplication app)
     {
-        endpoints.MapGet($"{RoutePrefix}/{{fileName}}", async ([AsParameters] GetFileByNameRequest request,
+        // todo: improve security
+        app.MapGet($"{RoutePrefix}/{{fileName}}", async ([AsParameters] GetFileByNameRequest request,
                 [FromServices] IFileStorage fs, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
                 var bytes = await fs.ReadFileAsync(request.FileName);
@@ -48,6 +49,6 @@ public class FilesModule : IModule
             .Produces(StatusCodes.Status404NotFound);
 
 
-        return endpoints;
+        return app;
     }
 }

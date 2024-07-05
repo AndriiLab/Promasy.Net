@@ -8,16 +8,17 @@ using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Finances.Dtos;
 using Promasy.Modules.Finances.Interfaces;
+using Promasy.Modules.Finances.Models;
 using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Finances.Repositories;
 
-internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepartmentRules, IFinanceFinanceSubDepartmentsRepository
+internal class FinanceSubDepartmentsRepository : IFinanceFinanceSubDepartmentRules, IFinanceSubDepartmentsRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
 
-    public FinanceFinanceSubDepartmentsRepository(IDatabase database, IUserContext userContext)
+    public FinanceSubDepartmentsRepository(IDatabase database, IUserContext userContext)
     {
         _database = database;
         _userContext = userContext;
@@ -116,11 +117,11 @@ internal class FinanceFinanceSubDepartmentsRepository : IFinanceFinanceSubDepart
                     f.ModifiedDate ?? f.CreatedDate));
     }
 
-    public Task<PagedResponse<FinanceSubDepartmentDto>> GetPagedListBySubDepartmentAsync(int subDepartmentId, PagedRequest request)
+    public Task<PagedResponse<FinanceSubDepartmentDto>> GetPagedListBySubDepartmentAsync(GetFinanceSubDepartmentsPagedRequest request)
     {
         var query = _database.FinanceSubDepartmentsWithSpendView
             .AsNoTracking()
-            .Where(f => f.SubDepartmentId == subDepartmentId && (f.FinanceSource.Start.Year == request.Year || f.FinanceSource.End.Year == request.Year));
+            .Where(f => f.SubDepartmentId == request.SubDepartmentId && (f.FinanceSource.Start.Year == request.Year || f.FinanceSource.End.Year == request.Year));
 
         return query
             .PaginateAsync(request,
