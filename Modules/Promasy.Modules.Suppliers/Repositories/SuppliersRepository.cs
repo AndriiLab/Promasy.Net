@@ -1,27 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
-using Promasy.Domain.Employees;
-using Promasy.Domain.Orders;
 using Promasy.Domain.Suppliers;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Suppliers.Dtos;
 using Promasy.Modules.Suppliers.Interfaces;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Suppliers.Repositories;
 
 internal class SuppliersRepository : ISupplierRules, ISuppliersRepository
 {
     private readonly IDatabase _database;
-    private readonly IUserContext _userContext;
 
-    public SuppliersRepository(IDatabase database, IUserContext userContext)
+    public SuppliersRepository(IDatabase database)
     {
         _database = database;
-        _userContext = userContext;
     }
 
     public Task<bool> IsExistsAsync(int id, CancellationToken ct)
@@ -37,13 +33,6 @@ internal class SuppliersRepository : ISupplierRules, ISuppliersRepository
     public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
         return await _database.Suppliers.Where(u => u.Id != id).AnyAsync(u => EF.Functions.ILike(u.Name, name), ct) == false;
-    }
-
-    public Task<bool> IsEditableAsync(int id, CancellationToken ct)
-    {
-        return !_userContext.HasRoles((int)RoleName.User)
-            ? Task.FromResult(true)
-            : _database.Suppliers.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.GetId(), ct);
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)
@@ -114,7 +103,7 @@ internal class SuppliersRepository : ISupplierRules, ISuppliersRepository
     {
         await _database.Orders
             .Where(o => o.SupplierId.HasValue && sourceIds.Contains(o.SupplierId.Value))
-            .UpdateAsync(o => new Order {SupplierId = targetId});
+            .ExecuteUpdateAsync(s => s.SetProperty(o => o.SupplierId, targetId));
 
         var unitsToDelete = await _database.Suppliers
             .Where(m => sourceIds.Contains(m.Id))
@@ -122,5 +111,25 @@ internal class SuppliersRepository : ISupplierRules, ISuppliersRepository
         
         _database.Suppliers.RemoveRange(unitsToDelete);
         await _database.SaveChangesAsync();
+    }
+    
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<Supplier>(_database, id, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameDepartmentAsync<Supplier>(_database, id, userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameSubDepartmentAsync<Supplier>(_database, id, userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<Supplier>(_database, id, userId, ct);
     }
 }

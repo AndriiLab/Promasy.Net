@@ -1,24 +1,29 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Models;
 
-public record UpdateSubDepartmentRequest(int Id, string Name, int DepartmentId);
-
-internal class UpdateSubDepartmentRequestValidator : AbstractValidator<UpdateSubDepartmentRequest>
+public record UpdateSubDepartmentRequest(int Id, string Name, int DepartmentId) : IRequestWithPermissionValidation
 {
-    public UpdateSubDepartmentRequestValidator(ISubDepartmentRules rules, IStringLocalizer<SharedResource> localizer)
+    public int GetId() => Id;
+}
+
+internal class UpdateSubDepartmentRequestValidator : AbstractPermissionsValidator<UpdateSubDepartmentRequest>
+{
+    public UpdateSubDepartmentRequestValidator(ISubDepartmentRules rules, IStringLocalizer<SharedResource> localizer, IUserContext userContext)
+        : base(rules, userContext, localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
             .MaximumLength(PersistenceConstant.FieldMedium);
 
         RuleFor(r => r)
-            .Must(r => rules.IsEditable(r.Id))
-            .WithMessage(localizer["You cannot perform this action"])
             .MustAsync((r, t) => rules.IsExistsAsync(r.Id, t))
             .WithMessage(localizer["Item not exist"]);
             

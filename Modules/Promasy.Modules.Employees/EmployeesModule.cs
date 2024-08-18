@@ -88,16 +88,8 @@ public class EmployeesModule : IModule
                     })).ToArray());
 
 
-        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository,
-                [FromServices] IEmployeeRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository) =>
             {
-                var isEditable = rules.IsEditable(id);
-                if (!isEditable)
-                {
-                    throw new ApiException(localizer["You cannot perform this action"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-
                 await repository.DeleteByIdAsync(id);
                 return TypedResults.NoContent();
             })
@@ -105,14 +97,8 @@ public class EmployeesModule : IModule
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
                 
         app.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
-                async ([AsParameters] PasswordChangeRequest request, IEmployeeRules rules, IAuthService authService, 
-                    IStringLocalizer<SharedResource> localizer) =>
+                async ([AsParameters] PasswordChangeRequest request, IAuthService authService) =>
                 {
-                    if (!rules.CanChangePasswordForEmployee(request.Id))
-                    {
-                        throw new ApiException(localizer["Unable to modify other user password"]);
-                    }
-
                     await authService.SetEmployeePasswordAsync(request.Id, request.Password);
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");

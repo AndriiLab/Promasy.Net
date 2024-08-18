@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Promasy.Application.Interfaces;
 using Promasy.Domain.Employees;
 using Promasy.Modules.Auth.Interfaces;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Auth.Repositories;
 
@@ -34,14 +33,13 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
             .Where(r => r.EmployeeId == userId)
             .Where(r => r.Revoked == null)
             .Where(r => r.Expires > DateTime.UtcNow)
-            .UpdateAsync(r => new RefreshToken
-            {
-                Revoked = DateTime.UtcNow,
-                ModifierId = userId,
-                ModifiedDate = DateTime.UtcNow,
-                ReasonRevoked = TokenRevokeReason.Revoked,
-                RevokedByIp = _userContext.GetIpAddress()
-            });
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(e => e.Revoked, DateTime.UtcNow)
+                .SetProperty(e => e.ModifierId, userId)
+                .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                .SetProperty(e => e.ReasonRevoked, TokenRevokeReason.Revoked)
+                .SetProperty(e => e.RevokedByIp, _userContext.GetIpAddress())
+            );
         
         var rt = new RefreshToken
         {
@@ -136,10 +134,10 @@ internal class RefreshTokenRepository : IRefreshTokenRepository
     }
 
     // todo: rewrite to scheduled task
-    private Task CleanupOldTokensAsync()
+    private Task<int> CleanupOldTokensAsync()
     {
         return _database.RefreshTokens
             .Where(rt => rt.Expires < DateTime.UtcNow.AddDays(-14))
-            .DeleteAsync();
+            .ExecuteDeleteAsync();
     }
 }

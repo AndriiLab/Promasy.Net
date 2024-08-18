@@ -1,16 +1,23 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Models;
 
-public record CreateDepartmentRequest(string Name, int OrganizationId);
-
-internal class CreateDepartmentRequestValidator : AbstractValidator<CreateDepartmentRequest>
+public record CreateDepartmentRequest(string Name, int OrganizationId): IRequestWithPermissionValidation
 {
-    public CreateDepartmentRequestValidator(IDepartmentRules rules, IOrganizationRules organizationRules, IStringLocalizer<SharedResource> localizer)
+    public int GetId() => OrganizationId;
+}
+
+internal class CreateDepartmentRequestValidator : AbstractPermissionsValidator<CreateDepartmentRequest>
+{
+    public CreateDepartmentRequestValidator(IDepartmentRules rules, IOrganizationRules organizationRules, IStringLocalizer<SharedResource> localizer, IUserContext userContext)
+        : base(organizationRules, userContext, localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()

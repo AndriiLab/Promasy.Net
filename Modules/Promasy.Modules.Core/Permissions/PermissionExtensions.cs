@@ -30,7 +30,7 @@ public static class PermissionExtensions
     
     public static RouteHandlerBuilder WithAuthorizationAndValidation<TModel>(this RouteHandlerBuilder builder, WebApplication app, 
         string tag, string summary, Func<string, PermissionTag> idGen, params (RoleName Role, PermissionCondition Condition)[] roleConditions)
-        where TModel : class
+        where TModel : IRequestWithPermissionValidation
     {
         var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
             
@@ -48,7 +48,7 @@ public static class PermissionExtensions
         
         builder.WithApiDescription(tag, id, summary);
 
-        builder.WithValidator<TModel>(); // todo: pass roleConditions into validation
+        builder.WithPermissionsValidator<TModel>(roleConditions);
 
         return builder;
     }
@@ -61,21 +61,4 @@ public static class PermissionExtensions
 
         return apb;
     }
-}
-
-public class PermissionTag
-{
-    public string Name { get; }
-    private PermissionTag(string name)
-    {
-        Name = name;
-    }
-    
-    public static PermissionTag List(string endpoint) => new($"List/{endpoint}");
-    public static PermissionTag Get(string endpoint) => new($"Get/{endpoint}");
-    public static PermissionTag Create(string endpoint) => new($"Create/{endpoint}");
-    public static PermissionTag Update(string endpoint) => new($"Update/{endpoint}");
-    public static PermissionTag Delete(string endpoint) => new($"Delete/{endpoint}");
-    public static PermissionTag Merge(string endpoint) => new($"Merge/{endpoint}");
-    public static PermissionTag Export(string endpoint) => new($"Export/{endpoint}");
 }

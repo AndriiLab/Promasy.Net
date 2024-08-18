@@ -13,7 +13,7 @@ public record UpdateFinanceSubDepartmentRequest(int Id, int FinanceSourceId, int
     
 internal class UpdateFinanceSubDepartmentRequestValidator : AbstractValidator<UpdateFinanceSubDepartmentRequest>
 {
-    public UpdateFinanceSubDepartmentRequestValidator(IFinanceFinanceSubDepartmentRules rules,
+    public UpdateFinanceSubDepartmentRequestValidator(IFinanceSubDepartmentRules rules,
         IFinanceSourceRules financeSourceRules, IRules<SubDepartment> subDepartmentRules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.Id)

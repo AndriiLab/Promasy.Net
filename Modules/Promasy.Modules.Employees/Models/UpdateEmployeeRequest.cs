@@ -6,6 +6,8 @@ using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
 using Promasy.Modules.Core.Mapper;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
 using Riok.Mapperly.Abstractions;
@@ -14,7 +16,10 @@ namespace Promasy.Modules.Employees.Models;
 
 public record UpdateEmployeeRequest(int Id, string FirstName, string? MiddleName, string LastName,
     string Email, string PrimaryPhone, string? ReservePhone, int SubDepartmentId,
-    RoleName[] Roles);
+    RoleName[] Roles) : IRequestWithPermissionValidation
+{
+    public int GetId() => Id;
+}
 
 [Mapper]
 internal partial class UpdateEmployeeRequestMapper : IMapper<UpdateEmployeeRequest, UpdateEmployeeDto>
@@ -22,10 +27,10 @@ internal partial class UpdateEmployeeRequestMapper : IMapper<UpdateEmployeeReque
     public partial UpdateEmployeeDto MapFromSource(UpdateEmployeeRequest src);
 }
 
-internal class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRequest>
+internal class UpdateEmployeeRequestValidator : AbstractPermissionsValidator<UpdateEmployeeRequest>
 {
     public UpdateEmployeeRequestValidator(IEmployeeRules employeeRules, IRules<SubDepartment> subDepartmentRules,
-         IUserContext userContext, IStringLocalizer<SharedResource> localizer)
+         IUserContext userContext, IStringLocalizer<SharedResource> localizer) : base(employeeRules, userContext, localizer)
     {
         RuleFor(r => r.FirstName)
             .NotEmpty()

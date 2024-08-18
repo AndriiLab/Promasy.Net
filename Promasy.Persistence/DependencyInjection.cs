@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Promasy.Application.Interfaces;
 using Promasy.Persistence.Context;
 using Promasy.Persistence.Seed;
-using Z.EntityFramework.Extensions;
 
 namespace Promasy.Persistence
 {
@@ -31,17 +29,6 @@ namespace Promasy.Persistence
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope();
 
-            var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<PromasyContext>>();
-
-            BatchDeleteManager.BatchDeleteBuilder = b =>
-            {
-                b.Executing = d => logger.LogInformation("SQL Batch Delete: {Sql}", d.CommandText);
-            };            
-            BatchUpdateManager.BatchUpdateBuilder = b =>
-            {
-                b.Executing = d => logger.LogInformation("SQL Batch Update: {Sql}", d.CommandText);
-            };
-            
             using var context = serviceScope.ServiceProvider.GetRequiredService<PromasyContext>();
             context.Database.Migrate();
 

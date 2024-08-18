@@ -13,7 +13,7 @@ public record CreateFinanceSubDepartmentRequest(int FinanceSourceId, int SubDepa
 
 internal class CreateFinanceSubDepartmentRequestValidator : AbstractValidator<CreateFinanceSubDepartmentRequest>
 {
-    public CreateFinanceSubDepartmentRequestValidator(IFinanceFinanceSubDepartmentRules rules,
+    public CreateFinanceSubDepartmentRequestValidator(IFinanceSubDepartmentRules rules,
         IFinanceSourceRules financeSourceRules, IRules<SubDepartment> subDepartmentRules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(r => r.FinanceSourceId)

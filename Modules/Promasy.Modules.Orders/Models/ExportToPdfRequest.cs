@@ -1,16 +1,25 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Orders.Interfaces;
 
 namespace Promasy.Modules.Orders.Models;
 
-public record ExportToPdfRequest(int[] OrderIds, Dictionary<RoleName, int> SignEmployees);
-
-internal class ExportToPdfRequestValidator : AbstractValidator<ExportToPdfRequest>
+public record ExportToPdfRequest(int[] OrderIds, Dictionary<RoleName, int> SignEmployees) : IRequestWithMultiplePermissionValidation
 {
-    public ExportToPdfRequestValidator(IOrderRules orderRules, IEmployeeRules employeeRules, IStringLocalizer<SharedResource> localizer, IStringLocalizer<RoleName> roleLocalizer)
+    public int GetId() => throw new NotSupportedException();
+    public int[] GetIds() => OrderIds;
+}
+
+internal class ExportToPdfRequestValidator : AbstractPermissionsValidator<ExportToPdfRequest>
+{
+    public ExportToPdfRequestValidator(IOrderRules orderRules, IEmployeeRules employeeRules, 
+        IStringLocalizer<SharedResource> localizer, IStringLocalizer<RoleName> roleLocalizer, IUserContext userContext) 
+        : base(orderRules, userContext, localizer)
     {
         RuleForEach(r => r.OrderIds)
             .MustAsync(orderRules.IsExistsAsync)

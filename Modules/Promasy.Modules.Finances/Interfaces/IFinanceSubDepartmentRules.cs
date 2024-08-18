@@ -4,7 +4,7 @@ using Promasy.Modules.Core.Modules;
 
 namespace Promasy.Modules.Finances.Interfaces;
 
-internal interface IFinanceFinanceSubDepartmentRules : IRules<FinanceSubDepartment>
+internal interface IFinanceSubDepartmentRules : IRules<FinanceSubDepartment>
 {
     Task<bool> IsUniqueFinanceSubDepartmentAsync(int financeSourceId, int subDepartmentId, CancellationToken ct);
     Task<bool> IsUniqueFinanceSubDepartmentAsync(int id, int financeSourceId, int subDepartmentId, CancellationToken ct);

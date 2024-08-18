@@ -84,23 +84,9 @@ public class ManufacturersModule : IModule
                         _ => PermissionCondition.None
                     })).ToArray());
 
-        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteManufacturerRequest request, [FromServices] IManufacturersRepository repository,  
-                [FromServices] IManufacturerRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteManufacturerRequest request, [FromServices] IManufacturersRepository repository,
+                [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = await rules.IsEditableAsync(request.Id, CancellationToken.None);
-                if (!isEditable)
-                {
-                    throw new ApiException(localizer["You cannot perform this action"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-                
-                var isUsed = await rules.IsUsedAsync(request.Id, CancellationToken.None);
-                if (isUsed)
-                {
-                    throw new ApiException(localizer["Manufacturer already associated with order"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })

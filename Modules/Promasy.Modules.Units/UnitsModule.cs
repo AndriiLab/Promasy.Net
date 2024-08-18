@@ -82,21 +82,8 @@ public class UnitsModule : IModule
                 Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteUnitRequest model, [FromServices] IUnitsRepository repository,
-                [FromServices] IUnitRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+                [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
-                var isEditable = await rules.IsEditableAsync(model.Id, CancellationToken.None);
-                if (!isEditable)
-                {
-                    throw new ApiException(localizer["You cannot perform this action"], StatusCodes.Status409Conflict);
-                }
-                
-                var isUsed = await rules.IsUsedAsync(model.Id, CancellationToken.None);
-                if (isUsed)
-                {
-                    throw new ApiException(localizer["Unit already associated with order"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-
                 await repository.DeleteByIdAsync(model.Id);
                 return TypedResults.NoContent();
             })

@@ -6,8 +6,6 @@ namespace Promasy.Modules.Employees.Interfaces;
 
 internal interface IEmployeeRules : IRules<Employee>
 {
-    bool CanChangePasswordForEmployee(int id);
-    bool IsEditable(int id);
     Task<bool> IsEmailUniqueAsync(string email, CancellationToken ct);
     Task<bool> IsEmailUniqueAsync(string email, int id, CancellationToken ct);
     Task<bool> IsPhoneUniqueAsync(string phone, CancellationToken ct);

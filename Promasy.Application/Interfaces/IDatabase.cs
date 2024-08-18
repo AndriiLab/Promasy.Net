@@ -37,3 +37,8 @@ public interface IDatabase
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct = new());
     Task<int> SaveChangesAsync(CancellationToken ct = new());
 }
+
+public interface IExtendedDatabase : IDatabase
+{
+    DbSet<T> GetDbSet<T>() where T : class;
+}

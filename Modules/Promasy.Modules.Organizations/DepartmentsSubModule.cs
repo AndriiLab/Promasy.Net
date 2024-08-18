@@ -100,23 +100,8 @@ internal class DepartmentsSubModule : SubModule
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
                 (RoleName.PersonallyLiableEmployee, PermissionCondition.SameDepartment));
 
-        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteDepartmentRequest request, [FromServices] IDepartmentsRepository repository,
-                [FromServices] IDepartmentRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteDepartmentRequest request, [FromServices] IDepartmentsRepository repository) =>
             {
-                var isEditable = rules.IsEditable(request.Id);
-                if (!isEditable)
-                {
-                    throw new ApiException(localizer["You cannot perform this action"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-                
-                var isUsed = await rules.IsUsedAsync(request.Id, CancellationToken.None);
-                if (isUsed)
-                {
-                    throw new ApiException(localizer["Department has subdepartments"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })

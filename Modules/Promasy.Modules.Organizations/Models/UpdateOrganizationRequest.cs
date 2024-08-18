@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Organizations.Interfaces;
 
 namespace Promasy.Modules.Organizations.Models;
@@ -22,11 +25,15 @@ public record UpdateOrganizationRequest(
     string Street,
     int StreetType,
     string BuildingNumber,
-    string? InternalNumber);
-
-internal class UpdateOrganizationRequestValidator : AbstractValidator<UpdateOrganizationRequest>
+    string? InternalNumber) : IRequestWithPermissionValidation
 {
-    public UpdateOrganizationRequestValidator(IOrganizationRules rules, IStringLocalizer<SharedResource> localizer)
+    public int GetId() => Id;
+}
+
+internal class UpdateOrganizationRequestValidator : AbstractPermissionsValidator<UpdateOrganizationRequest>
+{
+    public UpdateOrganizationRequestValidator(IOrganizationRules rules, IStringLocalizer<SharedResource> localizer, IUserContext userContext)
+        : base(rules, userContext, localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()
@@ -34,9 +41,7 @@ internal class UpdateOrganizationRequestValidator : AbstractValidator<UpdateOrga
 
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistsAsync)
-            .WithMessage(localizer["Item not exist"])
-            .Must(rules.IsEditable)
-            .WithMessage(localizer["You cannot perform this action"]);
+            .WithMessage(localizer["Item not exist"]);
 
         RuleFor(r => r)
             .MustAsync((r, t) => rules.IsNameUniqueAsync(r.Name, r.Id, t))

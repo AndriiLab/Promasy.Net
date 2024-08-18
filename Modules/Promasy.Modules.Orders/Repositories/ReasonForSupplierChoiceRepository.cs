@@ -1,26 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
-using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Orders.Dtos;
 using Promasy.Modules.Orders.Interfaces;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Orders.Repositories;
 
 internal class ReasonForSupplierChoiceRepository : IReasonForSupplierChoiceRules, IReasonForSupplierChoiceRepository
 {
     private readonly IDatabase _database;
-    private readonly IUserContext _userContext;
 
-    public ReasonForSupplierChoiceRepository(IDatabase database, IUserContext userContext)
+    public ReasonForSupplierChoiceRepository(IDatabase database)
     {
         _database = database;
-        _userContext = userContext;
     }
 
     public Task<bool> IsExistsAsync(int id, CancellationToken ct)
@@ -36,13 +33,6 @@ internal class ReasonForSupplierChoiceRepository : IReasonForSupplierChoiceRules
     public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
         return await _database.ReasonForSupplierChoice.Where(r => r.Id != id).AnyAsync(u => EF.Functions.ILike(u.Name, name), ct) == false;
-    }
-
-    public Task<bool> IsEditableAsync(int id, CancellationToken ct)
-    {
-        return !_userContext.HasRoles((int)RoleName.User)
-            ? Task.FromResult(true)
-            : _database.ReasonForSupplierChoice.Where(r => r.Id == id).AllAsync(r => r.CreatorId == _userContext.GetId(), ct);
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)
@@ -108,7 +98,7 @@ internal class ReasonForSupplierChoiceRepository : IReasonForSupplierChoiceRules
     {
         await _database.Orders
             .Where(o => o.ReasonId.HasValue && sourceIds.Contains(o.ReasonId.Value))
-            .UpdateAsync(o => new Order {ReasonId = targetId});
+            .ExecuteUpdateAsync(s => s.SetProperty(o => o.ReasonId, targetId));
 
         var reasonsToDelete = await _database.ReasonForSupplierChoice
             .Where(m => sourceIds.Contains(m.Id))
@@ -116,5 +106,25 @@ internal class ReasonForSupplierChoiceRepository : IReasonForSupplierChoiceRules
         
         _database.ReasonForSupplierChoice.RemoveRange(reasonsToDelete);
         await _database.SaveChangesAsync();
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<ReasonForSupplierChoice>(_database, id, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameDepartmentAsync<ReasonForSupplierChoice>(_database, id, userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameSubDepartmentAsync<ReasonForSupplierChoice>(_database, id, userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<ReasonForSupplierChoice>(_database, id, userId, ct);
     }
 }

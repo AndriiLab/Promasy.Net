@@ -60,6 +60,15 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дія не дозволена для цього користувача.
+        /// </summary>
+        internal static string Action_not_permitted {
+            get {
+                return ResourceManager.GetString("Action not permitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Недостатньо коштів для призначення вказаної суми.
         /// </summary>
         internal static string Cannot_assign_requested_amount {
@@ -312,6 +321,15 @@ namespace Promasy.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не підтримувана умова доступу.
+        /// </summary>
+        internal static string Permission_condition_is_not_supported {
+            get {
+                return ResourceManager.GetString("Permission condition is not supported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Телефон вже використовується.
         /// </summary>
         internal static string Phone_must_be_unique {
@@ -362,6 +380,15 @@ namespace Promasy.Core.Resources {
         internal static string Street_type_does_not_exist {
             get {
                 return ResourceManager.GetString("Street type does not exist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Підрозділ має співробітників.
+        /// </summary>
+        internal static string Sub_department_has_employees {
+            get {
+                return ResourceManager.GetString("Sub-department has employees", resourceCulture);
             }
         }
         

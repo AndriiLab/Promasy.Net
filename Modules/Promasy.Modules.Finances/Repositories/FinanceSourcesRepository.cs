@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
 using Promasy.Domain.Finances;
-using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Finances.Dtos;
 using Promasy.Modules.Finances.Interfaces;
 using Promasy.Modules.Finances.Models;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Finances.Repositories;
 
@@ -162,18 +161,24 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
 
             await _database.Orders
                 .Where(o => o.FinanceSubDepartment.FinanceSourceId == id)
-                .UpdateAsync(o => new Order
-                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(e => e.Deleted, true)
+                    .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                    .SetProperty(e => e.ModifierId, _userContext.GetId()));
         
             await _database.FinanceSubDepartments
                 .Where(f => f.FinanceSourceId == id)
-                .UpdateAsync(o => new FinanceSubDepartment
-                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(e => e.Deleted, true)
+                    .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                    .SetProperty(e => e.ModifierId, _userContext.GetId()));
 
             await _database.OrderStatuses
                 .Where(s => s.Order.FinanceSubDepartment.FinanceSourceId == entity.Id)
-                .UpdateAsync(s => new OrderStatusHistory
-                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(e => e.Deleted, true)
+                    .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                    .SetProperty(e => e.ModifierId, _userContext.GetId()));
             
             _database.FinanceSources.Remove(entity);
             await _database.SaveChangesAsync();
@@ -184,5 +189,27 @@ internal class FinanceSourcesRepository : IFinanceSourceRules, IFinanceSourcesRe
         {
             await trx.RollbackAsync();
         }
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<FinanceSource>(_database, id, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return _database.FinanceSources.AsNoTracking()
+            .AnyAsync(fs => fs.Id == id && fs.FinanceDepartments.Any(fd => fd.SubDepartment.DepartmentId == userDepartmentId), ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return _database.FinanceSources.AsNoTracking()
+            .AnyAsync(fs => fs.Id == id && fs.FinanceDepartments.Any(fd => fd.SubDepartmentId == userSubDepartmentId), ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<FinanceSource>(_database, id, userId, ct);
     }
 }

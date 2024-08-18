@@ -13,6 +13,11 @@ namespace Promasy.Persistence.Configurations
 
             builder.Property(b => b.CreatedDate)
                 .HasDefaultValueSql("now()");
+
+            if (typeof(ISoftDeletable).IsAssignableFrom(typeof(TEntity)))
+            {
+                builder.HasQueryFilter(p => !EF.Property<bool>(p, nameof(ISoftDeletable.Deleted)));
+            }
             
             Config(builder);
         }

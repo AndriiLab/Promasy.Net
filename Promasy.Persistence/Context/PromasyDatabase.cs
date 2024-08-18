@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence.Views;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Finances;
@@ -14,7 +15,7 @@ using IDatabase = Promasy.Application.Interfaces.IDatabase;
 
 namespace Promasy.Persistence.Context;
 
-internal class PromasyDatabase : IDatabase
+internal class PromasyDatabase : IExtendedDatabase
 {
     private readonly PromasyContext _ctx;
 
@@ -47,4 +48,7 @@ internal class PromasyDatabase : IDatabase
         _ctx.Database.BeginTransactionAsync(ct);
 
     public Task<int> SaveChangesAsync(CancellationToken ct = new()) => _ctx.SaveChangesAsync(ct);
+
+    public DbSet<T> GetDbSet<T>() where T : class
+        => _ctx.Set<T>();
 }

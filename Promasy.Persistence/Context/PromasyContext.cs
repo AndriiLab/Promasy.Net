@@ -44,8 +44,7 @@ namespace Promasy.Persistence.Context
 #pragma warning disable CS8618
         public PromasyContext(DbContextOptions<PromasyContext> options, IUserContext userContext) : base(options)
         {
-            this.Filter<ISoftDeletable>(q => q.Where(i => !i.Deleted));
-            if (userContext?.IsAuthenticated() ?? false)
+            if (userContext.IsAuthenticated())
             {
                 this.Filter<Organization>(q => q.Where(o => o.Id == userContext.GetOrganizationId()));
                 this.Filter<IOrganizationAssociated>(q => q.Where(i => i.OrganizationId == userContext.GetOrganizationId()));

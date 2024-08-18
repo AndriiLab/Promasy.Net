@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
-using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
@@ -14,12 +13,10 @@ namespace Promasy.Modules.Organizations.Repositories;
 internal class OrganizationsRepository : IOrganizationRules, IOrganizationsRepository
 {
     private readonly IDatabase _database;
-    private readonly IUserContext _userContext;
 
-    public OrganizationsRepository(IDatabase database, IUserContext userContext)
+    public OrganizationsRepository(IDatabase database)
     {
         _database = database;
-        _userContext = userContext;
     }
 
     public Task<bool> IsExistsAsync(int id, CancellationToken ct)
@@ -36,12 +33,6 @@ internal class OrganizationsRepository : IOrganizationRules, IOrganizationsRepos
     {
         return await _database.Organizations.Where(o => o.Id != id)
             .AnyAsync(o => EF.Functions.ILike(o.Name, name), ct) == false;
-    }
-
-    public bool IsEditable(int id)
-    {
-        return _userContext.HasRoles((int) RoleName.Administrator) ||
-               (_userContext.HasRoles((int)RoleName.Director, (int)RoleName.DeputyDirector) && _userContext.GetOrganizationId() == id);
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)
@@ -141,5 +132,25 @@ internal class OrganizationsRepository : IOrganizationRules, IOrganizationsRepos
         entity.Address.ModifiedDate = DateTime.UtcNow;
 
         await _database.SaveChangesAsync();
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return Task.FromResult(id == userOrganizationId);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        throw new NotSupportedException();
     }
 }

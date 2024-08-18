@@ -8,6 +8,5 @@ internal interface ISubDepartmentRules : IRules<SubDepartment>
 {
     Task<bool> IsNameUniqueAsync(string name, int departmentId, CancellationToken ct);
     Task<bool> IsNameUniqueAsync(string name, int id, int departmentId, CancellationToken ct);
-    bool IsEditable(int id);
     Task<bool> IsUsedAsync(int id, CancellationToken ct);
 }

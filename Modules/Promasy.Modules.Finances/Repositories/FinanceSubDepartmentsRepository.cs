@@ -1,19 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
 using Promasy.Domain.Finances;
-using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Finances.Dtos;
 using Promasy.Modules.Finances.Interfaces;
 using Promasy.Modules.Finances.Models;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Finances.Repositories;
 
-internal class FinanceSubDepartmentsRepository : IFinanceFinanceSubDepartmentRules, IFinanceSubDepartmentsRepository
+internal class FinanceSubDepartmentsRepository : IFinanceSubDepartmentRules, IFinanceSubDepartmentsRepository
 {
     private readonly IDatabase _database;
     private readonly IUserContext _userContext;
@@ -192,7 +191,7 @@ internal class FinanceSubDepartmentsRepository : IFinanceFinanceSubDepartmentRul
             var entities = await _database.FinanceSubDepartments
                 .Where(fs => fs.FinanceSourceId == financeId && fs.SubDepartmentId ==subDepartmentId)
                 .ToListAsync();
-            if (!entities.Any())
+            if (entities.Count == 0)
             {
                 await trx.RollbackAsync();
                 return;
@@ -200,13 +199,17 @@ internal class FinanceSubDepartmentsRepository : IFinanceFinanceSubDepartmentRul
 
             await _database.Orders
                 .Where(o => entities.Select(e => e.Id).Contains(o.FinanceSubDepartmentId))
-                .UpdateAsync(o => new Order
-                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(e => e.Deleted, true)
+                    .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                    .SetProperty(e => e.ModifierId, _userContext.GetId()));
 
             await _database.OrderStatuses
                 .Where(s => entities.Select(e => e.Id).Contains(s.Order.FinanceSubDepartmentId))
-                .UpdateAsync(s => new OrderStatusHistory
-                    {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(e => e.Deleted, true)
+                    .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                    .SetProperty(e => e.ModifierId, _userContext.GetId()));
             
             _database.FinanceSubDepartments.RemoveRange(entities);
             await _database.SaveChangesAsync();
@@ -217,5 +220,25 @@ internal class FinanceSubDepartmentsRepository : IFinanceFinanceSubDepartmentRul
         {
             await trx.RollbackAsync();
         }
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return _database.FinanceSubDepartments.AsNoTracking().AnyAsync(fs => fs.Id == id && fs.SubDepartment.OrganizationId == userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return _database.FinanceSubDepartments.AsNoTracking().AnyAsync(fs => fs.Id == id && fs.SubDepartment.DepartmentId == userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return _database.FinanceSubDepartments.AsNoTracking().AnyAsync(fs => fs.Id == id && fs.SubDepartmentId == userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<FinanceSubDepartment>(_database, id, userId, ct);
     }
 }

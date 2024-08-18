@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
-using Promasy.Domain.Employees;
 using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Pagination;
@@ -9,21 +9,17 @@ using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Units.Repositories;
 
 internal class UnitsRepository : IUnitRules, IUnitsRepository
 {
     private readonly IDatabase _database;
-    private readonly IUserContext _userContext;
     private readonly ISyncMapper<CreateUnitDto, UpdateUnitDto, Unit> _mapper;
 
-    public UnitsRepository(IDatabase database, IUserContext userContext, 
-        ISyncMapper<CreateUnitDto, UpdateUnitDto, Unit> mapper)
+    public UnitsRepository(IDatabase database, ISyncMapper<CreateUnitDto, UpdateUnitDto, Unit> mapper)
     {
         _database = database;
-        _userContext = userContext;
         _mapper = mapper;
     }
 
@@ -39,14 +35,8 @@ internal class UnitsRepository : IUnitRules, IUnitsRepository
 
     public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
-        return await _database.Units.Where(u => u.Id != id).AnyAsync(u => EF.Functions.ILike(u.Name, name), ct) == false;
-    }
-
-    public Task<bool> IsEditableAsync(int id, CancellationToken ct)
-    {
-        return !_userContext.HasRoles((int)RoleName.User)
-            ? Task.FromResult(true)
-            : _database.Units.Where(u => u.Id == id).AllAsync(u => u.CreatorId == _userContext.GetId(), ct);
+        return await _database.Units.Where(u => u.Id != id).AnyAsync(u => EF.Functions.ILike(u.Name, name), ct) ==
+               false;
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)
@@ -107,18 +97,38 @@ internal class UnitsRepository : IUnitRules, IUnitsRepository
         _mapper.CopyFromSource(unit, entity);
         await _database.SaveChangesAsync();
     }
-    
+
     public async Task MergeAsync(int targetId, int[] sourceIds)
     {
         await _database.Orders
             .Where(o => sourceIds.Contains(o.UnitId))
-            .UpdateAsync(o => new Order {UnitId = targetId});
+            .ExecuteUpdateAsync(s => s.SetProperty(o => o.UnitId, targetId));
 
         var unitsToDelete = await _database.Units
             .Where(m => sourceIds.Contains(m.Id))
             .ToListAsync();
-        
+
         _database.Units.RemoveRange(unitsToDelete);
         await _database.SaveChangesAsync();
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<Unit>(_database, id, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameDepartmentAsync<Unit>(_database, id, userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameSubDepartmentAsync<Unit>(_database, id, userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<Unit>(_database, id, userId, ct);
     }
 }

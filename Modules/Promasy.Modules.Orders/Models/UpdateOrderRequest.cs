@@ -8,19 +8,25 @@ using Promasy.Domain.Manufacturers;
 using Promasy.Domain.Orders;
 using Promasy.Domain.Suppliers;
 using Promasy.Modules.Core.Modules;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Orders.Interfaces;
 
 namespace Promasy.Modules.Orders.Models;
 
 public record UpdateOrderRequest(int Id, string Description, string? CatNum, decimal OnePrice, decimal Amount,
     OrderType Type, string? Kekv, DateOnly? ProcurementStartDate, int UnitId, int CpvId,
-    int FinanceSubDepartmentId, int? ManufacturerId, int? SupplierId, int? ReasonId);
-    
-internal class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
+    int FinanceSubDepartmentId, int? ManufacturerId, int? SupplierId, int? ReasonId) : IRequestWithPermissionValidation
+{
+    public int GetId() => Id;
+}
+
+internal class UpdateOrderRequestValidator : AbstractPermissionsValidator<UpdateOrderRequest>
 {
     public UpdateOrderRequestValidator(IStringLocalizer<SharedResource> localizer, IRules<Unit> unitRules,
         IOrderRules rules, IRules<FinanceSubDepartment> financeSubDepartmentRules, IRules<Manufacturer> manufacturerRules,
-        IRules<Supplier> supplierRules, IRules<ReasonForSupplierChoice> reasonForSupplierChoiceRules)
+        IRules<Supplier> supplierRules, IRules<ReasonForSupplierChoice> reasonForSupplierChoiceRules, IUserContext userContext)
+        : base(rules, userContext, localizer)
     {
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistsAsync)

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
-using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
@@ -14,12 +13,10 @@ namespace Promasy.Modules.Organizations.Repositories;
 internal class DepartmentsRepository : IDepartmentRules, IDepartmentsRepository
 {
     private readonly IDatabase _database;
-    private readonly IUserContext _userContext;
 
-    public DepartmentsRepository(IDatabase database, IUserContext userContext)
+    public DepartmentsRepository(IDatabase database)
     {
         _database = database;
-        _userContext = userContext;
     }
 
     public Task<bool> IsExistsAsync(int id, CancellationToken ct)
@@ -35,21 +32,6 @@ internal class DepartmentsRepository : IDepartmentRules, IDepartmentsRepository
     public async Task<bool> IsNameUniqueAsync(string name, int id, CancellationToken ct)
     {
         return await _database.Departments.Where(u => u.Id != id).AnyAsync(d => EF.Functions.ILike(d.Name, name), ct) == false;
-    }
-
-    public bool IsEditable(int id)
-    {
-        if (_userContext.HasRoles((int) RoleName.Administrator, (int) RoleName.Director, (int) RoleName.DeputyDirector))
-        {
-            return true;
-        }
-
-        if (_userContext.HasRoles((int) RoleName.HeadOfDepartment))
-        {
-            return _userContext.GetDepartmentId() == id;
-        }
-
-        return false;
     }
 
     public Task<bool> IsUsedAsync(int id, CancellationToken ct)
@@ -120,5 +102,25 @@ internal class DepartmentsRepository : IDepartmentRules, IDepartmentsRepository
         entity.Name = item.Name;
 
         await _database.SaveChangesAsync();
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return _database.Departments.AsNoTracking().AnyAsync(d => d.Id == id && d.OrganizationId == userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return Task.FromResult(id == userDepartmentId);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        throw new NotSupportedException();
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        throw new NotSupportedException();
     }
 }

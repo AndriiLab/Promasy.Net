@@ -74,7 +74,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                  Enum.GetValues<RoleName>().Select(r =>
                  (r, r switch
                  {
-                     RoleName.User => PermissionCondition.SameSubDepartment,
+                     RoleName.User => PermissionCondition.SameDepartment,
                      RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                      RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                      _ => PermissionCondition.None

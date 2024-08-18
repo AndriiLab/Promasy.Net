@@ -89,23 +89,8 @@ public class ReasonForSupplierChoiceSubModule : SubModule
                         _ => PermissionCondition.None
                     })).ToArray());
 
-        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteReasonForSupplierChoiceRequest request, [FromServices] IReasonForSupplierChoiceRepository repository,
-                [FromServices] IReasonForSupplierChoiceRules rules, [FromServices] IStringLocalizer<SharedResource> localizer) =>
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteReasonForSupplierChoiceRequest request, [FromServices] IReasonForSupplierChoiceRepository repository) =>
             {
-                var isEditable = await rules.IsEditableAsync(request.Id, CancellationToken.None);
-                if (!isEditable)
-                {
-                    throw new ApiException(localizer["You cannot perform this action"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-                
-                var isUsed = await rules.IsUsedAsync(request.Id, CancellationToken.None);
-                if (isUsed)
-                {
-                    throw new ApiException(localizer["Reason for Supplier Choice already associated with order"],
-                        statusCode: StatusCodes.Status409Conflict);
-                }
-
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })

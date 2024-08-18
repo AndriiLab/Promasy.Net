@@ -147,4 +147,13 @@
   <data name="File {0} not found" xml:space="preserve">
     <value>Файл {0} не знайдено</value>
   </data>
+  <data name="Action not permitted" xml:space="preserve">
+    <value>Дія не дозволена для цього користувача</value>
+  </data>
+  <data name="Permission condition is not supported" xml:space="preserve">
+    <value>Не підтримувана умова доступу</value>
+  </data>
+  <data name="Sub-department has employees" xml:space="preserve">
+    <value>Підрозділ має співробітників</value>
+  </data>
 </root>

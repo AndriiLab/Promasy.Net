@@ -23,6 +23,7 @@ export default {
         ["search", search],
         ["order", order],
         ["desc", descending ? "true" : undefined],
+        ["desc", descending ? "true" : undefined],
       ])}`
     );
   },

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
 using Promasy.Domain.Employees;
@@ -20,32 +21,24 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
         _userContext = userContext;
         _database = database;
     }
-    
+
     public Task<bool> IsExistsAsync(int id, CancellationToken ct)
     {
         return _database.Employees.AnyAsync(e => e.Id == id, ct);
     }
 
-    public bool CanChangePasswordForEmployee(int id)
-    {
-        return _userContext.HasRoles((int) RoleName.Administrator) || _userContext.GetId() == id;
-    }
-
-    public bool IsEditable(int id)
-    {
-        return _userContext.HasRoles((int) RoleName.Administrator) || _userContext.GetId() == id;
-    }
-
     public async Task<bool> IsEmailUniqueAsync(string email, CancellationToken ct)
     {
         return await _database.Employees
-                .AnyAsync(e => EF.Functions.ILike(e.Email, email), ct) == false;;
+            .AnyAsync(e => EF.Functions.ILike(e.Email, email), ct) == false;
+        ;
     }
 
     public async Task<bool> IsEmailUniqueAsync(string email, int id, CancellationToken ct)
     {
         return await _database.Employees.Where(e => e.Id != id)
-            .AnyAsync(e => EF.Functions.ILike(e.Email, email), ct) == false;;
+            .AnyAsync(e => EF.Functions.ILike(e.Email, email), ct) == false;
+        ;
     }
 
     public Task<bool> IsPhoneUniqueAsync(string phone, CancellationToken ct)
@@ -67,12 +60,12 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
 
     public bool CanHaveRoles(RoleName[] roles)
     {
-        return _userContext.HasRoles((int) RoleName.Administrator) || roles.All(r => r == RoleName.User);
+        return _userContext.HasRoles((int)RoleName.Administrator) || roles.All(r => r == RoleName.User);
     }
 
     public async Task<bool> CanHaveRolesAsync(RoleName[] roles, int id, CancellationToken ct)
     {
-        if (_userContext.HasRoles((int) RoleName.Administrator))
+        if (_userContext.HasRoles((int)RoleName.Administrator))
         {
             return true;
         }
@@ -96,7 +89,7 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
         {
             query = query.Where(e => e.SubDepartmentId == request.SubDepartmentId);
         }
-        else if(request.DepartmentId.HasValue)
+        else if (request.DepartmentId.HasValue)
         {
             query = query.Where(e => e.SubDepartment.DepartmentId == request.DepartmentId);
         }
@@ -105,7 +98,7 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
         {
             query = query.Where(e => e.Roles.Any(r => request.Roles.Contains(r.Name)));
         }
-        
+
         if (!string.IsNullOrEmpty(request.Search))
         {
             var pattern = $"%{request.Search}%";
@@ -207,5 +200,25 @@ internal class EmployeesRepository : IEmployeeRules, IEmployeesRepository
 
         _database.Employees.Remove(employee);
         await _database.SaveChangesAsync();
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<Employee>(_database, id, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return _database.Employees.AsNoTracking().AnyAsync(e => e.Id == id && e.SubDepartment.DepartmentId == userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return _database.Employees.AsNoTracking().AnyAsync(e => e.Id == id && e.SubDepartmentId == userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return Task.FromResult(id == userId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
 using Promasy.Core.Exceptions;
@@ -10,7 +11,6 @@ using Promasy.Modules.Core.Responses;
 using Promasy.Modules.Orders.Dtos;
 using Promasy.Modules.Orders.Interfaces;
 using Promasy.Modules.Orders.Models;
-using Z.EntityFramework.Plus;
 
 namespace Promasy.Modules.Orders.Repositories;
 
@@ -140,7 +140,7 @@ internal class OrdersRepository : IOrderRules, IOrdersRepository
     {
         var query = _database.Orders
             .AsNoTracking()
-            .AsNoFilter()
+            .IgnoreQueryFilters()
             .Where(o => o.Deleted == false);
 
         if (request.ExcludeId.HasValue)
@@ -321,10 +321,58 @@ internal class OrdersRepository : IOrderRules, IOrdersRepository
 
         await _database.OrderStatuses
             .Where(s => s.OrderId == entity.Id)
-            .UpdateAsync(s => new OrderStatusHistory
-                {Deleted = true, ModifiedDate = DateTime.UtcNow, ModifierId = _userContext.GetId()});
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(e => e.Deleted, true)
+                .SetProperty(e => e.ModifiedDate, DateTime.UtcNow)
+                .SetProperty(e => e.ModifierId, _userContext.GetId()));
 
         _database.Orders.Remove(entity);
         await _database.SaveChangesAsync();
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int id, int userOrganizationId, CancellationToken ct)
+    {       
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<Order>(_database, id, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int id, int userDepartmentId, CancellationToken ct)
+    {
+        return _database.Orders.AsNoTracking()
+            .AnyAsync(o => o.Id == id && o.FinanceSubDepartment.SubDepartment.DepartmentId == userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int id, int userSubDepartmentId, CancellationToken ct)
+    {
+        return _database.Orders.AsNoTracking()
+            .AnyAsync(o => o.Id == id && o.FinanceSubDepartment.SubDepartmentId == userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int id, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<Order>(_database, id, userId, ct);
+    }
+
+    public Task<bool> IsSameOrganizationAsync(int[] ids, int userOrganizationId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameOrganizationAsync<Order>(_database, ids, userOrganizationId, ct);
+    }
+
+    public Task<bool> IsSameDepartmentAsync(int[] ids, int userDepartmentId, CancellationToken ct)
+    {
+        return _database.Orders.AsNoTracking()
+            .Where(o => ids.Contains(o.Id))
+            .AllAsync(o => o.FinanceSubDepartment.SubDepartment.DepartmentId == userDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameSubDepartmentAsync(int[] ids, int userSubDepartmentId, CancellationToken ct)
+    {
+        return _database.Orders.AsNoTracking()
+            .Where(o => ids.Contains(o.Id))
+            .AllAsync(o => o.FinanceSubDepartment.SubDepartmentId == userSubDepartmentId, ct);
+    }
+
+    public Task<bool> IsSameUserAsync(int[] ids, int userId, CancellationToken ct)
+    {
+        return PermissionRulesRepositoryHelper.IsSameUserAsync<Order>(_database, ids, userId, ct);
     }
 }
