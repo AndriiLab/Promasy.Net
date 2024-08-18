@@ -1,7 +1,4 @@
-﻿namespace Promasy.Modules.Core.Permissions;
-
-public enum PermissionCondition
-{
+﻿export enum PermissionCondition {
     Forbidden = 0,
     Role = 1,
     SameOrganization = 2,

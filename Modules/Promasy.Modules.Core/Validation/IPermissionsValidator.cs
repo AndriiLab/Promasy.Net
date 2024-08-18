@@ -40,7 +40,7 @@ public abstract class AbstractPermissionsValidator<TModel> : AbstractValidator<T
 
             switch (condition)
             {
-                case PermissionCondition.None:
+                case PermissionCondition.Role:
                     return Task.FromResult(true);
                 case PermissionCondition.SameOrganization:
                     return VerifySameOrganizationAsync(model, rules, userContext, cancellationToken);

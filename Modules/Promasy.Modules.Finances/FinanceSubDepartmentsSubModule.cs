@@ -56,7 +56,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                          RoleName.User => PermissionCondition.SameDepartment,
                          RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                          RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
-                         _ => PermissionCondition.None
+                         _ => PermissionCondition.Role
                      })).ToArray());
          
          app.MapGet($"{RoutePrefix}/{{subDepartmentId:int}}", async ([AsParameters] GetFinanceSubDepartmentRequest request,
@@ -77,7 +77,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                      RoleName.User => PermissionCondition.SameDepartment,
                      RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                      RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
-                     _ => PermissionCondition.None
+                     _ => PermissionCondition.Role
                  })).ToArray());
 
 

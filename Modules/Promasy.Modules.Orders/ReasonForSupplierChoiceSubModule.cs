@@ -86,7 +86,7 @@ public class ReasonForSupplierChoiceSubModule : SubModule
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteReasonForSupplierChoiceRequest request, [FromServices] IReasonForSupplierChoiceRepository repository) =>
@@ -100,7 +100,7 @@ public class ReasonForSupplierChoiceSubModule : SubModule
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
             
         app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeReasonForSupplierChoiceRequest request, [FromServices] IReasonForSupplierChoiceRepository repository) =>

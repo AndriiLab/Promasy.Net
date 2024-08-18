@@ -71,7 +71,7 @@ internal class DepartmentsSubModule : SubModule
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
             .WithAuthorizationAndValidation<CreateDepartmentRequest>(app, Tag, "Create Department", PermissionTag.Create,
-                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Administrator, PermissionCondition.Role), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization));
 
@@ -94,7 +94,7 @@ internal class DepartmentsSubModule : SubModule
                     return TypedResults.Accepted(string.Empty);
                 })
             .WithAuthorizationAndValidation<UpdateDepartmentRequest>(app, Tag, "Update Department", PermissionTag.Update, 
-                (RoleName.Administrator, PermissionCondition.None),
+                (RoleName.Administrator, PermissionCondition.Role),
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
@@ -106,7 +106,7 @@ internal class DepartmentsSubModule : SubModule
                 return TypedResults.NoContent();
             })
             .WithAuthorizationAndValidation<DeleteDepartmentRequest>(app, Tag, "Delete Department by Id", PermissionTag.Delete,
-                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Administrator, PermissionCondition.Role), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization))
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);

@@ -52,7 +52,7 @@ public class FinancesModule : IModule
                 return TypedResults.Ok(list);
             })
             .WithAuthorizationAndValidation<FinanceSourcesPagedRequest>(app, Tag, "Get Finance sources list", PermissionTag.List,
-                Enum.GetValues<RoleName>().Select(r => (r, PermissionCondition.None)).ToArray());
+                Enum.GetValues<RoleName>().Select(r => (r, None: PermissionCondition.Role)).ToArray());
         
         app.MapGet($"{RoutePrefix}/{{id:int}}", async ([AsParameters] GetFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
             {
@@ -71,7 +71,7 @@ public class FinancesModule : IModule
                         RoleName.User => PermissionCondition.SameSubDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
         
         app.MapPost(RoutePrefix, async ([FromBody] CreateFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>

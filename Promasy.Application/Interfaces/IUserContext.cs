@@ -1,3 +1,5 @@
+using Promasy.Domain.Employees;
+
 namespace Promasy.Application.Interfaces;
 
 public interface IUserContext
@@ -17,4 +19,5 @@ public interface IUserContext
     string GetLocalizationCulture();
     DateTime AsUserTime(DateTime utcTime);
     bool HasRoles(params int[] roles);
+    IReadOnlyCollection<RoleName> GetRoles();
 }

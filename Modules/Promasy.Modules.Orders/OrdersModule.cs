@@ -55,7 +55,7 @@ public class OrdersModule : IModule
                         RoleName.User => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapGet($"{RoutePrefix}/suggestions", async ([AsParameters] OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
@@ -84,7 +84,7 @@ public class OrdersModule : IModule
                         RoleName.User => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapPost(RoutePrefix, async ([FromBody]CreateOrderRequest request, [FromServices] IOrdersRepository repository) =>
@@ -104,7 +104,7 @@ public class OrdersModule : IModule
                         RoleName.User => PermissionCondition.SameSubDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
@@ -130,7 +130,7 @@ public class OrdersModule : IModule
                         RoleName.User => PermissionCondition.SameUser,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteOrderRequest request, [FromServices] IOrdersRepository repository) =>
@@ -145,7 +145,7 @@ public class OrdersModule : IModule
                         RoleName.User => PermissionCondition.SameUser,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
         
         _rfscSubModule.MapEndpoints(app);
@@ -168,7 +168,7 @@ public class OrdersModule : IModule
                         RoleName.User => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
         
         return app;

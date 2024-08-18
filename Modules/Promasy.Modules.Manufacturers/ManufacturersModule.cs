@@ -81,7 +81,7 @@ public class ManufacturersModule : IModule
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteManufacturerRequest request, [FromServices] IManufacturersRepository repository,
@@ -96,7 +96,7 @@ public class ManufacturersModule : IModule
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.None
+                        _ => PermissionCondition.Role
                     })).ToArray());
 
         app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeManufacturersRequest request,

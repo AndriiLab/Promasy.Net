@@ -18,7 +18,7 @@ public static class PermissionExtensions
         var id = idGen(tag).Name;
         foreach (var role in roles)
         {
-            permissionsService.AddPermission(id, role, PermissionCondition.None);
+            permissionsService.AddPermission(id, role, PermissionCondition.Role);
         }
 
         builder.RequireAuthorization(p => UpdatePolicy(p, roles).Build());

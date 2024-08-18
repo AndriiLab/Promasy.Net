@@ -106,7 +106,7 @@ public class OrganizationsModule : IModule
                     return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
             .WithAuthorizationAndValidation<UpdateOrganizationRequest>(app, Tag, "Update Organization", PermissionTag.Update,
-                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Administrator, PermissionCondition.Role), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization));
 

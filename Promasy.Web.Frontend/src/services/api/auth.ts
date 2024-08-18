@@ -1,4 +1,5 @@
 import { ErrorApiResponse, Response, Fetch } from "@/utils/fetch-utils";
+import {EndpointPermission} from "@/store/session";
 
 export default {
   authUser(userData: AuthUserRequest): Promise<Response<AuthUserResponse, ErrorApiResponse>> {
@@ -19,4 +20,5 @@ interface AuthUserRequest {
 
 interface AuthUserResponse {
   token: string;
+  permissions: EndpointPermission[];
 }

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Immutable;
 using Promasy.Core.Exceptions;
 using Promasy.Domain.Employees;
+using Promasy.Modules.Core.Responses;
 
 namespace Promasy.Modules.Core.Permissions;
 
 public interface IPermissionsService
 {
-    ImmutableDictionary<string, ImmutableDictionary<RoleName, PermissionCondition>> GetAllPermissions();
-    PermissionCondition? GetPermissionForRole(string tag, RoleName roleName);
+    IReadOnlyCollection<EndpointPermission> GetPermissionForRoles(IReadOnlyCollection<RoleName> roleNames);
 }
 
 internal class PermissionsService : IPermissionsService
@@ -18,16 +18,14 @@ internal class PermissionsService : IPermissionsService
     {
         _dictionary = dictionary;
     }
-
-    public ImmutableDictionary<string, ImmutableDictionary<RoleName, PermissionCondition>> GetAllPermissions()
-        => _dictionary;
     
-    public PermissionCondition? GetPermissionForRole(string tag, RoleName roleName)
+    public IReadOnlyCollection<EndpointPermission> GetPermissionForRoles(IReadOnlyCollection<RoleName> roleNames)
     {
-        if (_dictionary.TryGetValue(tag, out var dict) && dict.TryGetValue(roleName, out var condition))
-            return condition;
+        return _dictionary.Select(kv =>
+                new EndpointPermission(kv.Key, kv.Value.Where(kv2 => roleNames.Contains(kv2.Key)).Max(kv2 => kv2.Value)))
+            .Where(t => t.Condition > PermissionCondition.Forbidden)
+            .ToImmutableArray();
 
-        return null;
     }
 }
 

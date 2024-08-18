@@ -83,7 +83,7 @@ public class EmployeesModule : IModule
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
-                        RoleName.Administrator => PermissionCondition.None,
+                        RoleName.Administrator => PermissionCondition.Role,
                         _ => PermissionCondition.SameUser
                     })).ToArray());
 
@@ -107,7 +107,7 @@ public class EmployeesModule : IModule
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                 {
-                    RoleName.Administrator => PermissionCondition.None,
+                    RoleName.Administrator => PermissionCondition.Role,
                     _ => PermissionCondition.SameUser
                 })).ToArray());
         

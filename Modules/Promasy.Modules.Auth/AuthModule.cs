@@ -17,6 +17,7 @@ using Promasy.Modules.Auth.Services;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
 
 namespace Promasy.Modules.Auth;
@@ -68,7 +69,8 @@ public class AuthModule : IModule
 
         app.MapPost(RoutePrefix,
                 async ([FromBody] UserCredentialsRequest request, IAuthService authService,
-                    ITokenService jwtTokenService, HttpResponse response, IStringLocalizer<SharedResource> localizer) =>
+                    ITokenService jwtTokenService, HttpResponse response, IStringLocalizer<SharedResource> localizer,
+                    IPermissionsService permissionsService, IUserContext userContext) =>
                 {
                     var id = await authService.AuthAsync(request.User, request.Password);
                     if (id is null)
@@ -78,7 +80,9 @@ public class AuthModule : IModule
                     var tokens = await jwtTokenService.GenerateTokenAsync(id.Value);
                     RefreshTokenCookieHelper.SetCookie(response, tokens.RefreshToken, tokens.RefreshExpiryTime);
 
-                    return TypedResults.Ok(new TokenResponse(tokens.Token));
+                    var permissions = permissionsService.GetPermissionForRoles(userContext.GetRoles());
+
+                    return TypedResults.Ok(new AuthResponse(tokens.Token, permissions));
                 })
             .WithValidator<UserCredentialsRequest>()
             .WithApiDescription(Tag, "Login", "Generate Token");

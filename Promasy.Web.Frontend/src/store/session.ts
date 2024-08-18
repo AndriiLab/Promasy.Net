@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { en } from "@/i18n/settings/en";
 import AuthApi from "@/services/api/auth";
 import LocalStore, { keys } from "@/services/local-store";
+import {PermissionCondition} from "@/constants/PermissionConditionEnum";
 
 export const useSessionStore = defineStore({
   id: "session",
@@ -31,18 +32,18 @@ export const useSessionStore = defineStore({
       rememberMe ? LocalStore.allow() : LocalStore.disable();
 
       if (response.data?.token) {
-        this.loginWithToken(response.data.token);
+        this.loginWithToken(response.data.token, response.data.permissions);
       }
     },
     async refreshTokenAsync() {
       const response = await AuthApi.refreshToken();
       if (response.success) {
-        this.loginWithToken(response.data!.token);
+        this.loginWithToken(response.data!.token, null);
         return;
       }
       await this.logoutAsync();
     },
-    loginWithToken(token: string) {
+    loginWithToken(token: string, permissions?: EndpointPermission[]) {
       const decodedToken = jwtDecode(token) as Object<string>;
       this.user = {
         token: token,
@@ -58,6 +59,7 @@ export const useSessionStore = defineStore({
         organizationId: parseInt(decodedToken[claims.organizationId]),
         departmentId: parseInt(decodedToken[claims.departmentId]),
         subDepartmentId: parseInt(decodedToken[claims.subDepartmentId]),
+        permissions: permissions ?? this.user?.permissions
       };
 
       LocalStore.set(keys.token, token);
@@ -111,6 +113,8 @@ export interface SessionUser {
   subDepartment: string;
   subDepartmentId: number;
 
+  permissions: EndpointPermission[];
+
   token: string;
 }
 const claims = {
@@ -126,4 +130,9 @@ const claims = {
   departmentId: 'departmentId',
   subDepartmentId: 'subDepartmentId',
   roles: 'role'
+}
+
+export interface EndpointPermission {
+  key: string;
+  condition: PermissionCondition;
 }

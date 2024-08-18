@@ -76,7 +76,7 @@ internal class SubDepartmentsSubModule : SubModule
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
             .WithAuthorizationAndValidation<CreateSubDepartmentRequest>(app, Tag, "Create SubDepartment", PermissionTag.Create,
-                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Administrator, PermissionCondition.Role), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
@@ -103,7 +103,7 @@ internal class SubDepartmentsSubModule : SubModule
                     return TypedResults.Accepted(string.Empty);
                 })
             .WithAuthorizationAndValidation<UpdateSubDepartmentRequest>(app, Tag, "Update SubDepartment", PermissionTag.Update,
-                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Administrator, PermissionCondition.Role), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
@@ -115,7 +115,7 @@ internal class SubDepartmentsSubModule : SubModule
                 return TypedResults.NoContent();
             })
             .WithAuthorizationAndValidation<DeleteSubDepartmentRequest>(app, Tag, "Delete SubDepartment by Id", PermissionTag.Delete,
-                (RoleName.Administrator, PermissionCondition.None), 
+                (RoleName.Administrator, PermissionCondition.Role), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),

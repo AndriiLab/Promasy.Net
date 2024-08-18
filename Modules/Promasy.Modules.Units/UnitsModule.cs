@@ -79,7 +79,7 @@ public class UnitsModule : IModule
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
             .WithAuthorizationAndValidation<UpdateUnitRequest>(app, Tag, "Update Unit", PermissionTag.Update, 
-                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray());
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Role)).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteUnitRequest model, [FromServices] IUnitsRepository repository,
                 [FromServices] IStringLocalizer<SharedResource> localizer) =>
@@ -88,7 +88,7 @@ public class UnitsModule : IModule
                 return TypedResults.NoContent();
             })
             .WithAuthorizationAndValidation<DeleteUnitRequest>(app, Tag, "Delete Unit", PermissionTag.Delete, 
-                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.None)).ToArray())
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Role)).ToArray())
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
 
         app.MapPost($"{RoutePrefix}/merge",

@@ -1,8 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Immutable;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Promasy.Application.Interfaces;
 using Promasy.Core.Constants;
+using Promasy.Domain.Employees;
 using Promasy.Modules.Auth.Extensions;
 using Promasy.Modules.Core.Extensions;
 
@@ -45,6 +47,9 @@ public class UserContext : IUserContext
     }
 
     public bool HasRoles(params int[] roles) => roles.Any(r => GetPrincipal()?.IsInRole(r.ToString()) ?? false);
-    
+
+    public IReadOnlyCollection<RoleName> GetRoles()
+        => Enum.GetValues<RoleName>().Where(r => GetPrincipal()?.IsInRole(((int)r).ToString()) ?? false).ToImmutableArray();
+
     private ClaimsPrincipal? GetPrincipal() => _httpContext?.User;
 }
