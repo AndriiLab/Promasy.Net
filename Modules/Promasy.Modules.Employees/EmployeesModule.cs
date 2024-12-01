@@ -8,7 +8,6 @@ using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Permissions;
@@ -53,9 +52,9 @@ public class EmployeesModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
         
-        app.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService,  [FromServices] IMapper<CreateEmployeeRequest, CreateEmployeeDto> mapper) =>
+        app.MapPost(RoutePrefix, async ([FromBody] CreateEmployeeRequest request, [FromServices] IEmployeesRepository repository, [FromServices] IAuthService authService) =>
             {
-                var id = await repository.CreateAsync(mapper.MapFromSource(request));
+                var id = await repository.CreateAsync(CreateEmployeeRequestMapper.MapFromSource(request));
 
                 await authService.SetEmployeePasswordAsync(id, request.Password);
                 
@@ -68,14 +67,14 @@ public class EmployeesModule : IModule
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateEmployeeRequest request, [FromRoute] int id, [FromServices] IEmployeesRepository repository,
-            [FromServices] IStringLocalizer<SharedResource> localizer, [FromServices] IMapper<UpdateEmployeeRequest, UpdateEmployeeDto> mapper) =>
+            [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
                     if (request.Id != id)
                     {
                         throw new ApiException(localizer["Incorrect Id"]);
                     }
 
-                    await repository.UpdateAsync(mapper.MapFromSource(request));
+                    await repository.UpdateAsync(UpdateEmployeeRequestMapper.MapFromSource(request));
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })

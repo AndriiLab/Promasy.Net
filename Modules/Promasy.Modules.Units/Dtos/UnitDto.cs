@@ -1,6 +1,5 @@
 ﻿using Promasy.Domain.Orders;
 using Promasy.Modules.Core.Dtos;
-using Promasy.Modules.Core.Mapper;
 using Riok.Mapperly.Abstractions;
 
 namespace Promasy.Modules.Units.Dtos;
@@ -14,10 +13,10 @@ internal record UpdateUnitDto(int Id, string Name);
 
 
 [Mapper]
-internal partial class UpdateUnitDtoMapper : ISyncMapper<CreateUnitDto, UpdateUnitDto, Unit>
+internal static partial class UpdateUnitDtoMapper
 {
-    public partial Unit MapFromSource(CreateUnitDto src);
+    public static partial Unit MapFromSource(CreateUnitDto src);
     
-    [MapperIgnoreTarget(nameof(Unit.Id))]
-    public partial void CopyFromSource(UpdateUnitDto src, Unit tgt);
+    [MapperIgnoreSource(nameof(UpdateUnitDto.Id))]
+    public static partial void CopyFromSource(UpdateUnitDto src, Unit tgt);
 }

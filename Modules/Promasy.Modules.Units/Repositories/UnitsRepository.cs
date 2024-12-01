@@ -3,7 +3,6 @@ using Promasy.Application.Helpers;
 using Promasy.Application.Interfaces;
 using Promasy.Application.Persistence;
 using Promasy.Domain.Orders;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Pagination;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Responses;
@@ -15,12 +14,10 @@ namespace Promasy.Modules.Units.Repositories;
 internal class UnitsRepository : IUnitRules, IUnitsRepository
 {
     private readonly IDatabase _database;
-    private readonly ISyncMapper<CreateUnitDto, UpdateUnitDto, Unit> _mapper;
 
-    public UnitsRepository(IDatabase database, ISyncMapper<CreateUnitDto, UpdateUnitDto, Unit> mapper)
+    public UnitsRepository(IDatabase database)
     {
         _database = database;
-        _mapper = mapper;
     }
 
     public Task<bool> IsExistsAsync(int id, CancellationToken ct)
@@ -84,7 +81,7 @@ internal class UnitsRepository : IUnitRules, IUnitsRepository
 
     public async Task<int> CreateAsync(CreateUnitDto unit)
     {
-        var entity = _mapper.MapFromSource(unit);
+        var entity = UpdateUnitDtoMapper.MapFromSource(unit);
         _database.Units.Add(entity);
         await _database.SaveChangesAsync();
 
@@ -94,7 +91,7 @@ internal class UnitsRepository : IUnitRules, IUnitsRepository
     public async Task UpdateAsync(UpdateUnitDto unit)
     {
         var entity = await _database.Units.FirstAsync(u => u.Id == unit.Id);
-        _mapper.CopyFromSource(unit, entity);
+        UpdateUnitDtoMapper.CopyFromSource(unit, entity);
         await _database.SaveChangesAsync();
     }
 

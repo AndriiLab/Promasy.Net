@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Promasy.Application.Interfaces;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Cpv.Dtos;
 using Promasy.Modules.Cpv.Interfaces;
 using Promasy.Modules.Cpv.Models;
@@ -11,12 +10,10 @@ namespace Promasy.Modules.Cpv.Repositories;
 internal class CpvsRepository : ICpvsRepository
 {
     private readonly IDatabase _database;
-    private readonly IQueryableMapper<Domain.Vocabulary.Cpv, CpvDto> _mapper;
 
-    public CpvsRepository(IDatabase database, IQueryableMapper<Domain.Vocabulary.Cpv, CpvDto> mapper)
+    public CpvsRepository(IDatabase database)
     {
         _database = database;
-        _mapper = mapper;
     }
 
     public async Task<List<CpvDto>> GetCpvsAsync(GetCpvsRequest request)
@@ -55,14 +52,14 @@ internal class CpvsRepository : ICpvsRepository
             query = query.Where(c => c.Level == 1);
         }
 
-        var list = await _mapper.MapFromQueryableSource(query).ToListAsync();
+        var list = await CpvMapper.MapFromQueryableSource(query).ToListAsync();
 
         return list;
     }
 
     public Task<CpvDto?> GetCpvByCodeAsync(string code)
     {
-        return _mapper.MapFromQueryableSource(_database.Cpvs
+        return CpvMapper.MapFromQueryableSource(_database.Cpvs
             .AsNoTracking()
             .Where(c => c.Code == code))
             .FirstOrDefaultAsync();

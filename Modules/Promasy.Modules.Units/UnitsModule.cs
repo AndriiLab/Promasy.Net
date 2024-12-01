@@ -7,13 +7,11 @@ using Microsoft.Extensions.Localization;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Modules.Core.Exceptions;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Requests;
 using Promasy.Modules.Core.Validation;
-using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
 using Promasy.Modules.Units.Models;
 
@@ -53,10 +51,9 @@ public class UnitsModule : IModule
             .RequireAuthorization()
             .Produces(StatusCodes.Status404NotFound);
 
-        app.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository,
-            [FromServices] IMapper<CreateUnitRequest, CreateUnitDto> mapper) =>
+        app.MapPost(RoutePrefix, async ([FromBody]CreateUnitRequest request, [FromServices] IUnitsRepository repository) =>
             {
-                var id = await repository.CreateAsync(mapper.MapFromSource(request));
+                var id = await repository.CreateAsync(CreateUnitRequestMapper.MapFromSource(request));
                 var unit = await repository.GetByIdAsync(id);
 
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
@@ -67,14 +64,14 @@ public class UnitsModule : IModule
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateUnitRequest request, [FromRoute] int id, [FromServices] IUnitsRepository repository,
-            [FromServices] IStringLocalizer<SharedResource> localizer, [FromServices] IMapper<UpdateUnitRequest, UpdateUnitDto> mapper) =>
+            [FromServices] IStringLocalizer<SharedResource> localizer) =>
                 {
                     if (request.Id != id)
                     {
                         throw new ApiException(localizer["Incorrect Id"]);
                     }
 
-                    await repository.UpdateAsync(mapper.MapFromSource(request));
+                    await repository.UpdateAsync(UpdateUnitRequestMapper.MapFromSource(request));
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })

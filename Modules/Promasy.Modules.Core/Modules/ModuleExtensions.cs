@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Promasy.Application.Interfaces;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Validation;
 
 namespace Promasy.Modules.Core.Modules;
@@ -30,9 +29,6 @@ public static class ModuleExtensions
             .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(IMapper<,>)))
-            .AsImplementedInterfaces()
-            .WithSingletonLifetime()
             .AddClasses(classes => classes.AssignableTo(typeof(IPermissionsValidator<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());

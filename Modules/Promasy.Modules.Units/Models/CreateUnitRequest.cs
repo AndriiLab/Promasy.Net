@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
 using Riok.Mapperly.Abstractions;
@@ -12,9 +11,9 @@ namespace Promasy.Modules.Units.Models;
 public record CreateUnitRequest(string Name);
 
 [Mapper]
-internal partial class CreateUnitRequestMapper : IMapper<CreateUnitRequest, CreateUnitDto>
+internal static partial class CreateUnitRequestMapper
 {
-    public partial CreateUnitDto MapFromSource(CreateUnitRequest src);
+    public static partial CreateUnitDto MapFromSource(CreateUnitRequest src);
 }
 
 internal class CreateUnitRequestValidator : AbstractValidator<CreateUnitRequest>

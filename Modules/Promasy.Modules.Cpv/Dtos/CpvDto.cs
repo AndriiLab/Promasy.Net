@@ -1,5 +1,4 @@
-﻿using Promasy.Modules.Core.Mapper;
-using Riok.Mapperly.Abstractions;
+﻿using Riok.Mapperly.Abstractions;
 
 namespace Promasy.Modules.Cpv.Dtos;
 
@@ -7,8 +6,7 @@ internal record CpvDto(int Id, string Code, string DescriptionEnglish, string De
     bool IsTerminal, int? ParentId);
     
 [Mapper]
-internal partial class CpvMapper : IQueryableMapper<Domain.Vocabulary.Cpv, CpvDto>
+internal static partial class CpvMapper
 {
-    public partial CpvDto MapFromSource(Domain.Vocabulary.Cpv src);
-    public partial IQueryable<CpvDto> MapFromQueryableSource(IQueryable<Domain.Vocabulary.Cpv> src);
+    public static partial IQueryable<CpvDto> MapFromQueryableSource(IQueryable<Domain.Vocabulary.Cpv> src);
 }

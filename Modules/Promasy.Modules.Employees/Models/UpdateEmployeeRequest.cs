@@ -5,7 +5,6 @@ using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Employees.Dtos;
@@ -22,9 +21,9 @@ public record UpdateEmployeeRequest(int Id, string FirstName, string? MiddleName
 }
 
 [Mapper]
-internal partial class UpdateEmployeeRequestMapper : IMapper<UpdateEmployeeRequest, UpdateEmployeeDto>
+internal static partial class UpdateEmployeeRequestMapper
 {
-    public partial UpdateEmployeeDto MapFromSource(UpdateEmployeeRequest src);
+    public static partial UpdateEmployeeDto MapFromSource(UpdateEmployeeRequest src);
 }
 
 internal class UpdateEmployeeRequestValidator : AbstractPermissionsValidator<UpdateEmployeeRequest>

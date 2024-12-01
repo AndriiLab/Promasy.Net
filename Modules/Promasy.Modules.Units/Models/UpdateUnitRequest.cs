@@ -3,7 +3,6 @@ using Microsoft.Extensions.Localization;
 using Promasy.Application.Interfaces;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
-using Promasy.Modules.Core.Mapper;
 using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Units.Dtos;
@@ -18,9 +17,9 @@ public record UpdateUnitRequest(int Id, string Name) : IRequestWithPermissionVal
 };
 
 [Mapper]
-internal partial class UpdateUnitRequestMapper : IMapper<UpdateUnitRequest, UpdateUnitDto>
+internal static partial class UpdateUnitRequestMapper
 {
-    public partial UpdateUnitDto MapFromSource(UpdateUnitRequest src);
+    public static partial UpdateUnitDto MapFromSource(UpdateUnitRequest src);
 }
 
 internal class UpdateUnitRequestValidator : AbstractPermissionsValidator<UpdateUnitRequest>
