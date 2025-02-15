@@ -1,4 +1,5 @@
 ﻿using Promasy.Application.Interfaces;
+using Promasy.Core.Exceptions;
 
 namespace Promasy.Modules.Files.Services;
 
@@ -8,26 +9,17 @@ internal class FileStorage : IFileStorage
 
     public Task<byte[]> ReadFileAsync(string fileName)
     {
-        if (fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
-        {
-            throw new ArgumentException("Invalid file name");
-        }
+        Ensure.FileNameSafety(fileName);
 
         var path = Path.Combine(Directory.GetCurrentDirectory(), ReportsPath, fileName);
-        if (!File.Exists(path))
-        {
-            return Task.FromResult(Array.Empty<byte>());
-        }
-
-        return File.ReadAllBytesAsync(path);
+        return File.Exists(path)
+            ? File.ReadAllBytesAsync(path)
+            : Task.FromResult(Array.Empty<byte>());
     }
 
     public string GetPathForFile(string fileName)
     {
-        if (fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
-        {
-            throw new ArgumentException("Invalid file name");
-        }
+        Ensure.FileNameSafety(fileName);
 
         if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), ReportsPath)))
         {
