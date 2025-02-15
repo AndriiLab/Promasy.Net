@@ -8,6 +8,11 @@ internal class FileStorage : IFileStorage
 
     public Task<byte[]> ReadFileAsync(string fileName)
     {
+        if (fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
+        {
+            throw new ArgumentException("Invalid file name");
+        }
+
         var path = Path.Combine(Directory.GetCurrentDirectory(), ReportsPath, fileName);
         if (!File.Exists(path))
         {
@@ -19,6 +24,11 @@ internal class FileStorage : IFileStorage
 
     public string GetPathForFile(string fileName)
     {
+        if (fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
+        {
+            throw new ArgumentException("Invalid file name");
+        }
+
         if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), ReportsPath)))
         {
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), ReportsPath));
