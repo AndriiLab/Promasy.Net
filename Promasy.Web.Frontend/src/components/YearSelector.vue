@@ -10,7 +10,7 @@ const sessionStore = useSessionStore();
 const selectedYear = ref(sessionStore.year);
 const hasError = ref(false);
 const years = ref(Array(11).fill(0).map((_, i) => {
-  return sessionStore.year - 9 + i;
+  return sessionStore.year + 1 - i;
 }));
 
 defineProps<{
