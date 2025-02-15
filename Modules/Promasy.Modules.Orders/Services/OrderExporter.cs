@@ -163,7 +163,7 @@ internal class OrderExporter : IOrderExporter
             .PaddingTop(5, Unit.Millimetre)
             .PaddingBottom(2, Unit.Millimetre)
             .PaddingHorizontal(8, Unit.Millimetre)
-            .MinimalBox()
+            .Shrink()
             .Border(0)
             .Table(table =>
             {
@@ -433,10 +433,11 @@ internal static class PdfContainerExtensions
     }
 
 // displays only text label
-    public static IContainer LabelCell(this IContainer container, string color = Colors.Grey.Lighten2) =>
-        container.Cell(color);
+    public static IContainer LabelCell(this IContainer container, string? color = null) =>
+        container.Cell(color ?? Colors.Grey.Lighten2);
 
 // allows to inject any type of content, e.g. image
-    public static IContainer ValueCell(this IContainer container, string color = Colors.White) => container.Cell(color)
+    public static IContainer ValueCell(this IContainer container, string? color = null) => 
+        container.Cell(color ?? Colors.White)
         .PaddingHorizontal(1, Unit.Millimetre);
 }
