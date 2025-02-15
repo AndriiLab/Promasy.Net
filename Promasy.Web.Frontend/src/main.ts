@@ -38,7 +38,7 @@ import Skeleton from "primevue/skeleton";
 import Calendar from "primevue/calendar";
 import ToastService from "primevue/toastservice";
 import BadgeDirective from 'primevue/badgedirective';
-import { vue3Debounce } from "vue-debounce";
+import vue3Debounce from "vue-debounce";
 
 const app = createApp(App);
 
