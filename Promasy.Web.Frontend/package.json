@@ -8,30 +8,31 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@primeuix/themes": "^1.0.0",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "currency.js": "^2.0.4",
     "jwt-decode": "^4.0.0",
-    "pinia": "^2.2.2",
-    "primeflex": "^3.3.1",
+    "pinia": "^2.3.1",
+    "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
-    "primevue": "^3.53.0",
+    "primevue": "^4.3.2",
     "tinycolor2": "^1.6.0",
-    "vue": "^3.4.38",
-    "vue-debounce": "^5.0.0",
-    "vue-i18n": "^9.14.0",
-    "vue-router": "^4.4.3"
+    "vue": "^3.5.13",
+    "vue-debounce": "^5.0.1",
+    "vue-i18n": "^11.1.2",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
     "@intlify/unplugin-vue-i18n": "^4.0.0",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.13.13",
     "@types/tinycolor2": "^1.4.6",
-    "@vitejs/plugin-vue": "^5.1.2",
-    "sass": "^1.77.8",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.1",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "sass": "^1.86.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.3",
     "vite-svg-loader": "^5.1.0",
-    "vue-tsc": "^2.0.29"
+    "vue-tsc": "^2.2.8"
   }
 }
