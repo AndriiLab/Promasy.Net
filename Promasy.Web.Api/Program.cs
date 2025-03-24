@@ -17,10 +17,11 @@ using Promasy.Modules.Units;
 using Promasy.Persistence;
 using Promasy.Web.App.ExceptionHandlers;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(theme: AnsiConsoleTheme.Code, applyThemeToRedirectedOutput: true)
     .CreateBootstrapLogger();
 
 try
@@ -133,7 +134,7 @@ try
         .AddSupportedUICultures(LocalizationCulture.SupportedCultures)
         .AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
         {
-            var requestLanguages = context.Request.Headers["Accept-Language"].ToString();
+            var requestLanguages = context.Request.Headers.AcceptLanguage.ToString();
             var requestLanguage = requestLanguages.Split(',').FirstOrDefault() ?? string.Empty;
             string selectedLanguage;
             if (LocalizationCulture.SupportedCultures.Contains(requestLanguage))

@@ -20,16 +20,16 @@ public static class ModuleExtensions
         // and rules decorated with IRules
         services.Scan(scan => scan
             .FromAssemblyOf<TModule>()
-            .AddClasses(classes => classes.AssignableTo<IService>())
+            .AddClasses(classes => classes.AssignableTo<IService>(), false)
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo<IRepository>())
+            .AddClasses(classes => classes.AssignableTo<IRepository>(), false)
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)))
+            .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)), false)
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(IPermissionsValidator<>)))
+            .AddClasses(classes => classes.AssignableTo(typeof(IPermissionsValidator<>)), false)
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         
