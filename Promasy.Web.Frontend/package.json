@@ -25,7 +25,7 @@
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
     "@intlify/unplugin-vue-i18n": "^4.0.0",
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.14.1",
     "@types/tinycolor2": "^1.4.6",
     "@vitejs/plugin-vue": "^5.2.1",
     "sass": "^1.85.0",
