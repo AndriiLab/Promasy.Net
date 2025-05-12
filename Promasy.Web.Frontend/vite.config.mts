@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
-import { resolve } from "path";
+import path from 'path';
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import viteNetCoreSslPlugin from "./.vite/vite-plugin-netcore-https";
 import svgLoader from "vite-svg-loader";
@@ -14,7 +14,7 @@ export default ({ mode }) => {
     base: "./",
     resolve: {
       alias: {
-        "@": resolve(__dirname, "./src"),
+        "@": path.resolve(__dirname, "./src"),
         "vue-i18n": "vue-i18n/dist/vue-i18n.runtime.esm-bundler.js",
       },
     },
@@ -42,7 +42,7 @@ export default ({ mode }) => {
     },
     plugins: [
       vue(),
-      VueI18nPlugin({ include: resolve(__dirname, "./src/i18n/locales/**") }),
+      VueI18nPlugin({ include: [path.resolve(__dirname, "./src/i18n/locales/**")] }),
       viteNetCoreSslPlugin(),
       svgLoader(),
     ],

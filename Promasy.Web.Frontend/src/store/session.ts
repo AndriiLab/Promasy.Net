@@ -5,8 +5,7 @@ import AuthApi from "@/services/api/auth";
 import LocalStore, { keys } from "@/services/local-store";
 import {PermissionCondition} from "@/constants/PermissionConditionEnum";
 
-export const useSessionStore = defineStore({
-  id: "session",
+export const useSessionStore = defineStore("session", {
   state: (): Session => ({
     locale: LocalStore.get(keys.language) ?? en.key,
     user: undefined,
@@ -38,7 +37,7 @@ export const useSessionStore = defineStore({
     async refreshTokenAsync() {
       const response = await AuthApi.refreshToken();
       if (response.success) {
-        this.loginWithToken(response.data!.token, null);
+        this.loginWithToken(response.data!.token, undefined);
         return;
       }
       await this.logoutAsync();
