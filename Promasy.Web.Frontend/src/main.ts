@@ -1,3 +1,5 @@
+import "primevue/resources/themes/lara-light-blue/theme.css";
+import "primevue/resources/primevue.min.css";
 import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";
 import "./assets/styles/layout.scss";
@@ -36,7 +38,6 @@ import Skeleton from "primevue/skeleton";
 import Calendar from "primevue/calendar";
 import ToastService from "primevue/toastservice";
 import BadgeDirective from 'primevue/badgedirective';
-import Aura from '@primeuix/themes/aura';
 import vue3Debounce from "vue-debounce";
 
 const app = createApp(App);
@@ -46,12 +47,7 @@ app.use(Router);
 app.use(Store);
 
 // Prime Vue
-app.use(PrimeVue, {
-    theme: {
-        preset: Aura
-    }
-});
-
+app.use(PrimeVue);
 app.use(ToastService);
 
 app.directive("ripple", Ripple);
