@@ -51,8 +51,7 @@ public class FinancesModule : IModule
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
             })
-            .WithAuthorizationAndValidation<FinanceSourcesPagedRequest>(app, Tag, "Get Finance sources list", PermissionTag.List,
-                Enum.GetValues<RoleName>().Select(r => (r, None: PermissionCondition.Role)).ToArray());
+            .WithAuthorizationAndValidation<FinanceSourcesPagedRequest>(app, Tag, "Get Finance sources list", PermissionAction.List);
         
         app.MapGet($"{RoutePrefix}/{{id:int}}", async ([AsParameters] GetFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
             {
@@ -64,14 +63,14 @@ public class FinancesModule : IModule
                 return TypedResults.Ok(fs);
             })
             .Produces(StatusCodes.Status404NotFound)
-            .WithAuthorizationAndValidation<GetFinanceSourceRequest>(app, Tag, "Get Finance source by Id", PermissionTag.Get,
+            .WithAuthorizationAndValidation<GetFinanceSourceRequest>(app, Tag, "Get Finance source by Id", PermissionAction.Get,
         Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameSubDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
         
         app.MapPost(RoutePrefix, async ([FromBody] CreateFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
@@ -83,7 +82,7 @@ public class FinancesModule : IModule
                 return TypedResults.Json(fs, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateFinanceSourceRequest>()
-            .WithAuthorization(app, Tag, "Create Finance source", PermissionTag.Create, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
+            .WithAuthorization(app, Tag, "Create Finance source", PermissionAction.Create, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateFinanceSourceRequest request, [FromRoute] int id, [FromServices] IFinanceSourcesRepository repository,
@@ -101,7 +100,7 @@ public class FinancesModule : IModule
                     return TypedResults.Accepted(string.Empty);
                 })
             .WithValidator<UpdateFinanceSourceRequest>()
-            .WithAuthorization(app, Tag, "Update Finance source", PermissionTag.Update, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
+            .WithAuthorization(app, Tag, "Update Finance source", PermissionAction.Update, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
 
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
@@ -109,7 +108,7 @@ public class FinancesModule : IModule
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorization(app, Tag, "Delete Finance source by Id", PermissionTag.Delete, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
+            .WithAuthorization(app, Tag, "Delete Finance source by Id", PermissionAction.Delete, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
 
         _fsSubModule.MapEndpoints(app);
         

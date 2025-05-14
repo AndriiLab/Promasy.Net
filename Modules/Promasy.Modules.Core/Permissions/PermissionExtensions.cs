@@ -11,44 +11,45 @@ namespace Promasy.Modules.Core.Permissions;
 public static class PermissionExtensions
 {
     public static RouteHandlerBuilder WithAuthorization(this RouteHandlerBuilder builder, WebApplication app,
-        string tag, string summary, Func<string, PermissionTag> idGen, params RoleName[] roleNames)
+        string tag, string summary, PermissionAction action, params RoleName[] roleNames)
     {
         var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
-        var roles = roleNames.Distinct().ToArray();
-        var id = idGen(tag).Name;
+        var roles = roleNames.Length > 0 ? roleNames.Distinct().ToArray() : Enum.GetValues<RoleName>();
         foreach (var role in roles)
         {
-            permissionsService.AddPermission(id, role, PermissionCondition.Role);
+            permissionsService.AddPermission(tag, action, role, PermissionCondition.Allowed);
         }
 
         builder.RequireAuthorization(p => UpdatePolicy(p, roles).Build());
 
-        builder.WithApiDescription(tag, id, summary);
+        builder.WithApiDescription(tag, $"{tag}|{action}", summary);
 
         return builder;
     }
     
     public static RouteHandlerBuilder WithAuthorizationAndValidation<TModel>(this RouteHandlerBuilder builder, WebApplication app, 
-        string tag, string summary, Func<string, PermissionTag> idGen, params (RoleName Role, PermissionCondition Condition)[] roleConditions)
+        string tag, string summary, PermissionAction action, params (RoleName Role, PermissionCondition Condition)[] roleConditions)
         where TModel : IRequestWithPermissionValidation
     {
         var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
+        var list = roleConditions;
+        if(list.Length < 1)
+            list = Enum.GetValues<RoleName>().Select(r => (r, PermissionCondition.Allowed)).ToArray();
             
-        var id = idGen(tag).Name;
-        foreach (var roleCondition in roleConditions.GroupBy(c => c.Role))
+        foreach (var roleCondition in list.GroupBy(c => c.Role))
         {
-            if (roleCondition.Count() > 1)
-                throw new SecurityException($"More than one {nameof(PermissionCondition)} registered for {id}/{roleCondition.Key}: {string.Join(", ", roleCondition.Select(c => c.Item2))}");
+            if (roleCondition.Count() > 1) 
+                throw new SecurityException($"More than one {nameof(PermissionCondition)} registered for {action}/{roleCondition.Key}: {string.Join(", ", roleCondition.Select(c => c.Item2))}");
 
             var rc = roleCondition.First();
-            permissionsService.AddPermission(id, rc.Role, rc.Condition);
+            permissionsService.AddPermission(tag, action, rc.Role, rc.Condition);
         }
 
-        builder.RequireAuthorization(p => UpdatePolicy(p, roleConditions.Select(rc => rc.Role).ToArray()).Build());
+        builder.RequireAuthorization(p => UpdatePolicy(p, list.Select(rc => rc.Role).ToArray()).Build());
         
-        builder.WithApiDescription(tag, id, summary);
+        builder.WithApiDescription(tag, $"{tag}|{action}", summary);
 
-        builder.WithPermissionsValidator<TModel>(roleConditions);
+        builder.WithPermissionsValidator<TModel>(list);
 
         return builder;
     }

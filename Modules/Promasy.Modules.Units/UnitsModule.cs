@@ -58,9 +58,7 @@ public class UnitsModule : IModule
 
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateUnitRequest>()
-            .WithApiDescription(Tag, "CreateUnit", "Create Unit")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<CreateUnitRequest>(app, Tag, "Create Unit", PermissionAction.Create);
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateUnitRequest request, [FromRoute] int id, [FromServices] IUnitsRepository repository,
@@ -75,8 +73,8 @@ public class UnitsModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithAuthorizationAndValidation<UpdateUnitRequest>(app, Tag, "Update Unit", PermissionTag.Update, 
-                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Role)).ToArray());
+            .WithAuthorizationAndValidation<UpdateUnitRequest>(app, Tag, "Update Unit", PermissionAction.Update, 
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Allowed)).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteUnitRequest model, [FromServices] IUnitsRepository repository,
                 [FromServices] IStringLocalizer<SharedResource> localizer) =>
@@ -84,8 +82,8 @@ public class UnitsModule : IModule
                 await repository.DeleteByIdAsync(model.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorizationAndValidation<DeleteUnitRequest>(app, Tag, "Delete Unit", PermissionTag.Delete, 
-                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Role)).ToArray())
+            .WithAuthorizationAndValidation<DeleteUnitRequest>(app, Tag, "Delete Unit", PermissionAction.Delete, 
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Allowed)).ToArray())
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
 
         app.MapPost($"{RoutePrefix}/merge",
@@ -96,7 +94,7 @@ public class UnitsModule : IModule
                     return TypedResults.Ok();
                 })
             .WithValidator<MergeUnitsRequest>()
-            .WithAuthorization(app, Tag, "Merge Units", PermissionTag.Merge, RoleName.Administrator);
+            .WithAuthorization(app, Tag, "Merge Units", PermissionAction.Merge, RoleName.Administrator);
 
         return app;
     }

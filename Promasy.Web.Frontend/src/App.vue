@@ -21,7 +21,7 @@ const primeVue = usePrimeVue();
 
 initLocale();
 onMounted(async () => {
-  initUser();
+  await initUserAsync();
 });
 
 function initLocale() {
@@ -35,10 +35,11 @@ function initLocale() {
   });
 }
 
-function initUser() {
+async function initUserAsync() {
   const token = LocalStore.get(keys.token);
   if (token) {
     sessionStore.loginWithToken(token);
+    await sessionStore.refreshTokenAsync();
   }
 }
 </script>

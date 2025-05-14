@@ -76,12 +76,12 @@ public class ManufacturersModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithAuthorizationAndValidation<UpdateManufacturerRequest>(app, Tag, "Update Manufacturer", PermissionTag.Update,
+            .WithAuthorizationAndValidation<UpdateManufacturerRequest>(app, Tag, "Update Manufacturer", PermissionAction.Update,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteManufacturerRequest request, [FromServices] IManufacturersRepository repository,
@@ -91,12 +91,12 @@ public class ManufacturersModule : IModule
                 return TypedResults.NoContent();
             })
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict)           
-            .WithAuthorizationAndValidation<DeleteManufacturerRequest>(app, Tag, "Delete Manufacturer by Id", PermissionTag.Delete,
+            .WithAuthorizationAndValidation<DeleteManufacturerRequest>(app, Tag, "Delete Manufacturer by Id", PermissionAction.Delete,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeManufacturersRequest request,
@@ -107,7 +107,7 @@ public class ManufacturersModule : IModule
                 return TypedResults.Ok();
             })
             .WithValidator<MergeManufacturersRequest>()
-            .WithAuthorization(app, Tag, "Merge Manufacturers", PermissionTag.Merge, RoleName.Administrator);
+            .WithAuthorization(app, Tag, "Merge Manufacturers", PermissionAction.Merge, RoleName.Administrator);
 
         return app;
     }

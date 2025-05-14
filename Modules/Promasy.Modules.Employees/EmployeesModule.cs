@@ -12,7 +12,6 @@ using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Core.OpenApi;
 using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
-using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
 using Promasy.Modules.Employees.Models;
 
@@ -63,7 +62,7 @@ public class EmployeesModule : IModule
                 return TypedResults.Json(employee, statusCode: StatusCodes.Status201Created);
             })
             .WithValidator<CreateEmployeeRequest>()
-            .WithAuthorization(app, Tag, "Create Employee", PermissionTag.Create, RoleName.Administrator);
+            .WithAuthorization(app, Tag, "Create Employee", PermissionAction.Create, RoleName.Administrator);
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateEmployeeRequest request, [FromRoute] int id, [FromServices] IEmployeesRepository repository,
@@ -78,11 +77,11 @@ public class EmployeesModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithAuthorizationAndValidation<UpdateEmployeeRequest>(app, Tag, "Update Employee", PermissionTag.Update,
+            .WithAuthorizationAndValidation<UpdateEmployeeRequest>(app, Tag, "Update Employee", PermissionAction.Update,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
-                        RoleName.Administrator => PermissionCondition.Role,
+                        RoleName.Administrator => PermissionCondition.Allowed,
                         _ => PermissionCondition.SameUser
                     })).ToArray());
 
@@ -92,7 +91,7 @@ public class EmployeesModule : IModule
                 await repository.DeleteByIdAsync(id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorization(app, Tag, "Delete Employee by Id", PermissionTag.Delete, RoleName.Administrator)
+            .WithAuthorization(app, Tag, "Delete Employee by Id", PermissionAction.Delete, RoleName.Administrator)
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
                 
         app.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
@@ -102,11 +101,11 @@ public class EmployeesModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{request.Id}");
                 })
-            .WithAuthorizationAndValidation<PasswordChangeRequest>(app, Tag, "Change Employee password", s => PermissionTag.Update($"{s}/Password"),
+            .WithAuthorizationAndValidation<PasswordChangeRequest>(app, $"{Tag}/Password", "Change Employee password", PermissionAction.Update,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                 {
-                    RoleName.Administrator => PermissionCondition.Role,
+                    RoleName.Administrator => PermissionCondition.Allowed,
                     _ => PermissionCondition.SameUser
                 })).ToArray());
         

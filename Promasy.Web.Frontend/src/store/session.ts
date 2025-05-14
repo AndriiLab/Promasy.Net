@@ -4,11 +4,13 @@ import { en } from "@/i18n/settings/en";
 import AuthApi from "@/services/api/auth";
 import LocalStore, { keys } from "@/services/local-store";
 import {PermissionCondition} from "@/constants/PermissionConditionEnum";
+import {PermissionAction} from "@/constants/PermissionActionEnum";
 
 export const useSessionStore = defineStore("session", {
   state: (): Session => ({
     locale: LocalStore.get(keys.language) ?? en.key,
     user: undefined,
+    permissions: new Object<string, Object<PermissionAction, PermissionCondition>>(),
     lastUrl: undefined,
     year: new Date().getFullYear(),
   }),
@@ -31,18 +33,20 @@ export const useSessionStore = defineStore("session", {
       rememberMe ? LocalStore.allow() : LocalStore.disable();
 
       if (response.data?.token) {
-        this.loginWithToken(response.data.token, response.data.permissions);
+        this.loginWithToken(response.data.token);
+        await this.loadPermissionsAsync();
       }
     },
     async refreshTokenAsync() {
       const response = await AuthApi.refreshToken();
       if (response.success) {
-        this.loginWithToken(response.data!.token, undefined);
+        this.loginWithToken(response.data!.token);
+        await this.loadPermissionsAsync();
         return;
       }
       await this.logoutAsync();
     },
-    loginWithToken(token: string, permissions?: EndpointPermission[]) {
+    loginWithToken(token: string) {
       const decodedToken = jwtDecode(token) as Object<string>;
       this.user = {
         token: token,
@@ -58,7 +62,6 @@ export const useSessionStore = defineStore("session", {
         organizationId: parseInt(decodedToken[claims.organizationId]),
         departmentId: parseInt(decodedToken[claims.departmentId]),
         subDepartmentId: parseInt(decodedToken[claims.subDepartmentId]),
-        permissions: permissions ?? this.user?.permissions
       };
 
       LocalStore.set(keys.token, token);
@@ -69,6 +72,20 @@ export const useSessionStore = defineStore("session", {
       await AuthApi.revokeToken();
       this.user = undefined;
     },
+    async loadPermissionsAsync() {
+      const response = await AuthApi.getPermissions();
+      if (!response.success) {
+        return;
+      }
+      this.permissions = new Object<string, Object<PermissionAction, PermissionCondition>>();
+      for (const permission of response.data!.permissions) {
+        if(!(permission.tag in this.permissions)) {
+          this.permissions[permission.tag] = new Object<PermissionAction, PermissionCondition>();
+        }
+
+        this.permissions[permission.tag][permission.action] = permission.condition;
+      }
+    }
   },
   getters: {
     getLastUrl(): string {
@@ -92,6 +109,7 @@ if (import.meta.hot) {
 export interface Session {
   locale: string;
   user?: SessionUser;
+  permissions: Object<string, Object<PermissionAction, PermissionCondition>>;
   lastUrl?: string;
   year: number;
 }
@@ -111,9 +129,6 @@ export interface SessionUser {
   departmentId: number;
   subDepartment: string;
   subDepartmentId: number;
-
-  permissions: EndpointPermission[];
-
   token: string;
 }
 const claims = {
@@ -129,9 +144,4 @@ const claims = {
   departmentId: 'departmentId',
   subDepartmentId: 'subDepartmentId',
   roles: 'role'
-}
-
-export interface EndpointPermission {
-  key: string;
-  condition: PermissionCondition;
 }

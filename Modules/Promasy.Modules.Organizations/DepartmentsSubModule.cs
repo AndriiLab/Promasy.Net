@@ -70,8 +70,8 @@ internal class DepartmentsSubModule : SubModule
 
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
-            .WithAuthorizationAndValidation<CreateDepartmentRequest>(app, Tag, "Create Department", PermissionTag.Create,
-                (RoleName.Administrator, PermissionCondition.Role), 
+            .WithAuthorizationAndValidation<CreateDepartmentRequest>(app, Tag, "Create Department", PermissionAction.Create,
+                (RoleName.Administrator, PermissionCondition.Allowed), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization));
 
@@ -93,8 +93,8 @@ internal class DepartmentsSubModule : SubModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithAuthorizationAndValidation<UpdateDepartmentRequest>(app, Tag, "Update Department", PermissionTag.Update, 
-                (RoleName.Administrator, PermissionCondition.Role),
+            .WithAuthorizationAndValidation<UpdateDepartmentRequest>(app, Tag, "Update Department", PermissionAction.Update, 
+                (RoleName.Administrator, PermissionCondition.Allowed),
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
@@ -105,8 +105,8 @@ internal class DepartmentsSubModule : SubModule
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorizationAndValidation<DeleteDepartmentRequest>(app, Tag, "Delete Department by Id", PermissionTag.Delete,
-                (RoleName.Administrator, PermissionCondition.Role), 
+            .WithAuthorizationAndValidation<DeleteDepartmentRequest>(app, Tag, "Delete Department by Id", PermissionAction.Delete,
+                (RoleName.Administrator, PermissionCondition.Allowed), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization))
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);

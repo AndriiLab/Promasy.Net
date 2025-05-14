@@ -75,8 +75,8 @@ internal class SubDepartmentsSubModule : SubModule
 
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
-            .WithAuthorizationAndValidation<CreateSubDepartmentRequest>(app, Tag, "Create SubDepartment", PermissionTag.Create,
-                (RoleName.Administrator, PermissionCondition.Role), 
+            .WithAuthorizationAndValidation<CreateSubDepartmentRequest>(app, Tag, "Create SubDepartment", PermissionAction.Create,
+                (RoleName.Administrator, PermissionCondition.Allowed), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
@@ -102,8 +102,8 @@ internal class SubDepartmentsSubModule : SubModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithAuthorizationAndValidation<UpdateSubDepartmentRequest>(app, Tag, "Update SubDepartment", PermissionTag.Update,
-                (RoleName.Administrator, PermissionCondition.Role), 
+            .WithAuthorizationAndValidation<UpdateSubDepartmentRequest>(app, Tag, "Update SubDepartment", PermissionAction.Update,
+                (RoleName.Administrator, PermissionCondition.Allowed), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),
@@ -114,8 +114,8 @@ internal class SubDepartmentsSubModule : SubModule
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorizationAndValidation<DeleteSubDepartmentRequest>(app, Tag, "Delete SubDepartment by Id", PermissionTag.Delete,
-                (RoleName.Administrator, PermissionCondition.Role), 
+            .WithAuthorizationAndValidation<DeleteSubDepartmentRequest>(app, Tag, "Delete SubDepartment by Id", PermissionAction.Delete,
+                (RoleName.Administrator, PermissionCondition.Allowed), 
                 (RoleName.Director, PermissionCondition.SameOrganization),
                 (RoleName.DeputyDirector, PermissionCondition.SameOrganization),
                 (RoleName.HeadOfDepartment, PermissionCondition.SameDepartment),

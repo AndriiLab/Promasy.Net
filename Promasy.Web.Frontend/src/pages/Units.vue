@@ -7,8 +7,9 @@
           <template v-slot:start>
             <div class="my-2">
               <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"
+                      v-if="canAccess(PermissionAction.Create, {})"
                       @click="create"/>
-              <Button v-if="isUserAdmin && selectedItems.length > 1" :label="t('merge')" icon="pi pi-angle-double-down"
+              <Button v-if="selectedItems.length > 1 && canAccess(PermissionAction.Merge, {})" :label="t('merge')" icon="pi pi-angle-double-down"
                       class="p-button-warning mr-2" @click="merge"/>
             </div>
           </template>
@@ -17,7 +18,7 @@
         <DataTable ref="dt" :value="items" :lazy="true" :paginator="true"
                    :rows="tableData.offset" :totalRecords="tableData.total" :loading="isLoading"
                    @page="onPageAsync($event)" @sort="onSortAsync($event)"
-                   :selectionMode="isUserAdmin ? 'multiple' : null" v-model:selection="selectedItems" dataKey="id"
+                   :selectionMode="canAccess(PermissionAction.Merge, {}) ? 'multiple' : null" v-model:selection="selectedItems" dataKey="id"
                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                    :rowsPerPageOptions="[10,50,100]"
                    :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('units') })"
@@ -33,7 +34,7 @@
             </div>
           </template>
 
-          <Column v-if="isUserAdmin" selectionMode="multiple" headerStyle="width: 3em"></Column>
+          <Column v-if="canAccess(PermissionAction.Merge, {})" selectionMode="multiple" headerStyle="width: 3em"></Column>
           <Column field="name" :header="t('name')" :sortable="true" headerStyle="width:35%; min-width:10rem;">
             <template #body="slotProps">
               <span class="p-column-title">{{ t('name') }}</span>
@@ -54,8 +55,10 @@
           </Column>
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
-              <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
-              <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+              <Button v-if="canAccess(PermissionAction.Update, { userId: slotProps.data.editorId })" 
+                      icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+              <Button v-if="canAccess(PermissionAction.Delete, { userId: slotProps.data.editorId })" 
+                      icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -125,7 +128,6 @@
 <script lang="ts" setup>
 import processError from "@/utils/error-response-utils";
 import { capitalize } from "@/utils/string-utils";
-import { useSessionStore } from "@/store/session";
 import { ref, reactive, onMounted, computed } from "vue";
 import UnitsApi, { Unit } from "@/services/api/units";
 import { useToast } from "primevue/usetoast";
@@ -136,9 +138,11 @@ import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@/i18n/validators";
 import UserChip from "@/components/UserChip.vue";
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import permissionsService, {PermissionParams} from "@/services/permissions-service";
+import {PermissionTag} from "@/constants/PermissionTag";
 
 const { d, t } = useI18n();
-const { isUserAdmin } = useSessionStore();
 const toast = useToast();
 const route = useRoute();
 const Router = useRouter();
@@ -174,6 +178,9 @@ onMounted(async () => {
   }
 });
 
+function canAccess(action: PermissionAction, params: PermissionParams) {
+  return permissionsService.canAccess(PermissionTag.Unit, action, params);
+}
 async function useFilterAsync() {
   await getDataAsync();
 }

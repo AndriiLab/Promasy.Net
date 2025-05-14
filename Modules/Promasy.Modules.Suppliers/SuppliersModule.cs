@@ -77,8 +77,8 @@ public class SuppliersModule : IModule
 
                     return TypedResults.Accepted($"{RoutePrefix}/{id}");
                 })
-            .WithAuthorizationAndValidation<UpdateSupplierRequest>(app, Tag, "Update Supplier", PermissionTag.Update,
-                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Role)).ToArray());
+            .WithAuthorizationAndValidation<UpdateSupplierRequest>(app, Tag, "Update Supplier", PermissionAction.Update,
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Allowed)).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteSupplierRequest model, [FromServices] ISuppliersRepository repository,
                 [FromServices] IStringLocalizer<SharedResource> localizer) =>
@@ -86,8 +86,8 @@ public class SuppliersModule : IModule
                 await repository.DeleteByIdAsync(model.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorizationAndValidation<DeleteSupplierRequest>(app, Tag, "Delete Supplier by Id", PermissionTag.Delete,
-                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Role)).ToArray())
+            .WithAuthorizationAndValidation<DeleteSupplierRequest>(app, Tag, "Delete Supplier by Id", PermissionAction.Delete,
+                Enum.GetValues<RoleName>().Select(r => (r, r == RoleName.User ? PermissionCondition.SameUser : PermissionCondition.Allowed)).ToArray())
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
         
         app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeSuppliersRequest request, [FromServices] ISuppliersRepository repository) =>
@@ -97,7 +97,7 @@ public class SuppliersModule : IModule
                 return TypedResults.Ok();
             })
             .WithValidator<MergeSuppliersRequest>()
-            .WithAuthorization(app, Tag, "Merge Suppliers", PermissionTag.Merge, RoleName.Administrator);
+            .WithAuthorization(app, Tag, "Merge Suppliers", PermissionAction.Merge, RoleName.Administrator);
 
         return app;
     }

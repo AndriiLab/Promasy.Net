@@ -13,6 +13,10 @@ declare module '*.bmp'
 declare module '*.tiff'
 declare module '*.json'
 
+interface Object<Tkey, Tvalue> {
+	[key: Tkey]: Tvalue
+}
+
 interface Object<T> {
 	[key: string]: T
 }

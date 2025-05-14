@@ -1,5 +1,6 @@
 import { ErrorApiResponse, Response, Fetch } from "@/utils/fetch-utils";
-import {EndpointPermission} from "@/store/session";
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionCondition} from "@/constants/PermissionConditionEnum";
 
 export default {
   authUser(userData: AuthUserRequest): Promise<Response<AuthUserResponse, ErrorApiResponse>> {
@@ -11,6 +12,9 @@ export default {
   revokeToken(): Promise<Response<string, ErrorApiResponse>> {
     return Fetch.Post<string, ErrorApiResponse>("/api/auth/revoke");
   },
+  getPermissions(): Promise<Response<PermissionsResponse, ErrorApiResponse>> {
+    return Fetch.Get<PermissionsResponse, ErrorApiResponse>("/api/auth/permissions");
+  },
 };
 
 interface AuthUserRequest {
@@ -20,5 +24,14 @@ interface AuthUserRequest {
 
 interface AuthUserResponse {
   token: string;
+}
+
+interface PermissionsResponse {
   permissions: EndpointPermission[];
+}
+
+export interface EndpointPermission {
+  key: string;
+  action: PermissionAction,
+  condition: PermissionCondition;
 }

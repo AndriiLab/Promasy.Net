@@ -25,7 +25,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
     {
     }
 
-    public override string Tag { get; } = "Finance sub-department";
+    public override string Tag { get; } = "Finance_sub-department";
 
     public override IServiceCollection RegisterServices(IServiceCollection builder, IConfiguration configuration)
     {
@@ -49,14 +49,14 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                  var list = await repository.GetPagedListBySubDepartmentAsync(request);
                  return TypedResults.Ok(list);
              })
-             .WithAuthorizationAndValidation<GetFinanceSubDepartmentsPagedRequest>(app, Tag, "Get Finance sub-departments list by sub-department", PermissionTag.List,
+             .WithAuthorizationAndValidation<GetFinanceSubDepartmentsPagedRequest>(app, Tag, "Get Finance sub-departments list by sub-department", PermissionAction.List,
                  Enum.GetValues<RoleName>().Select(r =>
                  (r, r switch
                      {
                          RoleName.User => PermissionCondition.SameDepartment,
                          RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                          RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
-                         _ => PermissionCondition.Role
+                         _ => PermissionCondition.Allowed
                      })).ToArray());
          
          app.MapGet($"{RoutePrefix}/{{subDepartmentId:int}}", async ([AsParameters] GetFinanceSubDepartmentRequest request,
@@ -70,14 +70,14 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                  return TypedResults.Ok(fs);
              })
              .Produces(StatusCodes.Status404NotFound)
-             .WithAuthorizationAndValidation<GetFinanceSubDepartmentRequest>(app, Tag, "Get Finance sub-department by Id", PermissionTag.Get,
+             .WithAuthorizationAndValidation<GetFinanceSubDepartmentRequest>(app, Tag, "Get Finance sub-department by Id", PermissionAction.Get,
                  Enum.GetValues<RoleName>().Select(r =>
                  (r, r switch
                  {
                      RoleName.User => PermissionCondition.SameDepartment,
                      RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
                      RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
-                     _ => PermissionCondition.Role
+                     _ => PermissionCondition.Allowed
                  })).ToArray());
 
 
@@ -94,7 +94,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                      return TypedResults.Json(fs, statusCode: StatusCodes.Status201Created);
                  })
              .WithValidator<CreateFinanceSubDepartmentRequest>()
-             .WithAuthorization(app, Tag,"Create Finance sub-department", PermissionTag.Create,
+             .WithAuthorization(app, Tag,"Create Finance sub-department", PermissionAction.Create,
                  RoleName.Administrator,
                  RoleName.ChiefAccountant,
                  RoleName.ChiefEconomist);
@@ -114,7 +114,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                     return TypedResults.Accepted(string.Empty);
                 })
             .WithValidator<UpdateFinanceSubDepartmentRequest>()
-            .WithAuthorization(app, Tag, "Update Finance sub-department", PermissionTag.Update,
+            .WithAuthorization(app, Tag, "Update Finance sub-department", PermissionAction.Update,
                 RoleName.Administrator,
                 RoleName.ChiefAccountant,
                 RoleName.ChiefEconomist);
@@ -124,7 +124,7 @@ internal class FinanceSubDepartmentsSubModule : SubModule
                 await repository.DeleteByFinanceSubDepartmentIdsAsync(request.FinanceId, request.SubDepartmentId);
                 return TypedResults.NoContent();
             })
-            .WithAuthorization(app, Tag, "Delete Finance sub-department", PermissionTag.Delete,
+            .WithAuthorization(app, Tag, "Delete Finance sub-department", PermissionAction.Delete,
                 RoleName.Administrator,
                 RoleName.ChiefAccountant,
                 RoleName.ChiefEconomist);

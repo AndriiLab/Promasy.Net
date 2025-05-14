@@ -2,13 +2,17 @@
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Units.Dtos;
 using Promasy.Modules.Units.Interfaces;
 using Riok.Mapperly.Abstractions;
 
 namespace Promasy.Modules.Units.Models;
 
-public record CreateUnitRequest(string Name);
+public record CreateUnitRequest(string Name)  : IRequestWithPermissionValidation
+{
+    public int GetId() => 0;
+}
 
 [Mapper]
 internal static partial class CreateUnitRequestMapper

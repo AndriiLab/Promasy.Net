@@ -3,7 +3,7 @@
 public enum PermissionCondition
 {
     Forbidden = 0,
-    Role = 1,
+    Allowed = 1,
     SameOrganization = 2,
     SameDepartment = 3,
     SameSubDepartment = 4,

@@ -20,7 +20,7 @@ namespace Promasy.Modules.Orders;
 
 public class ReasonForSupplierChoiceSubModule : SubModule
 {
-    public override string Tag { get; } = "Reason for Supplier Choice";
+    public override string Tag { get; } = "Reason_for_Supplier_Choice";
     
     public ReasonForSupplierChoiceSubModule(string parentRoutePrefix)
         : base(parentRoutePrefix, "/reasons-for-supplier-choice")
@@ -81,12 +81,12 @@ public class ReasonForSupplierChoiceSubModule : SubModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithAuthorizationAndValidation<UpdateReasonForSupplierChoiceRequest>(app, Tag, "Update Reason for Supplier Choice", PermissionTag.Update,
+            .WithAuthorizationAndValidation<UpdateReasonForSupplierChoiceRequest>(app, Tag, "Update Reason for Supplier Choice", PermissionAction.Update,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteReasonForSupplierChoiceRequest request, [FromServices] IReasonForSupplierChoiceRepository repository) =>
@@ -95,12 +95,12 @@ public class ReasonForSupplierChoiceSubModule : SubModule
                 return TypedResults.NoContent();
             })
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict)
-            .WithAuthorizationAndValidation<DeleteReasonForSupplierChoiceRequest>(app, Tag, "Delete Reason for Supplier Choice by Id", PermissionTag.Delete,
+            .WithAuthorizationAndValidation<DeleteReasonForSupplierChoiceRequest>(app, Tag, "Delete Reason for Supplier Choice by Id", PermissionAction.Delete,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
             
         app.MapPost($"{RoutePrefix}/merge", async ([FromBody] MergeReasonForSupplierChoiceRequest request, [FromServices] IReasonForSupplierChoiceRepository repository) =>
@@ -110,7 +110,7 @@ public class ReasonForSupplierChoiceSubModule : SubModule
                 return TypedResults.Ok();
             })
             .WithValidator<MergeReasonForSupplierChoiceRequest>()
-            .WithAuthorization(app, Tag, "Merge Reasons for Supplier Choice", PermissionTag.Merge, RoleName.Administrator);
+            .WithAuthorization(app, Tag, "Merge Reasons for Supplier Choice", PermissionAction.Merge, RoleName.Administrator);
 
         return app;
     }

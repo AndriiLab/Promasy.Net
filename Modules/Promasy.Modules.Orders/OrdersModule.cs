@@ -48,14 +48,14 @@ public class OrdersModule : IModule
                 var list = await repository.GetPagedListAsync(request);
                 return TypedResults.Ok(list);
             })
-            .WithAuthorizationAndValidation<OrdersPagedRequest>(app, Tag, "Get Orders list", PermissionTag.List,
+            .WithAuthorizationAndValidation<OrdersPagedRequest>(app, Tag, "Get Orders list", PermissionAction.List,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapGet($"{RoutePrefix}/suggestions", async ([AsParameters] OrderSuggestionPagedRequest request, [FromServices] IOrdersRepository repository) =>
@@ -77,14 +77,14 @@ public class OrdersModule : IModule
                 }
                 return TypedResults.Ok(order);
             })
-            .WithAuthorizationAndValidation<GetOrderRequest>(app, Tag, "Get Order by Id", PermissionTag.Get,
+            .WithAuthorizationAndValidation<GetOrderRequest>(app, Tag, "Get Order by Id", PermissionAction.Get,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapPost(RoutePrefix, async ([FromBody]CreateOrderRequest request, [FromServices] IOrdersRepository repository) =>
@@ -97,14 +97,14 @@ public class OrdersModule : IModule
 
                 return TypedResults.Json(order, statusCode: StatusCodes.Status201Created);
             })
-            .WithAuthorizationAndValidation<CreateOrderRequest>(app, Tag, "Create Order", PermissionTag.Create,
+            .WithAuthorizationAndValidation<CreateOrderRequest>(app, Tag, "Create Order", PermissionAction.Create,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameSubDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
@@ -123,14 +123,14 @@ public class OrdersModule : IModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithAuthorizationAndValidation<UpdateOrderRequest>(app, Tag, "Update Order", PermissionTag.Update,
+            .WithAuthorizationAndValidation<UpdateOrderRequest>(app, Tag, "Update Order", PermissionAction.Update,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteOrderRequest request, [FromServices] IOrdersRepository repository) =>
@@ -138,14 +138,14 @@ public class OrdersModule : IModule
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorizationAndValidation<DeleteOrderRequest>(app, Tag, "Delete Order by Id", PermissionTag.Delete,
+            .WithAuthorizationAndValidation<DeleteOrderRequest>(app, Tag, "Delete Order by Id", PermissionAction.Delete,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameUser,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
         
         _rfscSubModule.MapEndpoints(app);
@@ -161,14 +161,14 @@ public class OrdersModule : IModule
                 await exporter.ExportToPdfFileAsync(fileName);
                 return TypedResults.Ok(new ExportResponse(fileName));
             })
-            .WithAuthorizationAndValidation<ExportToPdfRequest>(app, Tag, "Export as PDF", s => PermissionTag.Export($"{s}/PDF"),
+            .WithAuthorizationAndValidation<ExportToPdfRequest>(app, $"{Tag}/PDF", "Export as PDF", PermissionAction.Export,
                 Enum.GetValues<RoleName>().Select(r =>
                 (r, r switch
                     {
                         RoleName.User => PermissionCondition.SameDepartment,
                         RoleName.HeadOfDepartment => PermissionCondition.SameDepartment,
                         RoleName.PersonallyLiableEmployee => PermissionCondition.SameDepartment,
-                        _ => PermissionCondition.Role
+                        _ => PermissionCondition.Allowed
                     })).ToArray());
         
         return app;
