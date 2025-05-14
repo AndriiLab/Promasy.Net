@@ -58,8 +58,7 @@
               <Button v-if="canAccess(PermissionAction.Update, { userId: slotProps.data.editorId })" 
                       icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
               <Button v-if="canAccess(PermissionAction.Delete, { userId: slotProps.data.editorId })" 
-                      icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
-                      @click="confirmDelete(slotProps.data)"/>
+                      icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
         </DataTable>

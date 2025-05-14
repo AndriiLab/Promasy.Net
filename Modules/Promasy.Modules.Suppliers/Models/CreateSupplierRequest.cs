@@ -2,11 +2,15 @@
 using Microsoft.Extensions.Localization;
 using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Suppliers.Interfaces;
 
 namespace Promasy.Modules.Suppliers.Models;
 
-public record CreateSupplierRequest(string Name, string? Comment, string? Phone);
+public record CreateSupplierRequest(string Name, string? Comment, string? Phone) : IRequestWithPermissionValidation
+{
+    public int GetId() => throw new NotSupportedException();
+}
 
 internal class CreateManufacturerRequestValidator : AbstractValidator<CreateSupplierRequest>
 {

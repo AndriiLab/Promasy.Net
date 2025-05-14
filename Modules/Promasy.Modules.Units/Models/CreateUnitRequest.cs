@@ -11,7 +11,7 @@ namespace Promasy.Modules.Units.Models;
 
 public record CreateUnitRequest(string Name)  : IRequestWithPermissionValidation
 {
-    public int GetId() => 0;
+    public int GetId() => throw new NotSupportedException();
 }
 
 [Mapper]

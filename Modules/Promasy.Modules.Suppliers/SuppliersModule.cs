@@ -60,9 +60,7 @@ public class SuppliersModule : IModule
 
                 return TypedResults.Json(unit, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateSupplierRequest>()
-            .WithApiDescription(Tag, "CreateSupplier", "Create Supplier")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<CreateSupplierRequest>(app, Tag, "Create Supplier", PermissionAction.Create);
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateSupplierRequest request, [FromRoute] int id, [FromServices] ISuppliersRepository repository, 
