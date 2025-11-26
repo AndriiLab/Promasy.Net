@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Promasy.Modules.Core.OpenApi;
 
@@ -8,13 +8,14 @@ public static class OpenApiExtensions
     public static RouteHandlerBuilder WithApiDescription(this RouteHandlerBuilder builder, string tag, string id,
         string? summary = null, string? description = null)
     {
-        builder.WithOpenApi(o => new OpenApiOperation(o)
+        builder.WithName(id)
+            .WithSummary(summary ?? id)
+            .WithTags(tag);
+
+        if (description is not null)
         {
-            OperationId = id,
-            Summary = summary ?? id,
-            Description = description,
-            Tags = new List<OpenApiTag> { new() { Name = tag } }
-        });
+            builder.WithDescription(description);
+        }
 
         return builder;
     }
