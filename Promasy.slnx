@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/Modules/">
+    <Project Path="Modules/Promasy.Modules.Auth/Promasy.Modules.Auth.csproj" />
+    <Project Path="Modules/Promasy.Modules.Core/Promasy.Modules.Core.csproj" />
+    <Project Path="Modules/Promasy.Modules.Cpv/Promasy.Modules.Cpv.csproj" />
+    <Project Path="Modules/Promasy.Modules.Dashboard/Promasy.Modules.Dashboard.csproj" />
+    <Project Path="Modules/Promasy.Modules.Employees/Promasy.Modules.Employees.csproj" />
+    <Project Path="Modules/Promasy.Modules.Files/Promasy.Modules.Files.csproj" />
+    <Project Path="Modules/Promasy.Modules.Finances/Promasy.Modules.Finances.csproj" />
+    <Project Path="Modules/Promasy.Modules.Manufacturers/Promasy.Modules.Manufacturers.csproj" />
+    <Project Path="Modules/Promasy.Modules.Orders/Promasy.Modules.Orders.csproj" />
+    <Project Path="Modules/Promasy.Modules.Organizations/Promasy.Modules.Organizations.csproj" />
+    <Project Path="Modules/Promasy.Modules.Suppliers/Promasy.Modules.Suppliers.csproj" />
+    <Project Path="Modules/Promasy.Modules.Units/Promasy.Modules.Units.csproj" />
+  </Folder>
+  <Project Path="Promasy.Application/Promasy.Application.csproj" />
+  <Project Path="Promasy.Core/Promasy.Core.csproj" />
+  <Project Path="Promasy.Domain/Promasy.Domain.csproj" />
+  <Project Path="Promasy.Persistence/Promasy.Persistence.csproj" />
+  <Project Path="Promasy.Web.Api/Promasy.Web.Api.csproj" />
+  <Project Path="Promasy.Web.Frontend/Promasy.Web.Frontend.esproj" Type="C#">
+    <BuildType Project="Debug" />
+  </Project>
+</Solution>

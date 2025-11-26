@@ -18,7 +18,7 @@
         <DataTable ref="dt" :value="items" :lazy="true" :paginator="true"
                    :rows="tableData.offset" :totalRecords="tableData.total" :loading="isLoading"
                    @page="onPageAsync($event)" @sort="onSortAsync($event)"
-                   :selectionMode="canAccess(PermissionAction.Merge, {}) ? 'multiple' : null" v-model:selection="selectedItems" dataKey="id"
+                   :selectionMode="canAccess(PermissionAction.Merge, {}) ? 'multiple' : 'single'" v-model:selection="selectedItems" dataKey="id"
                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                    :rowsPerPageOptions="[10,50,100]"
                    :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('suppliers') })"

@@ -10,48 +10,51 @@ namespace Promasy.Modules.Core.Permissions;
 
 public static class PermissionExtensions
 {
-    public static RouteHandlerBuilder WithAuthorization(this RouteHandlerBuilder builder, WebApplication app,
-        string tag, string summary, PermissionAction action, params RoleName[] roleNames)
+    extension(RouteHandlerBuilder builder)
     {
-        var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
-        var roles = roleNames.Length > 0 ? roleNames.Distinct().ToArray() : Enum.GetValues<RoleName>();
-        foreach (var role in roles)
+        public RouteHandlerBuilder WithAuthorization(WebApplication app,
+            string tag, string summary, PermissionAction action, params RoleName[] roleNames)
         {
-            permissionsService.AddPermission(tag, action, role, PermissionCondition.Allowed);
+            var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
+            var roles = roleNames.Length > 0 ? roleNames.Distinct().ToArray() : Enum.GetValues<RoleName>();
+            foreach (var role in roles)
+            {
+                permissionsService.AddPermission(tag, action, role, PermissionCondition.Allowed);
+            }
+
+            builder.RequireAuthorization(p => UpdatePolicy(p, roles).Build());
+
+            builder.WithApiDescription(tag, $"{tag}|{action}", summary);
+
+            return builder;
         }
 
-        builder.RequireAuthorization(p => UpdatePolicy(p, roles).Build());
-
-        builder.WithApiDescription(tag, $"{tag}|{action}", summary);
-
-        return builder;
-    }
-    
-    public static RouteHandlerBuilder WithAuthorizationAndValidation<TModel>(this RouteHandlerBuilder builder, WebApplication app, 
-        string tag, string summary, PermissionAction action, params (RoleName Role, PermissionCondition Condition)[] roleConditions)
-        where TModel : IRequestWithPermissionValidation
-    {
-        var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
-        var list = roleConditions;
-        if(list.Length < 1)
-            list = Enum.GetValues<RoleName>().Select(r => (r, PermissionCondition.Allowed)).ToArray();
+        public RouteHandlerBuilder WithAuthorizationAndValidation<TModel>(WebApplication app, 
+            string tag, string summary, PermissionAction action, params (RoleName Role, PermissionCondition Condition)[] roleConditions)
+            where TModel : IRequestWithPermissionValidation
+        {
+            var permissionsService = app.Services.GetRequiredService<IPermissionsServiceBuilder>();
+            var list = roleConditions;
+            if(list.Length < 1)
+                list = Enum.GetValues<RoleName>().Select(r => (r, PermissionCondition.Allowed)).ToArray();
             
-        foreach (var roleCondition in list.GroupBy(c => c.Role))
-        {
-            if (roleCondition.Count() > 1) 
-                throw new SecurityException($"More than one {nameof(PermissionCondition)} registered for {action}/{roleCondition.Key}: {string.Join(", ", roleCondition.Select(c => c.Item2))}");
+            foreach (var roleCondition in list.GroupBy(c => c.Role))
+            {
+                if (roleCondition.Count() > 1) 
+                    throw new SecurityException($"More than one {nameof(PermissionCondition)} registered for {action}/{roleCondition.Key}: {string.Join(", ", roleCondition.Select(c => c.Item2))}");
 
-            var rc = roleCondition.First();
-            permissionsService.AddPermission(tag, action, rc.Role, rc.Condition);
-        }
+                var rc = roleCondition.First();
+                permissionsService.AddPermission(tag, action, rc.Role, rc.Condition);
+            }
 
-        builder.RequireAuthorization(p => UpdatePolicy(p, list.Select(rc => rc.Role).ToArray()).Build());
+            builder.RequireAuthorization(p => UpdatePolicy(p, list.Select(rc => rc.Role).ToArray()).Build());
         
-        builder.WithApiDescription(tag, $"{tag}|{action}", summary);
+            builder.WithApiDescription(tag, $"{tag}|{action}", summary);
 
-        builder.WithPermissionsValidator<TModel>(list);
+            builder.WithPermissionsValidator<TModel>(list);
 
-        return builder;
+            return builder;
+        }
     }
 
     private static AuthorizationPolicyBuilder UpdatePolicy(AuthorizationPolicyBuilder apb,
