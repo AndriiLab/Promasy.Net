@@ -14,8 +14,8 @@ Vue.js as frontend.
 
 ## Requirements
 
-- .NET Core 8
-- PostgreSQL 14
+- .NET Core 10
+- PostgreSQL 17
 
 ## How to run
 

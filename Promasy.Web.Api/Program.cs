@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Localization;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Promasy.Core.Constants;
 using Promasy.Modules.Auth;
 using Promasy.Modules.Core;
@@ -77,18 +77,18 @@ try
             Description =
                 "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.",
         });
-        o.AddSecurityRequirement(new OpenApiSecurityRequirement
+        o.AddSecurityRequirement(d => new OpenApiSecurityRequirement
         {
             {
-                new OpenApiSecurityScheme
+                new OpenApiSecuritySchemeReference("Bearer", d)
                 {
-                    Reference = new OpenApiReference
+                    Reference = new JsonSchemaReference
                     {
                         Type = ReferenceType.SecurityScheme,
                         Id = "Bearer"
                     }
                 },
-                Array.Empty<string>()
+                []
             }
         });
     });
@@ -133,7 +133,7 @@ try
         .AddSupportedUICultures(LocalizationCulture.SupportedCultures)
         .AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
         {
-            var requestLanguages = context.Request.Headers["Accept-Language"].ToString();
+            var requestLanguages = context.Request.Headers.AcceptLanguage.ToString();
             var requestLanguage = requestLanguages.Split(',').FirstOrDefault() ?? string.Empty;
             string selectedLanguage;
             if (LocalizationCulture.SupportedCultures.Contains(requestLanguage))
