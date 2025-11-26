@@ -9,7 +9,7 @@ namespace Promasy.Modules.Core.Modules;
 
 public static class ModuleExtensions
 {
-    private static readonly ICollection<IModule> RegisteredModules = new List<IModule>();
+    private static readonly List<IModule> RegisteredModules = [];
 
     public static IServiceCollection RegisterModule<TModule>(this IServiceCollection services, IConfiguration configuration) where TModule : class, IModule
     {
@@ -20,16 +20,16 @@ public static class ModuleExtensions
         // and rules decorated with IRules
         services.Scan(scan => scan
             .FromAssemblyOf<TModule>()
-            .AddClasses(classes => classes.AssignableTo<IService>(), false)
+            .AddClasses(classes => classes.AssignableTo<IService>(), publicOnly: false)
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo<IRepository>(), false)
+            .AddClasses(classes => classes.AssignableTo<IRepository>(), publicOnly: false)
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)), false)
+            .AddClasses(classes => classes.AssignableTo(typeof(IRules<>)), publicOnly: false)
             .AsImplementedInterfaces()
             .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(IPermissionsValidator<>)), false)
+            .AddClasses(classes => classes.AssignableTo(typeof(IMapper<,>)), publicOnly: false)
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         

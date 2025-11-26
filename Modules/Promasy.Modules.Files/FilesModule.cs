@@ -37,7 +37,7 @@ public class FilesModule : IModule
                 var bytes = await fs.ReadFileAsync(request.FileName);
                 if (!bytes.Any())
                 {
-                    throw new ApiException(string.Format(localizer["File {0} not found"], request.FileName),
+                    throw new ApiException(localizer["File {0} not found", request.FileName],
                         StatusCodes.Status404NotFound);
                 }
 
