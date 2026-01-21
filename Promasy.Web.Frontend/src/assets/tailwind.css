@@ -1,0 +1,4 @@
+﻿@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+
+@variant dark (.app-dark &);

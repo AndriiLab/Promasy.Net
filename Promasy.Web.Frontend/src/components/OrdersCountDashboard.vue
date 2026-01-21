@@ -1,16 +1,16 @@
 ﻿<template>
   <div class="card mb-0">
-    <div class="flex justify-content-between mb-3">
+    <div class="flex justify-between mb-3">
       <div>
-        <span class="block text-500 font-medium mb-3">{{
+        <span class="block text-muted-color font-medium mb-3">{{
             t(sessionStore.year === new Date().getFullYear() ? 'orders' : 'ordersInYear', {year: sessionStore.year})
           }}</span>
         <Skeleton v-if="isLoading" width="5rem" class="mb-2"></Skeleton>
-        <div v-else class="text-900 font-medium text-xl">
+        <div v-else class="text-surface-900 dark:text-surface-0 font-medium text-xl">
           {{ total }}
         </div>
       </div>
-      <div class="flex align-items-center justify-content-center border-round"
+      <div class="flex items-center justify-center rounded"
            :style="{ width:'2.5rem', height:'2.5rem', backgroundColor: pair.backgroundColor }">
         <i class="pi pi-shopping-cart text-xl" :style="{ color: pair.foregroundColor }"></i>
       </div>
@@ -20,7 +20,7 @@
       <span class="text-green-500 font-medium mr-1">
       {{ countByPeriod }}
       </span>
-      <span class="text-500">{{ t('newForLastMonth') }}</span>
+      <span class="text-muted-color">{{ t('newForLastMonth') }}</span>
     </div>
   </div>
 </template>

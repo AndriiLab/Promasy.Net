@@ -3,6 +3,7 @@ using Microsoft.OpenApi;
 using Promasy.Core.Constants;
 using Promasy.Modules.Auth;
 using Promasy.Modules.Core;
+using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Cpv;
 using Promasy.Modules.Dashboard;
@@ -15,7 +16,7 @@ using Promasy.Modules.Organizations;
 using Promasy.Modules.Suppliers;
 using Promasy.Modules.Units;
 using Promasy.Persistence;
-using Promasy.Web.App.ExceptionHandlers;
+using Promasy.Web.App.Logger;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
@@ -33,7 +34,7 @@ try
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console());
+        .WriteTo.Console(theme: PromasySerilogTheme.Console));
 
     builder.Services.AddPersistence(builder.Configuration);
 

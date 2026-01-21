@@ -12,6 +12,7 @@ import { ErrorObject } from "@vuelidate/core";
 import { watch, computed } from "vue";
 
 const inputErrorClass = "p-invalid";
+const invalidProp = "invalid";
 const props = defineProps<{
   errors: ErrorObject[],
   externalErrors?: string[]
@@ -19,15 +20,14 @@ const props = defineProps<{
 const id = getRandomId();
 const hasErrors = computed(() => !!props.errors.length || !!props.externalErrors?.length);
 watch(hasErrors, () => {
-  const slotInputs = document.getElementById(id)?.querySelectorAll("input, select, textarea");
+  const slotInputs = document.getElementById(id)?.querySelectorAll("input, select, textarea, .p-inputtext, .p-select, .p-datepicker, .p-inputnumber");
   slotInputs?.forEach((si) => {
-    const hasErrorClass = si.classList.contains(inputErrorClass);
-    if (!hasErrors && hasErrorClass) {
-      si.classList.remove(inputErrorClass);
-      return;
-    }
-    if (hasErrors && !hasErrorClass) {
+    if (hasErrors.value) {
+      si.setAttribute(invalidProp, "");
       si.classList.add(inputErrorClass);
+    } else {
+      si.removeAttribute(invalidProp);
+      si.classList.remove(inputErrorClass);
     }
   });
 });

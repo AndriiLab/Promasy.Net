@@ -1,12 +1,12 @@
 <template>
-  <div class="grid">
-    <div class="col-12">
+  <div class="grid grid-cols-12 gap-8">
+    <div class="col-span-12">
       <div class="card">
 
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"
+              <Button :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"
                       @click="create"/>
             </div>
           </template>
@@ -20,7 +20,7 @@
                    :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('departments') })"
                    responsiveLayout="scroll">
           <template #header>
-            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
               <h5 class="m-0">{{ t('table.header', {itemName: t('manageDepartments')}) }}</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                   <i class="pi pi-search"/>
@@ -56,8 +56,8 @@
               <router-link :to="{ name: 'DepartmentEmployees', params: { departmentId: slotProps.data.id } }">
                 <Button v-tooltip.left="t('employee', 2)" icon="pi pi-users" class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
-              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
-              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDelete(slotProps.data)"/>
+              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success" @click="edit(slotProps.data)"/>
+              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning" @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
         </DataTable>
@@ -88,7 +88,7 @@
               err
             }}
           </Message>
-          <div class="flex align-items-center justify-content-center">
+          <div class="flex items-center justify-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
             <span v-if="item">{{ t('deleteDialog.text') }} <b>{{ item.name }}</b>?</span>
           </div>
@@ -255,3 +255,9 @@ async function deleteItemAsync() {
   "departmentDetails": "Деталі відділу"
 }
 </i18n>
+
+
+
+
+
+

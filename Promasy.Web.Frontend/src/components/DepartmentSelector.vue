@@ -1,8 +1,8 @@
-﻿<template>
-  <Dropdown :options="options" optionLabel="text"
+<template>
+  <Select :options="options" optionLabel="text"
             :filter="true" v-on:before-show="getListAsync"
             v-model="value"
-            optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Dropdown>
+            optionValue="value" :loading="isLoading" :disabled="disabled ?? false"></Select>
 </template>
 
 <script lang="ts" setup>
@@ -78,6 +78,6 @@ function getDefaultItem(): SelectItem<number> {
 
 <i18n locale="uk">
 {
-  "all": "-всі відділи-"
+  "all": "-??? ???????-"
 }
 </i18n>

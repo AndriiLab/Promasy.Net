@@ -10,3 +10,33 @@
 .layout-sidebar {
     z-index: 997 !important;
 }
+
+// DataTable responsive column titles - hide on desktop, show on mobile
+.p-column-title {
+    display: none;
+}
+
+@media screen and (max-width: 960px) {
+    .p-datatable {
+        &.p-datatable-responsive-scroll > .p-datatable-wrapper > table,
+        &.p-datatable-responsive-stack > .p-datatable-wrapper > table {
+            .p-column-title {
+                display: inline-block;
+                font-weight: bold;
+                margin-right: 0.5rem;
+            }
+        }
+    }
+}
+
+// Form labels - ensure proper color in light and dark mode
+label {
+    color: var(--p-text-color);
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+// Headers - ensure proper color in light and dark mode
+h1, h2, h3, h4, h5, h6 {
+    color: var(--p-text-color);
+}

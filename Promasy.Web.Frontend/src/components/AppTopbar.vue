@@ -9,10 +9,15 @@
 
     <ul class="layout-topbar-menu hidden lg:flex origin-top">
       <li>
+        <button class="p-link layout-topbar-button" @click="onDarkModeToggle" v-tooltip.bottom="t('darkMode')">
+          <i :class="['pi', sessionStore.darkMode ? 'pi-moon' : 'pi-sun']"></i>
+        </button>
+      </li>
+      <li>
         <button class="p-link layout-topbar-button" @click="onSettingsMenuToggle" v-tooltip.bottom="t('settings')">
           <i class="pi pi-cog"></i>
         </button>
-        <OverlayPanel ref="settingsMenuPanel">
+        <Popover ref="settingsMenuPanel">
           <div class="p-fluid formgrid grid w-15rem">
             <div class="field col-12 text-900 font-medium text-xl mb-2">{{ t('settings') }}</div>
             <hr class="field col-12 mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
@@ -25,27 +30,27 @@
               <YearSelector id="currentYear"></YearSelector>
             </div>
           </div>
-        </OverlayPanel>
+        </Popover>
       </li>
       <li>
         <button class="p-link layout-topbar-button" @click="onProfileMenuToggle" v-tooltip.bottom="t('profile')">
           <i class="pi pi-user"></i>
         </button>
-        <OverlayPanel ref="profileMenuPanel">
+        <Popover ref="profileMenuPanel">
           <div class="text-900 font-medium text-xl mb-2">{{ t('welcomeUser', {firstName: user?.firstName}) }}</div>
           <UserInfoSection :user="user" :config="{ role: true, organization: true, department: true, subDepartment: true } as UserInfoSectionConfig"/>
           <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto"/>
           <div class="flex justify-content-between">
             <router-link to="/me">
-              <Button :label="t('userProfile')" icon="pi pi-user" class="p-button-info p-button-sm"
+              <Button :label="t('userProfile')" icon="pi pi-user"  severity="info" size="small"
                       @click="() => profileMenuPanel.toggle(false)"></Button>
             </router-link>
             <router-link to="/logout">
-              <Button :label="t('logout')" icon="pi pi-sign-out" class="p-button-danger p-button-sm"></Button>
+              <Button :label="t('logout')" icon="pi pi-sign-out"  severity="danger" size="small"></Button>
             </router-link>
           </div>
 
-        </OverlayPanel>
+        </Popover>
       </li>
     </ul>
   </div>
@@ -63,9 +68,14 @@ import {UserInfoSectionConfig} from "@/components/UserInfoSection.vue";
 const { t } = useI18n({ useScope: "local" });
 const profileMenuPanel = ref(null);
 const settingsMenuPanel = ref(null);
-const { user } = useSessionStore();
+const sessionStore = useSessionStore();
+const { user } = sessionStore;
 
 const emit = defineEmits([ "menu-toggle", "topbar-settings-menu-toggle" ]);
+
+function onDarkModeToggle() {
+  sessionStore.setDarkMode(!sessionStore.darkMode);
+}
 
 function onMenuToggle(event: Event) {
   emit("menu-toggle", event);
@@ -86,7 +96,8 @@ function onSettingsMenuToggle(event: Event) {
   "logout": "Logout",
   "profile": "Profile",
   "settings": "Settings",
-  "userProfile": "My Profile"
+  "userProfile": "My Profile",
+  "darkMode": "Dark Mode"
 }
 </i18n>
 
@@ -96,6 +107,13 @@ function onSettingsMenuToggle(event: Event) {
   "logout": "Вийти",
   "profile": "Профіль користувача",
   "settings": "Налаштування",
-  "userProfile": "Мій профіль"
+  "userProfile": "Мій профіль",
+  "darkMode": "Темна тема"
 }
 </i18n>
+
+
+
+
+
+

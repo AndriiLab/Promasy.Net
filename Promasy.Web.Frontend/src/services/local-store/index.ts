@@ -2,6 +2,7 @@ export const keys = {
   allowStore: "allow",
   language: "lang",
   token: "token",
+  darkMode: "darkMode",
 };
 
 export default {

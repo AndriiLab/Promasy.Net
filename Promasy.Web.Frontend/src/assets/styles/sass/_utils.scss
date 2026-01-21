@@ -1,7 +1,9 @@
+@use "../_variables" as *;
+
 .card {
-    background-color: var(--surface-card);
+    background-color: var(--p-content-background);
     padding: 1.5rem;
-    color: var(--surface-900);
+    color: var(--p-surface-900);
     margin-bottom: 1rem;
     border-radius: $borderRadius;
     box-shadow: 0px 3px 5px rgba(0,0,0,.02), 0px 0px 2px rgba(0,0,0,.05), 0px 1px 4px rgba(0,0,0,.08) !important;
@@ -10,3 +12,16 @@
         padding-bottom: 2rem;
     }
 }
+
+.text-color {
+    color: var(--p-text-color) !important;
+}
+
+.text-muted-color {
+    color: var(--p-text-muted-color) !important;
+}
+
+.bg-surface-ground {
+    background-color: var(--p-surface-ground) !important;
+}
+

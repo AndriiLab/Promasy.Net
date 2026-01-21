@@ -1,49 +1,43 @@
 <template>
-  <div class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
-    <div class="grid justify-content-center p-2 lg:p-0" style="min-width:80%">
-      <div class="col-12 mt-5 xl:mt-0 text-center">
-      </div>
-      <div class="col-12 xl:col-6"
-           style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color), rgba(33, 150, 243, 0) 30%);">
-        <div class="h-full w-full m-0 py-7 px-4"
-             style="border-radius:53px; background: linear-gradient(180deg, var(--surface-50) 38.9%, var(--surface-0));">
-          <div class="text-center mb-5">
-            <img :src="'/src/assets/logo.png'" alt="Promasy logo" height="50" class="mb-3">
-            <div class="text-900 text-3xl font-medium mb-3">{{ t('welcome') }}</div>
-            <span class="text-600 font-medium">{{ t('signInToContinue') }}</span>
+  <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="flex flex-col items-center justify-center">
+      <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+        <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+          <div class="text-center mb-8">
+            <img :src="'/src/assets/logo.png'" alt="Promasy logo" height="50" class="mb-8 w-16 shrink-0 mx-auto">
+            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">{{ t('welcome') }}</div>
+            <span class="text-muted-color font-medium">{{ t('signInToContinue') }}</span>
           </div>
 
-          <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{ err }}</Message>
-          <form class="w-full md:w-10 mx-auto">
-            <ErrorWrap :errors="v$.username.$errors" :class="['mb-3']" :externalErrors="externalErrors['Username']">
-              <label for="username" class="block text-900 text-xl font-medium mb-2">{{ t('username') }}</label>
-              <InputText id="username" v-model.trim="model.username" type="text" autocomplete="username" class="w-full"
-                         :placeholder="t('username')" style="padding:1rem;"/>
+          <div>
+            <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{ err }}</Message>
+
+            <ErrorWrap :errors="v$.username.$errors" :externalErrors="externalErrors['Username']">
+              <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">{{ t('username') }}</label>
+              <InputText id="username" v-model.trim="model.username" type="text" autocomplete="username" class="w-full md:w-[30rem] mb-8"
+                         :placeholder="t('username')" />
             </ErrorWrap>
 
-            <ErrorWrap :errors="v$.password.$errors" :class="['mb-3']" :externalErrors="externalErrors['Password']">
-              <label for="password" class="block text-900 font-medium text-xl mb-2">{{ t('password') }}</label>
+            <ErrorWrap :errors="v$.password.$errors" :externalErrors="externalErrors['Password']">
+              <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">{{ t('password') }}</label>
               <Password id="password" v-model="model.password" :placeholder="t('password')"
-                             class="w-full mb-3" inputClass="w-full" inputStyle="padding:1rem"
-                             autocomplete="password" :toggleMask="true"></Password>
+                             class="mb-4" fluid :toggleMask="true" :feedback="false" autocomplete="password"></Password>
             </ErrorWrap>
 
-            <div class="flex align-items-center justify-content-between mb-5">
-              <div class="flex align-items-center">
-                <Checkbox id="rememberme" v-model="model.rememberMe" :binary="true" class="mr-2"></Checkbox>
+            <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+              <div class="flex items-center">
+                <Checkbox id="rememberme" v-model="model.rememberMe" binary class="mr-2"></Checkbox>
                 <label for="rememberme">{{ t('rememberMe') }}</label>
               </div>
-              <a class="font-medium no-underline ml-2 text-right cursor-pointer"
-                 style="color: var(--primary-color)">{{ t('forgotPassword') }}</a>
+              <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">{{ t('forgotPassword') }}</span>
             </div>
-            <Button :label="t('signIn')" class="w-full p-3 text-xl" @click="submitLogin"></Button>
-          </form>
+            <Button :label="t('signIn')" class="w-full" @click="submitLogin"></Button>
 
-          <div class="mt-5 ml-7">
-            <label for="language" class="mr-3">{{ t('language') }}</label>
-            <LanguageSelector id="language" classes="ml-2"></LanguageSelector>
+            <div class="mt-8 text-center">
+              <label for="language" class="mr-3">{{ t('language') }}</label>
+              <LanguageSelector id="language" classes="ml-2"></LanguageSelector>
+            </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -129,3 +123,4 @@ async function submitLogin() {
   margin-right: 1rem;
 }
 </style>
+

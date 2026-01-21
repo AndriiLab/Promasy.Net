@@ -4,7 +4,7 @@
   <div v-else class="grid">
     <div class="col-12">
       <div class="card">
-        <div class="p-fluid formgrid grid">
+        <Fluid class="formgrid grid">
           <div class="field col-12">
             <h3>{{ header }}</h3>
           </div>
@@ -36,13 +36,13 @@
           <ErrorWrap :errors="v$.type.$errors" class="field col-12 md:col-6"
                      :external-errors="externalErrors['Type']">
             <label for="type">{{ t('type') }}</label>
-            <Dropdown id="type" v-model="model.type" :options="types"
+            <Select id="type" v-model="model.type" :options="types"
                       optionLabel="text" optionValue="value"/>
           </ErrorWrap>
           <ErrorWrap :errors="v$.financeSubDepartment.$errors" class="field col-12 md:col-6"
                      :external-errors="externalErrors['FinanceSubDepartmentId']">
             <label for="financeSubDepartment">{{ t('financeSource') }}</label>
-            <Dropdown id="financeSubDepartment"
+            <Select id="financeSubDepartment"
                       v-model="model.financeSubDepartment"
                       :options="financeSubDepartments"
                       v-on:before-show="getFinanceSubDepartmentsListAsync"
@@ -57,13 +57,13 @@
                      :external-errors="externalErrors['ManufacturerId']">
             <label for="manufacturerId">{{ t('manufacturer') }}</label>
             <div class="p-inputgroup">
-              <Dropdown id="manufacturerId" v-model="model.manufacturerId"
+              <Select id="manufacturerId" v-model="model.manufacturerId"
                         :options="manufacturers"
                         v-on:before-show="getManufacturersAsync"
                         :filter="true"
                         optionLabel="text" optionValue="value" :loading="loading"/>
               <router-link :to="{ name: 'CreateManufacturer'}" target="_blank">
-                <Button icon="pi pi-plus" class="p-button-outlined p-button-success"
+                <Button icon="pi pi-plus" class="p-button-outlined" severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
             </div>
@@ -106,7 +106,7 @@
               <InputText id="cpv"
                          :modelValue="getCpvLabel(model.cpv)"
                          disabled/>
-              <Button icon="pi pi-search" class="p-button-outlined p-button-info" @click="selectCpvDialog = true"/>
+              <Button icon="pi pi-search" class="p-button-outlined " severity="info" @click="selectCpvDialog = true"/>
             </div>
           </ErrorWrap>
 
@@ -117,13 +117,13 @@
                      :external-errors="externalErrors['SupplierId']">
             <label for="supplierId">{{ t('supplierName') }}</label>
             <div class="p-inputgroup">
-              <Dropdown id="supplierId" v-model="model.supplierId"
+              <Select id="supplierId" v-model="model.supplierId"
                         :options="suppliers"
                         v-on:before-show="getSuppliersAsync"
                         :filter="true"
                         optionLabel="text" optionValue="value" :loading="loading"/>
               <router-link :to="{ name: 'CreateSupplier'}" target="_blank">
-                <Button icon="pi pi-plus" class="p-button-outlined p-button-success"
+                <Button icon="pi pi-plus" class="p-button-outlined " severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
             </div>
@@ -132,7 +132,7 @@
                      :external-errors="externalErrors['ReasonId']">
             <label for="reasonId">{{ t('reasonForSupplierChoice') }}</label>
             <div class="p-inputgroup">
-              <Dropdown id="reasonId" v-model="model.reasonId"
+              <Select id="reasonId" v-model="model.reasonId"
                         :options="reasons"
                         v-on:before-show="getReasonsForSupplierChoiceAsync"
                         :filter="true"
@@ -140,7 +140,7 @@
                         :placeholder="isSupplierSelected ? '' : t('selectSupplierFirst')"
                         optionLabel="text" optionValue="value" :loading="loading"/>
               <router-link :to="{ name: 'CreateReasonForSupplierChoice'}" target="_blank">
-                <Button icon="pi pi-plus" class="p-button-outlined p-button-success"
+                <Button icon="pi pi-plus" class="p-button-outlined " severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
             </div>
@@ -170,13 +170,13 @@
                      :external-errors="externalErrors['UnitId']">
             <label for="unitId">{{ t('units') }}</label>
             <div class="p-inputgroup">
-              <Dropdown id="unitId" v-model="model.unitId"
+              <Select id="unitId" v-model="model.unitId"
                         :options="units"
                         v-on:before-show="getUnitsAsync"
                         :filter="true"
                         optionLabel="text" optionValue="value" :loading="loading"/>
               <router-link :to="{ name: 'CreateUnit'}" target="_blank">
-                <Button icon="pi pi-plus" class="p-button-outlined p-button-success"
+                <Button icon="pi pi-plus" class="p-button-outlined " severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
             </div>
@@ -194,14 +194,14 @@
           <ErrorWrap :errors="v$.procurementStartDate.$errors" class="field col-12 md:col-6"
                      :external-errors="externalErrors['ProcurementStartDate']">
             <label for="procurementStartDate">{{ t('procurementStartDate') }}</label>
-            <Calendar id="procurementStartDate" v-model="model.procurementStartDate"></Calendar>
+            <DatePicker id="procurementStartDate" v-model="model.procurementStartDate"></DatePicker>
           </ErrorWrap>
           <ErrorWrap class="field col-12 md:col-6" :errors="v$.kekv.$errors"
                      :external-errors="externalErrors['Kekv']">
             <label for="kekv" v-tooltip.bottom="t('kekvFull')">{{ t('kekv') }}</label>
             <div class="p-inputgroup">
               <InputText id="kekv" v-model="model.kekv" :disabled="!isKekvEdit"/>
-              <Button icon="pi pi-pencil" class="p-button-outlined p-button-success"
+              <Button icon="pi pi-pencil" class="p-button-outlined " severity="success"
                       v-on:click="isKekvEdit = !isKekvEdit"/>
             </div>
           </ErrorWrap>
@@ -212,7 +212,7 @@
               }}
             </Message>
           </div>
-        </div>
+        </Fluid>
 
         <div class="flex justify-content-between flex-wrap mt-5">
           <div v-if="model.editedDate">{{ t('lastEdit') }}:
@@ -230,10 +230,10 @@
       </template>
     </Dialog>
 
-    <OverlayPanel ref="suggestionsPanel" appendTo="body" :showCloseIcon="true" id="suggestions_panel"
-                  style="width: 800px" :breakpoints="{'960px': '75vw'}">
+    <Popover ref="suggestionsPanel" appendTo="body" id="suggestions_panel"
+                  style="width: 800px">
       <DataTable v-if="selectedSuggestions" :value="selectedSuggestions.items" :lazy="true" :paginator="true"
-                 class="p-datatable-sm"
+                 size="small"
                  :rows="selectedSuggestions.offset" :totalRecords="selectedSuggestions.total"
                  @page="onSuggestionsPageAsync($event)"
                  paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
@@ -306,7 +306,7 @@
           </div>
         </template>
       </DataTable>
-    </OverlayPanel>
+    </Popover>
 
   </div>
 </template>
@@ -867,3 +867,10 @@ interface SuggestionsTablePaging extends TablePagingData {
   background: #edf1f5 !important;
 }
 </style>
+
+
+
+
+
+
+

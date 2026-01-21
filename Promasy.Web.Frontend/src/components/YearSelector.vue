@@ -1,5 +1,5 @@
-﻿<template>
-  <Dropdown v-model.number="selectedYear" :options="years" :editable="true" :class="{ 'p-invalid': hasError }" :disabled="disabled"/>
+<template>
+  <Select v-model.number="selectedYear" :options="years" :editable="true" :class="{ 'p-invalid': hasError }" :disabled="disabled"/>
 </template>
 
 <script lang="ts" setup>

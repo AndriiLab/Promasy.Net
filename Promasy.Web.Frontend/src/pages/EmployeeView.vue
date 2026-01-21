@@ -69,7 +69,7 @@
           </ErrorWrap>
           <ErrorWrap class="field col-12 md:col-4" :errors="v$.role.$errors" :external-errors="externalErrors['Roles']">
             <label for="role">{{ t('role') }}</label>
-            <Dropdown id="role" v-model="model.role" :options="roles" optionLabel="text" optionValue="value"></Dropdown>
+            <Select id="role" v-model="model.role" :options="roles" optionLabel="text" optionValue="value"></Select>
           </ErrorWrap>
 
           <template v-if="model.id < 1">
@@ -356,3 +356,5 @@ interface EmployeeModel {
   "selectSubDepartment": "Виберіть підрозділ"
 }
 </i18n>
+
+

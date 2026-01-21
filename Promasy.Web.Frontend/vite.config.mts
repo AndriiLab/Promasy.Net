@@ -4,6 +4,7 @@ import path from 'path';
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import viteNetCoreSslPlugin from "./.vite/vite-plugin-netcore-https";
 import svgLoader from "vite-svg-loader";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -42,6 +43,7 @@ export default ({ mode }) => {
     },
     plugins: [
       vue(),
+      tailwindcss(),
       VueI18nPlugin({ include: [path.resolve(__dirname, "./src/i18n/locales/**")] }),
       viteNetCoreSslPlugin(),
       svgLoader(),

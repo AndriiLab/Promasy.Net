@@ -1,12 +1,12 @@
 <template>
-  <div class="grid">
-    <div class="col-12">
+  <div class="grid grid-cols-12 gap-8">
+    <div class="col-span-12">
       <div class="card">
 
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"
+              <Button :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"
                       @click="create"/>
             </div>
           </template>
@@ -16,7 +16,7 @@
           </template>
         </Toolbar>
 
-        <DataTable ref="dt" :value="items" :lazy="true" :paginator="true" class="p-datatable-sm"
+        <DataTable ref="dt" :value="items" :lazy="true" :paginator="true" size="small"
                    :rows="tableData.offset" :totalRecords="tableData.total" :loading="isLoading"
                    @page="onPageAsync($event)" @sort="onSortAsync($event)"
                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -24,7 +24,7 @@
                    :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('financeSources') })"
                    responsiveLayout="scroll">
           <template #header>
-            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
               <h5 class="m-0">{{ t('table.header', {itemName: t('manageFinanceSources')}) }}</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                   <i class="pi pi-search"/>
@@ -108,19 +108,19 @@
           </Column>
           <Column headerStyle="min-width:12rem;">
             <template #body="slotProps">
-              <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+              <router-link icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
                            :to="{ name: 'FinanceSubDepartments', params: {financeId: slotProps.data.id}}">
                 <Button v-tooltip.left="t('sub-department', 2)" icon="pi pi-briefcase"
                         class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
-              <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+              <router-link icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
                            :to="{ name: 'FinanceOrders', params: {financeId: slotProps.data.id, type: 1 }}">
                 <Button v-tooltip.left="t('order', 2)" icon="pi pi-shopping-cart"
                         class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
-              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
                       @click="edit(slotProps.data)"/>
-              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -144,8 +144,8 @@
             </ErrorWrap>
             <ErrorWrap :errors="v$.fundType.$errors" :external-errors="externalErrors['FundType']" class="mt-3">
               <label for="fundType">{{ t('fundType') }}</label>
-              <Dropdown id="fundType" :options="fundTypes" v-model="item.fundType" option-label="text"
-                        option-value="value"></Dropdown>
+              <Select id="fundType" :options="fundTypes" v-model="item.fundType" option-label="text"
+                        option-value="value"></Select>
             </ErrorWrap>
             <ErrorWrap :errors="v$.totalMaterials.$errors" :external-errors="externalErrors['TotalMaterials']"
                        class="mt-3">
@@ -164,11 +164,11 @@
             </ErrorWrap>
             <ErrorWrap :errors="v$.start.$errors" :external-errors="externalErrors['Start']" class="mt-3">
               <label for="start">{{ t('start') }}</label>
-              <Calendar id="start" v-model="item.start" dateFormat="yy-mm-dd"></Calendar>
+              <DatePicker id="start" v-model="item.start" dateFormat="yy-mm-dd"></DatePicker>
             </ErrorWrap>
             <ErrorWrap :errors="v$.end.$errors" :external-errors="externalErrors['End']" class="mt-3">
               <label for="end">{{ t('end') }}</label>
-              <Calendar id="end" v-model="item.end" dateFormat="yy-mm-dd"></Calendar>
+              <DatePicker id="end" v-model="item.end" dateFormat="yy-mm-dd"></DatePicker>
             </ErrorWrap>
             <ErrorWrap :errors="v$.kpkvk.$errors" :external-errors="externalErrors['Kpkvk']" class="mt-3">
               <label for="kpkvk">{{ t('kpkvk') }}</label>
@@ -446,3 +446,12 @@ function getDefaultItem(): FinanceSource {
   "kpkvk": "КПКВК"
 }
 </i18n>
+
+
+
+
+
+
+
+
+

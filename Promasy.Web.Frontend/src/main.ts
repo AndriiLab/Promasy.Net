@@ -1,9 +1,7 @@
-import "primevue/resources/themes/lara-light-blue/theme.css";
-import "primevue/resources/primevue.min.css";
-import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";
-import "./assets/styles/layout.scss";
 import "./assets/flags/flags.css";
+import "./assets/tailwind.css";
+import "./assets/styles/layout.scss";
 
 import { createApp } from "vue";
 import App from "./App.vue";
@@ -11,6 +9,7 @@ import { i18n } from "./i18n";
 import { Store } from "./store";
 import { Router } from "./router";
 import PrimeVue from "primevue/config";
+import Aura from "@primeuix/themes/aura";
 import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import Password from "primevue/password";
@@ -20,9 +19,9 @@ import Button from "primevue/button";
 import Badge from "primevue/badge";
 import Ripple from "primevue/ripple";
 import Textarea from "primevue/textarea";
-import Dropdown from "primevue/dropdown";
+import Select from "primevue/select";
 import Message from "primevue/message";
-import OverlayPanel from "primevue/overlaypanel";
+import Popover from "primevue/popover";
 import Tooltip from "primevue/tooltip";
 import Tag from "primevue/tag";
 import DataTable from "primevue/datatable";
@@ -35,7 +34,8 @@ import Dialog from "primevue/dialog";
 import Chip from "primevue/chip";
 import Avatar from "primevue/avatar";
 import Skeleton from "primevue/skeleton";
-import Calendar from "primevue/calendar";
+import DatePicker from "primevue/datepicker";
+import Fluid from "primevue/fluid";
 import ToastService from "primevue/toastservice";
 import BadgeDirective from 'primevue/badgedirective';
 import vue3Debounce from "vue-debounce";
@@ -47,7 +47,14 @@ app.use(Router);
 app.use(Store);
 
 // Prime Vue
-app.use(PrimeVue);
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura,
+        options: {
+            darkModeSelector: ".app-dark"
+        }
+    }
+});
 app.use(ToastService);
 
 app.directive("ripple", Ripple);
@@ -63,9 +70,9 @@ app.component("RadioButton", RadioButton);
 app.component("Button", Button);
 app.component("Badge", Badge);
 app.component("Textarea", Textarea);
-app.component("Dropdown", Dropdown);
+app.component("Select", Select);
 app.component("Message", Message);
-app.component("OverlayPanel", OverlayPanel);
+app.component("Popover", Popover);
 app.component("Tag", Tag);
 app.component("DataTable", DataTable);
 app.component("TreeTable", TreeTable);
@@ -77,6 +84,7 @@ app.component("Dialog", Dialog);
 app.component("Chip", Chip);
 app.component("Avatar", Avatar);
 app.component("Skeleton", Skeleton);
-app.component("Calendar", Calendar);
+app.component("DatePicker", DatePicker);
+app.component("Fluid", Fluid);
 
 app.mount("#app");

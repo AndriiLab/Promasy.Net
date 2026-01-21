@@ -1,5 +1,5 @@
 <template>
-  <Dropdown v-model="language" :options="availableLanguages" optionLabel="name" optionValue="value">
+  <Select v-model="language" :options="availableLanguages" optionLabel="name" optionValue="value">
     <template #value="slotProps">
       <div class="flex align-items-center">
         <span :class="'mr-2 flag flag-' + getFlag(slotProps.value)" style="width:18px; height: 12px"/>
@@ -12,7 +12,7 @@
         <div>{{ slotProps.option.name }}</div>
       </div>
     </template>
-  </Dropdown>
+  </Select>
 </template>
 
 <script lang="ts" setup>
@@ -40,3 +40,4 @@ function getNameByKey(key: string, items: SelectObject<string>[]): string | unde
 
 watch(language, (l) => sessionStore.setLanguage(l));
 </script>
+

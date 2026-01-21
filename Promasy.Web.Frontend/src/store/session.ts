@@ -13,11 +13,16 @@ export const useSessionStore = defineStore("session", {
     permissions: new Object<string, Object<PermissionAction, PermissionCondition>>(),
     lastUrl: undefined,
     year: new Date().getFullYear(),
+    darkMode: LocalStore.get(keys.darkMode) === "true",
   }),
   actions: {
     setLanguage(language: string) {
       this.locale = language;
       LocalStore.set(keys.language, this.locale);
+    },
+    setDarkMode(darkMode: boolean) {
+      this.darkMode = darkMode;
+      LocalStore.set(keys.darkMode, darkMode.toString());
     },
     setYear(year: number) {
       this.year = year;
@@ -112,6 +117,7 @@ export interface Session {
   permissions: Object<string, Object<PermissionAction, PermissionCondition>>;
   lastUrl?: string;
   year: number;
+  darkMode: boolean;
 }
 
 export interface SessionUser {

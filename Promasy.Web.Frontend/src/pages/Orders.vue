@@ -1,6 +1,6 @@
 <template>
-    <div class="grid">
-        <div class="col-12">
+    <div class="grid grid-cols-12 gap-8">
+        <div class="col-span-12">
             <div class="card">
 
                 <Toolbar class="mb-4">
@@ -8,7 +8,7 @@
                         <div class="my-2">
                             <router-link :to="{ name: 'OrderNew' }">
                                 <Button :label="t('createDialog.addNew')" icon="pi pi-plus"
-                                        class="p-button-success mr-2"/>
+                                         severity="success" class="mr-2"/>
                             </router-link>
                             <Button v-if="selectedItems.length" :label="t('print')" icon="pi pi-print"
                                     class="p-button-primary mr-2" @click="openExportOrdersDialog"/>
@@ -19,25 +19,25 @@
                         <YearSelector id="currentYear" style="width: 100px"
                                       :disabled="financeSourceId > 0"></YearSelector>
                         <label for="financeSource" class="ml-3 mr-2">{{ t("financeSource") }}</label>
-                        <Dropdown id="financeSource" v-model="financeSourceId" :options="financeSources"
+                        <Select id="financeSource" v-model="financeSourceId" :options="financeSources"
                                   v-on:before-show="getFinanceSourceListAsync" class="w-17rem"
                                   optionLabel="text" optionValue="value" :loading="isLoading"/>
                         <label for="type" class="ml-3 mr-2">{{ t("type") }}</label>
-                        <Dropdown id="type" v-model="typeId" :options="types" class="w-11rem"
+                        <Select id="type" v-model="typeId" :options="types" class="w-11rem"
                                   optionLabel="text" optionValue="value"/>
                     </template>
                 </Toolbar>
 
-                <DataTable ref="dt" :value="items" :lazy="true" :paginator="true" class="p-datatable-sm"
+                <DataTable ref="dt" :value="items" :lazy="true" :paginator="true" size="small"
                            :rows="tableData.offset" :totalRecords="tableData.total" :loading="isLoading"
-                           selectionMode="multiple" v-model:selection="selectedItems" dataKey="id"
+                           v-model:selection="selectedItems" selectionMode="multiple" dataKey="id"
                            @page="onPageAsync($event)" @sort="onSortAsync($event)"
                            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                            :rowsPerPageOptions="[10,50,100]"
                            :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('orders') })"
                            responsiveLayout="scroll">
                     <template #header>
-                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center">
 
                             <h5 class="m-0">{{ t("table.header", { itemName: t("manageOrders") }) }}</h5>
                             <div>
@@ -107,18 +107,18 @@
                     </Column>
                     <Column headerStyle="min-width:10rem;">
                         <template #body="slotProps">
-                            <router-link icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                            <router-link icon="pi pi-pencil" class="p-button-rounded mr-2" severity="success"
                                          :to="{ name: 'OrderView', params: { orderId: slotProps.data.id }}">
                                 <Button v-tooltip.left="t('edit')" icon="pi pi-pencil"
-                                        class="p-button-rounded p-button-success mr-2"/>
+                                        class="p-button-rounded mr-2" severity="success"/>
                             </router-link>
                             <Button v-tooltip.left="t('delete')" icon="pi pi-trash"
-                                    class="p-button-rounded p-button-warning mt-2"
+                                    class="p-button-rounded mt-2" severity="warning"
                                     @click="confirmDelete(slotProps.data)"/>
                         </template>
                     </Column>
                     <template #footer>
-                        <div class="flex justify-content-end">
+                        <div class="flex justify-end">
                             <span v-if="tableData.leftAmount"
                                   class="mr-7">{{ t("leftAmount") }}: {{
                                 currency(tableData.leftAmount).format()
@@ -134,7 +134,7 @@
                         err
                         }}
                     </Message>
-                    <div class="flex align-items-center justify-content-center">
+                    <div class="flex items-center justify-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
                         <span v-if="item">{{ t("deleteDialog.text") }} <b>{{ item.name }}</b>?</span>
                     </div>
@@ -156,7 +156,7 @@
                             getRoleAsText(RoleEnum.Director)
                             }}/{{ getRoleAsText(RoleEnum.DeputyDirector) }}</label>
                         <div class="col">
-                            <Dropdown id="organizationHead"
+                            <Select id="organizationHead"
                                       class="w-6"
                                       v-model="exportPdfModel.organizationHead"
                                       :options="exportPdfModel.organizationHeads"
@@ -170,7 +170,7 @@
                             getRoleAsText(RoleEnum.ChiefAccountant)
                             }}</label>
                         <div class="col">
-                            <Dropdown id="chiefAccountant"
+                            <Select id="chiefAccountant"
                                       class="w-6"
                                       v-model="exportPdfModel.chiefAccountant"
                                       :options="exportPdfModel.chiefAccountants"
@@ -184,7 +184,7 @@
                             getRoleAsText(RoleEnum.ChiefEconomist)
                             }}</label>
                         <div class="col">
-                            <Dropdown id="chiefEconomist"
+                            <Select id="chiefEconomist"
                                       class="w-6"
                                       v-model="exportPdfModel.chiefEconomist"
                                       :options="exportPdfModel.chiefEconomists"
@@ -198,7 +198,7 @@
                             getRoleAsText(RoleEnum.SecretaryOfTenderCommittee)
                             }}</label>
                         <div class="col">
-                            <Dropdown id="secretaryOfTenderCommittee"
+                            <Select id="secretaryOfTenderCommittee"
                                       class="w-6"
                                       v-model="exportPdfModel.secretaryOfTenderCommittee"
                                       :options="exportPdfModel.secretaryOfTenderCommittees"
@@ -209,8 +209,8 @@
 
                     <ErrorWrap :errors="v$.items.$errors" class="field grid">
 
-                        <DataTable ref="dt-select" :value="selectedItems" class="p-datatable-sm"
-                                   selectionMode="multiple" v-model:selection="exportPdfModel.items"
+                        <DataTable ref="dt-select" :value="selectedItems" size="small"
+                                   v-model:selection="exportPdfModel.items" selectionMode="multiple"
                                    dataKey="id"
                                    responsiveLayout="scroll">
                             <Column selectionMode="multiple" headerStyle="width: 3em"></Column>
@@ -229,7 +229,7 @@
                                 </template>
                             </Column>
                             <template #footer>
-                                <div class="flex justify-content-end">
+                                <div class="flex justify-end">
                             <span>{{
                                 t("total")
                                 }}: {{
@@ -631,3 +631,11 @@ interface ExportToPdfModel {
   "exportOrdersDialog.header": "Створити заявку для обраних замовлень"
 }
 </i18n>
+
+
+
+
+
+
+
+

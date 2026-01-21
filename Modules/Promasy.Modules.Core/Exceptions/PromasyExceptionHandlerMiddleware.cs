@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Promasy.Core.Exceptions;
-using Promasy.Modules.Core.Exceptions;
 
-namespace Promasy.Web.App.ExceptionHandlers;
+namespace Promasy.Modules.Core.Exceptions;
 
 public class PromasyExceptionHandlerMiddleware
 {

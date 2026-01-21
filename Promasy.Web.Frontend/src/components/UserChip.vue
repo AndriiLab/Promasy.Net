@@ -1,16 +1,16 @@
-﻿<template>
+<template>
   <div style="display: inline">
     <Avatar
         class="user-avatar"
         :label="initials"
         :style="{ 'background-color': backgroundColor, color: color }"
         @click="togglePopupAsync($event, true)"/>
-    <OverlayPanel ref="userChipDetailsPanel" @mouseleave="togglePopupAsync($event, false)">
+    <Popover ref="userChipDetailsPanel" @mouseleave="togglePopupAsync($event, false)">
       <div v-if="!showDetails">
         <p class="pl-2">{{ userName }}</p>
       </div>
       <UserInfoSection v-else :user="user" :config="userInfoConfig"/>
-    </OverlayPanel>
+    </Popover>
   </div>
 </template>
 
@@ -100,6 +100,6 @@ async function togglePopupAsync(ev: Event, loadData: boolean) {
 
 <i18n locale="uk">
 {
-  "moreDetails": "Більше інформації"
+  "moreDetails": "?????? ??????????"
 }
 </i18n>

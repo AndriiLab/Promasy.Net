@@ -1,6 +1,6 @@
 <template>
-  <div class="grid">
-    <div class="col-12">
+  <div class="grid grid-cols-12 gap-8">
+    <div class="col-span-12">
       <div class="card">
         <CpvSelector :select-mode="false" v-model="model"></CpvSelector>
       </div>
@@ -11,6 +11,8 @@
 <script lang="ts" setup>
 import CpvSelector from "../components/CpvSelector.vue";
 import {Cpv} from "@/services/api/cpv";
+import {ref} from "vue";
 
-const model = {} as Cpv;
+const model = ref<Cpv>({} as Cpv);
 </script>
+

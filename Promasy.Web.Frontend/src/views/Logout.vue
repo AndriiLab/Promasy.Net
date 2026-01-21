@@ -1,14 +1,14 @@
 <template>
-    <div class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+    <div class="bg-surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="grid justify-content-center p-2 lg:p-0" style="min-width:80%">
             <div class="col-12 mt-5 xl:mt-0 text-center">
                 <img src="@/assets/logo.png" alt="Logo" class="mb-5">
             </div>
-            <div class="col-12 xl:col-6" style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, rgba(33, 150, 243, 0.4) 10%, rgba(33, 150, 243, 0) 30%);">
-                <div class="flex justify-content-center h-full w-full m-0 py-7 px-4" style="border-radius:53px; background: linear-gradient(180deg, var(--surface-50) 38.9%, var(--surface-0));">
+            <div class="col-12 xl:col-6" style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--p-primary-color) 10%, rgba(33, 150, 243, 0) 30%);">
+                <div class="flex justify-content-center h-full w-full m-0 py-7 px-4" style="border-radius:53px; background: linear-gradient(180deg, var(--p-content-background) 38.9%, var(--p-surface-ground))">
                     <div class="grid flex-column align-items-center">
-                        <h1 class="text-900 font-bold text-3xl lg:text-5xl mb-2"> {{ t('loggingoutYou') }}</h1>
-                        <span class="text-gray-600">{{ t('pleaseWait') }}</span>
+                        <h1 class="text-color font-bold text-3xl lg:text-5xl mb-2"> {{ t('loggingoutYou') }}</h1>
+                        <span class="text-muted-color">{{ t('pleaseWait') }}</span>
                     </div>
                 </div>
             </div>
@@ -44,3 +44,4 @@ onMounted(async () => {
     "pleaseWait": "Будь ласка, зачекайте"
 }
 </i18n>
+

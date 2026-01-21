@@ -1,16 +1,16 @@
 <template>
-  <div class="grid">
-    <div class="col-12">
+  <div class="grid grid-cols-12 gap-8">
+    <div class="col-span-12">
       <div class="card">
 
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <Button :label="t('createDialog.addNew')" icon="pi pi-plus" class="p-button-success mr-2"
+              <Button :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"
                       v-if="canAccess(PermissionAction.Create, {})"
                       @click="create"/>
               <Button v-if="selectedItems.length > 1 && canAccess(PermissionAction.Merge, {})" :label="t('merge')" icon="pi pi-angle-double-down"
-                      class="p-button-warning mr-2" @click="merge"/>
+                       severity="warning" class="mr-2" @click="merge"/>
             </div>
           </template>
         </Toolbar>
@@ -18,13 +18,13 @@
         <DataTable ref="dt" :value="items" :lazy="true" :paginator="true"
                    :rows="tableData.offset" :totalRecords="tableData.total" :loading="isLoading"
                    @page="onPageAsync($event)" @sort="onSortAsync($event)"
-                   :selectionMode="canAccess(PermissionAction.Merge, {}) ? 'multiple' : 'single'" v-model:selection="selectedItems" dataKey="id"
+                   v-model:selection="selectedItems" :selectionMode="canAccess(PermissionAction.Merge, {}) ? 'multiple' : 'single'" dataKey="id"
                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                    :rowsPerPageOptions="[10,50,100]"
                    :currentPageReportTemplate="t('table.paginationFooter', { itemName: t('units') })"
                    responsiveLayout="scroll">
           <template #header>
-            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
               <h5 class="m-0">{{ t('table.header', {itemName: t('manageUnits')}) }}</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                   <i class="pi pi-search"/>
@@ -56,9 +56,9 @@
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
               <Button v-if="canAccess(PermissionAction.Update, { userId: slotProps.data.editorId })" 
-                      icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="edit(slotProps.data)"/>
+                      icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success" @click="edit(slotProps.data)"/>
               <Button v-if="canAccess(PermissionAction.Delete, { userId: slotProps.data.editorId })" 
-                      icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDelete(slotProps.data)"/>
+                      icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning" @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
         </DataTable>
@@ -89,7 +89,7 @@
               err
             }}
           </Message>
-          <div class="flex align-items-center justify-content-center">
+          <div class="flex items-center justify-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
             <span v-if="item">{{ t('deleteDialog.text') }} <b>{{ item.name }}</b>?</span>
           </div>
@@ -102,15 +102,15 @@
         <Dialog v-model:visible="mergeDialog" :style="{width: '450px'}" :header="t('mergeDialog.header')"
                 :modal="true">
           <Message v-for="err of externalErrors['']" :severity="'error'" :key="err" :closable="false">{{err}}</Message>
-          <div class="flex flex-column">
-            <i class="flex align-items-center justify-content-center pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
-            <div class="flex align-items-center justify-content-center">{{ t('mergeDialog.text1') }}:</div>
+          <div class="flex flex-col">
+            <i class="flex items-center justify-center pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
+            <div class="flex items-center justify-center">{{ t('mergeDialog.text1') }}:</div>
             <ul>
               <li v-for="item in selectedItems"><b>{{ item.name }}</b></li>
             </ul>
-            <div class="flex align-items-center justify-content-center mb-3">{{ t('mergeDialog.text2') }}</div>
-            <div class="flex align-items-center justify-content-center">
-              <Dropdown v-model="item" :options="selectedItems" optionLabel="name"></Dropdown><span class="ml-1">?</span>
+            <div class="flex items-center justify-center mb-3">{{ t('mergeDialog.text2') }}</div>
+            <div class="flex items-center justify-center">
+              <Select v-model="item" :options="selectedItems" optionLabel="name"></Select><span class="ml-1">?</span>
             </div>
           </div>
           <template #footer>
@@ -317,3 +317,10 @@ async function mergeAsync() {
   "unitDetails": "Деталі розмірності"
 }
 </i18n>
+
+
+
+
+
+
+

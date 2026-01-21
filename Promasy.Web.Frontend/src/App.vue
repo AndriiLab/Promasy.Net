@@ -20,9 +20,25 @@ const { locale } = useI18n();
 const primeVue = usePrimeVue();
 
 initLocale();
+initDarkMode();
 onMounted(async () => {
   await initUserAsync();
 });
+
+function initDarkMode() {
+  applyDarkMode(sessionStore.darkMode);
+  sessionStore.$subscribe((mutation, state) => {
+    applyDarkMode(state.darkMode);
+  });
+}
+
+function applyDarkMode(isDark: boolean) {
+  if (isDark) {
+    document.documentElement.classList.add("app-dark");
+  } else {
+    document.documentElement.classList.remove("app-dark");
+  }
+}
 
 function initLocale() {
   locale.value = sessionStore.locale;

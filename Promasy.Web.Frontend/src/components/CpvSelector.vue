@@ -1,11 +1,11 @@
-﻿<template>
+<template>
   <TreeTable :value="nodes" :lazy="true" :loading="loading" @nodeExpand="onExpand">
     <template #header>
       <div class="text-right">
         <template v-if="nodes.length && nodes[0].data.level > 1">
-          <Button icon="pi pi-home" class="mr-2 p-button-outlined p-button-secondary"
+          <Button icon="pi pi-home" class="mr-2 p-button-outlined" severity="secondary"
                   v-tooltip.left="t('backToCpvBeginning')" @click="backToRootAsync"/>
-          <Button icon="pi pi-arrow-up" class="mr-2 p-button-outlined p-button-secondary"
+          <Button icon="pi pi-arrow-up" class="mr-2 p-button-outlined" severity="secondary"
                   v-tooltip.left="t('levelUp')"
                   @click="backOneLevelAsync"/>
         </template>
@@ -23,7 +23,7 @@
       <template #body="slotProps">
         <Button v-if="isSelectable(slotProps.node.data)"
                 icon="pi pi-check"
-                class="p-button-rounded p-button-sm p-button-success"
+                class="p-button-rounded" size="small" severity="success"
                 :class="{'p-button-outlined': slotProps.node.data.id !== preSelectedValue?.id }"
                 @click="onSelectItem(slotProps.node.data)"
                 v-tooltip.left="t('select')"/>
@@ -150,3 +150,6 @@ function onSelectItem(cpv: Cpv) {
   "descriptionEnglish": "Опис англійською"
 }
 </i18n>
+
+
+

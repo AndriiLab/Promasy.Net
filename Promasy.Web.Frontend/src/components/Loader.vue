@@ -25,3 +25,4 @@ const { t } = useI18n({ useScope: "local" });
   "loading": "Завантаження"
 }
 </i18n>
+
