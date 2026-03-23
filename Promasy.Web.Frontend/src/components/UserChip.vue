@@ -100,6 +100,6 @@ async function togglePopupAsync(ev: Event, loadData: boolean) {
 
 <i18n locale="uk">
 {
-  "moreDetails": "?????? ??????????"
+  "moreDetails": "Більше інформації"
 }
 </i18n>

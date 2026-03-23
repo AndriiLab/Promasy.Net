@@ -100,6 +100,6 @@ function getDefaultItem(): SelectItem<number> {
 
 <i18n locale="uk">
 {
-  "all": "-??? ??????????-"
+  "all": "-всі підрозділи-"
 }
 </i18n>

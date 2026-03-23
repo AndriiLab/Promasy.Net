@@ -39,10 +39,10 @@ public static class FluentValidationExtensions
     {
         builder.AddEndpointFilter(async (context, next) =>
             {
-                var validator = context.HttpContext.RequestServices.GetService<IPermissionsValidator<TModel>>();
+                var validator = context.HttpContext.RequestServices.GetService<IValidator<TModel>>();
                 ArgumentNullException.ThrowIfNull(validator);
                 
-                validator.SetRoleConditions(roleConditions);
+                ((IPermissionsValidator<TModel>)validator).SetRoleConditions(roleConditions);
 
                 var model = context.GetArgument<TModel>(argumentIndex);
                 ArgumentNullException.ThrowIfNull(model);

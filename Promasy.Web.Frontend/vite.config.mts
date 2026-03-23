@@ -1,16 +1,24 @@
 import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from 'path';
+import { fileURLToPath } from 'node:url';
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import viteNetCoreSslPlugin from "./.vite/vite-plugin-netcore-https";
 import svgLoader from "vite-svg-loader";
 import tailwindcss from "@tailwindcss/vite";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // https://vitejs.dev/config/
 export default ({ mode }) => {
-  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-  console.log(`Running in ${process.env.NODE_ENV} mode`);
-  const isDevelopment = process.env.NODE_ENV === "development";
+  console.log(`Running in ${mode} mode`);
+  const env = loadEnv(mode, __dirname, "");
+  const isDevelopment = mode === "development";
+  const apiUrl = env.VITE_PROMASY_API_URL;
+  if (!apiUrl) {
+    throw new Error(`VITE_PROMASY_API_URL is not defined in environment variables or .env file (mode: ${mode}).`);
+  }
   return defineConfig({
     base: "./",
     resolve: {
@@ -24,7 +32,7 @@ export default ({ mode }) => {
       proxy: {
         "/g": "https://google.com",
         "/api": {
-          target: process.env.VITE_PROMASY_API_URL,
+          target: apiUrl,
           changeOrigin: true,
           secure: false,
           configure: (proxy, _options) => {

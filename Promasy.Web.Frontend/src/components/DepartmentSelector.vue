@@ -78,6 +78,6 @@ function getDefaultItem(): SelectItem<number> {
 
 <i18n locale="uk">
 {
-  "all": "-??? ???????-"
+  "all": "-всі відділи-"
 }
 </i18n>

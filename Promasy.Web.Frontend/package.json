@@ -15,27 +15,27 @@
     "pinia": "^3.0.4",
     "@primeuix/themes": "^2.0.3",
     "primeicons": "^7.0.0",
-    "primevue": "^4.5.4",
+    "primevue": "^4.5.5",
     "tailwindcss-primeui": "^0.6.1",
     "tinycolor2": "^1.6.0",
-    "vue": "^3.5.27",
+    "vue": "^3.5.32",
     "vue-debounce": "^5.0.1",
-    "vue-i18n": "^11.2.8",
-    "vue-router": "^4.6.4",
-    "unplugin": "^2.3.11"
+    "vue-i18n": "^11.3.2",
+    "vue-router": "^5.0.4",
+    "unplugin": "^3.0.0"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
-    "@intlify/unplugin-vue-i18n": "^11.0.3",
-    "@tailwindcss/vite": "^4.1.18",
-    "@types/node": "^24.10.9",
+    "@intlify/unplugin-vue-i18n": "^11.0.7",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^24.12.2",
     "@types/tinycolor2": "^1.4.6",
-    "@vitejs/plugin-vue": "^6.0.3",
-    "sass": "^1.97.2",
-    "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vite-svg-loader": "^5.1.0",
-    "vue-tsc": "^3.2.2"
+    "@vitejs/plugin-vue": "^6.0.5",
+    "sass": "^1.99.0",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.7",
+    "vite-svg-loader": "^5.1.1",
+    "vue-tsc": "^3.2.6"
   }
 }

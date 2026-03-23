@@ -10,12 +10,10 @@ export default function viteAspNetCoreSslPlugin(): Plugin {
     name: "vite:netcore-https",
     async config(config) {
       const { cert, key } = await readCertificateAsync();
-      const https = () => ({
-        https: { cert: readFileSync(cert), key: readFileSync(key) },
-      });
+      const https = { cert: readFileSync(cert), key: readFileSync(key) };
       return {
-        server: https(),
-        preview: https(),
+        server: { https },
+        preview: { https },
       };
     },
   };
