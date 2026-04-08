@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -9,7 +8,7 @@ using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
 using Promasy.Modules.Core.Exceptions;
 using Promasy.Modules.Core.Modules;
-using Promasy.Modules.Core.OpenApi;
+using Promasy.Modules.Core.Permissions;
 using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Files.Helpers;
 using Promasy.Modules.Files.Models;
@@ -30,7 +29,6 @@ public class FilesModule : IModule
 
     public WebApplication MapEndpoints(WebApplication app)
     {
-        // todo: improve security
         app.MapGet($"{RoutePrefix}/{{fileName}}", async ([AsParameters] GetFileByNameRequest request,
                 [FromServices] IFileStorage fs, [FromServices] IStringLocalizer<SharedResource> localizer) =>
             {
@@ -43,7 +41,7 @@ public class FilesModule : IModule
 
                 return TypedResults.File(bytes, MediaTypeNameHelper.GetMediaTypeName(request.FileName));
             })
-            .WithApiDescription(Tag, "GetFile", "Get file by name")
+            .WithAuthorization(app, Tag, "Get file by name", PermissionAction.Get)
             .WithValidator<GetFileByNameRequest>()
             .Produces<FileResult>()
             .Produces(StatusCodes.Status404NotFound);

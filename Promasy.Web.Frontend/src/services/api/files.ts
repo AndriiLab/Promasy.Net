@@ -1,5 +1,8 @@
-﻿export default {
+﻿import { useSessionStore } from "@/store/session";
+
+export default {
   buildGetFileUrl(fileKey: string){
-    return `/api/files/${fileKey}`;
+    const { user } = useSessionStore();
+    return `/api/files/${fileKey}?token=${user?.token}`;
   }
 }

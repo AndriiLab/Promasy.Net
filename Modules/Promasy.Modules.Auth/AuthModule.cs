@@ -54,6 +54,19 @@ public class AuthModule : IModule
                     ValidateAudience = false,
                     ValidateLifetime = true,
                 };
+                o.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/api/files"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
         
         builder.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
