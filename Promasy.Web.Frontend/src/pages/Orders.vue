@@ -157,7 +157,7 @@
                             }}/{{ getRoleAsText(RoleEnum.DeputyDirector) }}</label>
                         <div class="col">
                             <Select id="organizationHead"
-                                      class="w-6"
+                                      class="w-full"
                                       v-model="exportPdfModel.organizationHead"
                                       :options="exportPdfModel.organizationHeads"
                                       v-on:before-show="getEmployeesListAsync([RoleEnum.Director, RoleEnum.DeputyDirector], (r) => exportPdfModel.organizationHeads = r)"
@@ -171,7 +171,7 @@
                             }}</label>
                         <div class="col">
                             <Select id="chiefAccountant"
-                                      class="w-6"
+                                      class="w-full"
                                       v-model="exportPdfModel.chiefAccountant"
                                       :options="exportPdfModel.chiefAccountants"
                                       v-on:before-show="getEmployeesListAsync([RoleEnum.ChiefAccountant], (r) => exportPdfModel.chiefAccountants = r)"
@@ -185,7 +185,7 @@
                             }}</label>
                         <div class="col">
                             <Select id="chiefEconomist"
-                                      class="w-6"
+                                      class="w-full"
                                       v-model="exportPdfModel.chiefEconomist"
                                       :options="exportPdfModel.chiefEconomists"
                                       v-on:before-show="getEmployeesListAsync([RoleEnum.ChiefEconomist], (r) => exportPdfModel.chiefEconomists = r)"
@@ -199,7 +199,7 @@
                             }}</label>
                         <div class="col">
                             <Select id="secretaryOfTenderCommittee"
-                                      class="w-6"
+                                      class="w-full"
                                       v-model="exportPdfModel.secretaryOfTenderCommittee"
                                       :options="exportPdfModel.secretaryOfTenderCommittees"
                                       v-on:before-show="getEmployeesListAsync([RoleEnum.SecretaryOfTenderCommittee], (r) => exportPdfModel.secretaryOfTenderCommittees = r)"

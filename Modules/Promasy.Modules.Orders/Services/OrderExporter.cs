@@ -51,7 +51,7 @@ internal class OrderExporter : IOrderExporter
         }
         
         var roles = group.Employees.Select(e => (e.EmployeeId, e.Role))
-            .Concat(new [] { (group.EditorId, RoleName.User) });
+            .Concat([(group.EditorId, RoleName.User)]);
         
         var employees = await _employeesRepository.GetByIdsAndRolesAsync(roles);
         var orders = await _ordersRepository.GetByIdsAsync(group.OrderIds);
@@ -74,14 +74,14 @@ internal class OrderExporter : IOrderExporter
         if (headEmployee is null)
         {
             throw new ServiceException(string.Format(_localizer["Employee with required Role {0} is missing"],
-                $"{_roleLocalizer[RoleName.Director.ToString()]}/{_roleLocalizer[RoleName.DeputyDirector.ToString()]}"));
+                $"{_roleLocalizer[nameof(RoleName.Director)]}/{_roleLocalizer[nameof(RoleName.DeputyDirector)]}"));
         }
         
         var customer = employees.FirstOrDefault(e => e.Role is RoleName.User);
         if (customer is null)
         {
             throw new ServiceException(string.Format(_localizer["Employee with required Role {0} is missing"],
-                _roleLocalizer[RoleName.User.ToString()]));
+                _roleLocalizer[nameof(RoleName.User)]));
         }
         
         var document = Document.Create(container =>
@@ -264,15 +264,15 @@ internal class OrderExporter : IOrderExporter
                         DrawTotalsCell(table, _localizer["Total by department"],
                             departmentGroup.Sum(o => o.OnePrice * o.Amount));
                         
-                        DrawSignatureCell(table, _roleLocalizer[RoleName.HeadOfDepartment.ToString()], employees.FirstOrDefault(e => e.DepartmentId == departmentGroup.Key.Id && e.Role == RoleName.HeadOfDepartment)?.Name, 5);
-                        DrawSignatureCell(table, _roleLocalizer[RoleName.PersonallyLiableEmployee.ToString()], employees.FirstOrDefault(e => e.DepartmentId == departmentGroup.Key.Id && e.Role == RoleName.PersonallyLiableEmployee)?.Name, paddingBottom: 2);
+                        DrawSignatureCell(table, _roleLocalizer[nameof(RoleName.HeadOfDepartment)], employees.FirstOrDefault(e => e.DepartmentId == departmentGroup.Key.Id && e.Role == RoleName.HeadOfDepartment)?.Name, 5);
+                        DrawSignatureCell(table, _roleLocalizer[nameof(RoleName.PersonallyLiableEmployee)], employees.FirstOrDefault(e => e.DepartmentId == departmentGroup.Key.Id && e.Role == RoleName.PersonallyLiableEmployee)?.Name, paddingBottom: 2);
                     }
                     
                     DrawTotalsCell(table, _localizer["Total"], orders.Sum(o => o.OnePrice * o.Amount));
 
-                    DrawSignatureCell(table, _roleLocalizer[RoleName.ChiefAccountant.ToString()], employees.FirstOrDefault(e => e.Role == RoleName.ChiefAccountant)?.Name, 5);
-                    DrawSignatureCell(table, _roleLocalizer[RoleName.ChiefEconomist.ToString()], employees.FirstOrDefault(e => e.Role == RoleName.ChiefEconomist)?.Name);
-                    DrawSignatureCell(table, _roleLocalizer[RoleName.SecretaryOfTenderCommittee.ToString()], employees.FirstOrDefault(e => e.Role == RoleName.SecretaryOfTenderCommittee)?.Name, paddingBottom: 2);
+                    DrawSignatureCell(table, _roleLocalizer[nameof(RoleName.ChiefAccountant)], employees.FirstOrDefault(e => e.Role == RoleName.ChiefAccountant)?.Name, 5);
+                    DrawSignatureCell(table, _roleLocalizer[nameof(RoleName.ChiefEconomist)], employees.FirstOrDefault(e => e.Role == RoleName.ChiefEconomist)?.Name);
+                    DrawSignatureCell(table, _roleLocalizer[nameof(RoleName.SecretaryOfTenderCommittee)], employees.FirstOrDefault(e => e.Role == RoleName.SecretaryOfTenderCommittee)?.Name, paddingBottom: 2);
                 }
             });
     }

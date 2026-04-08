@@ -12,10 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="QuestPDF" Version="2026.2.4" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Update="Resources\Services\OrderExporter.uk.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>OrderExporterResource.uk.Designer.cs</LastGenOutput>
