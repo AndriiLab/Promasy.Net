@@ -14,9 +14,9 @@ public record UpdateSupplierRequest(int Id, string Name, string? Comment, string
     public int GetId() => Id;
 }
 
-internal class UpdateManufacturerRequestValidator : AbstractPermissionsValidator<UpdateSupplierRequest>
+internal class UpdateSupplierRequestValidator : AbstractPermissionsValidator<UpdateSupplierRequest>
 {
-    public UpdateManufacturerRequestValidator(ISupplierRules rules, IStringLocalizer<SharedResource> localizer, IUserContext userContext) : base(rules, userContext, localizer)
+    public UpdateSupplierRequestValidator(ISupplierRules rules, IStringLocalizer<SharedResource> localizer, IUserContext userContext) : base(rules, userContext, localizer)
     {
         RuleFor(r => r.Name)
             .NotEmpty()

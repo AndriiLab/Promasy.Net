@@ -339,7 +339,7 @@ async function mergeAsync() {
   "name": "Name",
   "phone": "Phone",
   "comment": "Comment",
-  "suppliersDetails": "Manufacturer Details"
+  "suppliersDetails": "Supplier Details"
 }
 </i18n>
 

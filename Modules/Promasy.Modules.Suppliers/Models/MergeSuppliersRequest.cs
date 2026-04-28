@@ -7,9 +7,9 @@ namespace Promasy.Modules.Suppliers.Models;
 
 public record MergeSuppliersRequest(int TargetId, int[] SourceIds);
 
-internal class MergeManufacturersRequestValidator : AbstractValidator<MergeSuppliersRequest>
+internal class MergeSuppliersRequestValidator : AbstractValidator<MergeSuppliersRequest>
 {
-    public MergeManufacturersRequestValidator(ISupplierRules rules, IStringLocalizer<SharedResource> localizer)
+    public MergeSuppliersRequestValidator(ISupplierRules rules, IStringLocalizer<SharedResource> localizer)
     {
         RuleFor(_ => _.SourceIds)
             .NotEmpty();
