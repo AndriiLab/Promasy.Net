@@ -5,6 +5,8 @@ using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Employees;
 using Promasy.Domain.Organizations;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 using Promasy.Modules.Employees.Dtos;
 using Promasy.Modules.Employees.Interfaces;
 using Riok.Mapperly.Abstractions;
@@ -13,7 +15,10 @@ namespace Promasy.Modules.Employees.Models;
 
 public record CreateEmployeeRequest(string FirstName, string? MiddleName, string LastName,
     string Email, string PrimaryPhone, string? ReservePhone, string UserName, string Password,
-    int SubDepartmentId, RoleName[] Roles);
+    int SubDepartmentId, RoleName[] Roles) : IRequestWithPermissionValidation
+{
+    public int GetId() => throw new NotSupportedException();
+}
 
 [Mapper]
 internal static partial class CreateEmployeeRequestMapper
@@ -22,10 +27,10 @@ internal static partial class CreateEmployeeRequestMapper
     public static partial CreateEmployeeDto MapFromSource(CreateEmployeeRequest src);
 }
 
-internal class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
+internal class CreateEmployeeRequestValidator : AbstractPermissionsValidator<CreateEmployeeRequest>
 {
     public CreateEmployeeRequestValidator(IEmployeeRules employeeRules, IRules<SubDepartment> subDepartmentRules,
-        IStringLocalizer<SharedResource> localizer)
+        IUserContext userContext, IStringLocalizer<SharedResource> localizer) : base(employeeRules, userContext, localizer)
     {
         RuleFor(r => r.FirstName)
             .NotEmpty()

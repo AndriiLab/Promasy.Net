@@ -5,7 +5,7 @@
 
         <Toolbar class="mb-4">
           <template v-slot:start>
-            <div class="my-2">
+            <div v-if="canAccess(PermissionAction.Create, {})" class="my-2">
               <router-link :to="{ name: 'EmployeeCreate' }">
                 <Button :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"/>
               </router-link>
@@ -88,11 +88,11 @@
           </Column>
           <Column headerStyle="min-width:10rem;">
             <template #body="slotProps">
-              <router-link icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
+              <router-link v-if="canAccess(PermissionAction.Update, { userId: slotProps.data.id })" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
                            :to="{ name: 'EmployeeView', params: {employeeId: slotProps.data.id}}">
                 <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"/>
               </router-link>
-              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning"
+              <Button v-if="canAccess(PermissionAction.Delete, { userId: slotProps.data.id })" v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -121,6 +121,9 @@
 </template>
 
 <script lang="ts" setup>
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionTag} from "@/constants/PermissionTag";
+import permissionsService, {PermissionParams} from "@/services/permissions-service";
 import { useSessionStore } from "@/store/session";
 import processError from "@/utils/error-response-utils";
 import { SelectItem } from "@/utils/fetch-utils";
@@ -140,6 +143,10 @@ import UserChip from "@/components/UserChip.vue";
 
 const { d, t } = useI18n();
 const { user } = useSessionStore();
+
+function canAccess(action: PermissionAction, params: PermissionParams) {
+  return permissionsService.canAccess(PermissionTag.Employee, action, params);
+}
 const toast = useToast();
 const Router = useRouter();
 const route = useRoute();

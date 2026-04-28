@@ -99,7 +99,7 @@
             <UserChip :user-id="model.editorId" :user-name="model.editor"/>
             {{ d(new Date(model.editedDate), 'long') }}
           </div>
-          <Button :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
+          <Button v-if="canAccess(isCreateMode ? PermissionAction.Create : PermissionAction.Update)" :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
         </div>
       </div>
     </div>
@@ -114,6 +114,9 @@ import useVuelidate from "@vuelidate/core";
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionTag} from "@/constants/PermissionTag";
+import permissionsService from "@/services/permissions-service";
 import { useSessionStore } from "@/store/session";
 import EmployeesApi, { Employee } from "@/services/api/employees";
 import ErrorWrap from "@/components/ErrorWrap.vue";
@@ -127,6 +130,10 @@ const { t, d } = useI18n({ useScope: "local" });
 const route = useRoute();
 const Router = useRouter();
 const { user } = useSessionStore();
+
+function canAccess(action: PermissionAction) {
+  return permissionsService.canAccess(PermissionTag.Employee, action, isCreateMode.value ? {} : { userId: model.value.id });
+}
 
 const roles = ref(getRolesAsSelectItems())
 const externalErrors = ref({} as Object<string[]>);

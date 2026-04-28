@@ -61,8 +61,7 @@ public class EmployeesModule : IModule
 
                 return TypedResults.Json(employee, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateEmployeeRequest>()
-            .WithAuthorization(app, Tag, "Create Employee", PermissionAction.Create, RoleName.Administrator);
+            .WithAuthorizationAndValidation<CreateEmployeeRequest>(app, Tag, "Create Employee", PermissionAction.Create, (RoleName.Administrator, PermissionCondition.Allowed));
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateEmployeeRequest request, [FromRoute] int id, [FromServices] IEmployeesRepository repository,
@@ -86,12 +85,12 @@ public class EmployeesModule : IModule
                     })).ToArray());
 
 
-        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([FromRoute] int id, [FromServices] IEmployeesRepository repository) =>
+        app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteEmployeeRequest request, [FromServices] IEmployeesRepository repository) =>
             {
-                await repository.DeleteByIdAsync(id);
+                await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorization(app, Tag, "Delete Employee by Id", PermissionAction.Delete, RoleName.Administrator)
+            .WithAuthorizationAndValidation<DeleteEmployeeRequest>(app, Tag, "Delete Employee by Id", PermissionAction.Delete, (RoleName.Administrator, PermissionCondition.Allowed))
             .Produces<ProblemDetails>(StatusCodes.Status409Conflict);
                 
         app.MapPost($"{RoutePrefix}/{{id:int}}/change-password",
