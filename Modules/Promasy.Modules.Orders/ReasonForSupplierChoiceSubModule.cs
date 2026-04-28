@@ -64,9 +64,7 @@ public class ReasonForSupplierChoiceSubModule : SubModule
 
                 return TypedResults.Json(rsc, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateReasonForSupplierChoiceRequest>()
-            .WithApiDescription(Tag, "CreateReasonsForSupplierChoice", "Create Reason for Supplier Choice")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<CreateReasonForSupplierChoiceRequest>(app, Tag, "Create Reason for Supplier Choice", PermissionAction.Create);
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateReasonForSupplierChoiceRequest request, [FromRoute] int id, [FromServices] IReasonForSupplierChoiceRepository repository,
