@@ -5,7 +5,7 @@
 
         <Toolbar class="mb-4">
           <template v-slot:start>
-            <div class="my-2">
+            <div v-if="canAccess(PermissionAction.Create, { organizationId })" class="my-2">
               <Button :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"
                       @click="create"/>
             </div>
@@ -56,8 +56,8 @@
               <router-link :to="{ name: 'DepartmentEmployees', params: { departmentId: slotProps.data.id } }">
                 <Button v-tooltip.left="t('employee', 2)" icon="pi pi-users" class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
-              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success" @click="edit(slotProps.data)"/>
-              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning" @click="confirmDelete(slotProps.data)"/>
+              <Button v-if="canAccess(PermissionAction.Update, { departmentId: slotProps.data.id, organizationId: slotProps.data.organizationId })" v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success" @click="edit(slotProps.data)"/>
+              <Button v-if="canAccess(PermissionAction.Delete, { departmentId: slotProps.data.id, organizationId: slotProps.data.organizationId })" v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning" @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
         </DataTable>
@@ -78,7 +78,7 @@
 
           <template #footer>
             <Button :label="t('cancel')" icon="pi pi-times" class="p-button-text" @click="closeItemDialog"/>
-            <Button :label="t('save')" icon="pi pi-check" class="p-button-text" @click="saveAsync"/>
+            <Button v-if="canAccess(item.id ? PermissionAction.Update : PermissionAction.Create, item.id ? { departmentId: item.id, organizationId: item.organizationId } : { organizationId })" :label="t('save')" icon="pi pi-check" class="p-button-text" @click="saveAsync"/>
           </template>
         </Dialog>
 
@@ -94,7 +94,7 @@
           </div>
           <template #footer>
             <Button :label="t('no')" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
-            <Button :label="t('yes')" icon="pi pi-check" class="p-button-text" @click="deleteItemAsync"/>
+            <Button v-if="canAccess(PermissionAction.Delete, { departmentId: item.id, organizationId: item.organizationId })" :label="t('yes')" icon="pi pi-check" class="p-button-text" @click="deleteItemAsync"/>
           </template>
         </Dialog>
 
@@ -116,10 +116,17 @@ import ErrorWrap from "../components/ErrorWrap.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, maxLength } from "@/i18n/validators";
 import UserChip from "@/components/UserChip.vue";
+import { PermissionAction } from "@/constants/PermissionActionEnum";
+import { PermissionTag } from "@/constants/PermissionTag";
+import permissionsService, { PermissionParams } from "@/services/permissions-service";
 
 const { d, t } = useI18n();
 const { user } = useSessionStore();
 const organizationId = user!.organizationId;
+
+function canAccess(action: PermissionAction, params: PermissionParams) {
+  return permissionsService.canAccess(PermissionTag.Department, action, params);
+}
 const toast = useToast();
 const items = ref([] as Department[]);
 const externalErrors = ref({} as Object<string[]>);
