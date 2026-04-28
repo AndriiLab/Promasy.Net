@@ -3,18 +3,22 @@ using Microsoft.Extensions.Localization;
 using Promasy.Application.Interfaces;
 using Promasy.Core.Resources;
 using Promasy.Domain.Organizations;
-using Promasy.Modules.Core.Modules;
 using Promasy.Modules.Finances.Interfaces;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 
 namespace Promasy.Modules.Finances.Models;
 
 public record UpdateFinanceSubDepartmentRequest(int Id, int FinanceSourceId, int SubDepartmentId,
-    decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices);
+    decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices) : IRequestWithPermissionValidation
+{
+    public int GetId() => Id;
+}
     
-internal class UpdateFinanceSubDepartmentRequestValidator : AbstractValidator<UpdateFinanceSubDepartmentRequest>
+internal class UpdateFinanceSubDepartmentRequestValidator : AbstractPermissionsValidator<UpdateFinanceSubDepartmentRequest>
 {
     public UpdateFinanceSubDepartmentRequestValidator(IFinanceSubDepartmentRules rules,
-        IFinanceSourceRules financeSourceRules, IRules<SubDepartment> subDepartmentRules, IStringLocalizer<SharedResource> localizer)
+        IFinanceSourceRules financeSourceRules, IRules<SubDepartment> subDepartmentRules, IUserContext userContext, IStringLocalizer<SharedResource> localizer) : base(rules, userContext, localizer)
     {
         RuleFor(r => r.Id)
             .MustAsync(rules.IsExistsAsync)

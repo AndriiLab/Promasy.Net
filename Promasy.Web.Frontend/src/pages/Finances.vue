@@ -6,7 +6,7 @@
         <Toolbar class="mb-4">
           <template v-slot:start>
             <div class="my-2">
-              <Button :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"
+              <Button v-if="canAccess(PermissionAction.Create, {})" :label="t('createDialog.addNew')" icon="pi pi-plus"  severity="success" class="mr-2"
                       @click="create"/>
             </div>
           </template>
@@ -118,9 +118,9 @@
                 <Button v-tooltip.left="t('order', 2)" icon="pi pi-shopping-cart"
                         class="p-button-rounded p-button-primary mr-2"/>
               </router-link>
-              <Button v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
+              <Button v-if="canAccess(PermissionAction.Update, { userId: slotProps.data.editorId })" v-tooltip.left="t('edit')" icon="pi pi-pencil" class="p-button-rounded  mr-2" severity="success"
                       @click="edit(slotProps.data)"/>
-              <Button v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning"
+              <Button v-if="canAccess(PermissionAction.Delete, { userId: slotProps.data.editorId })" v-tooltip.left="t('delete')" icon="pi pi-trash" class="p-button-rounded  mt-2" severity="warning"
                       @click="confirmDelete(slotProps.data)"/>
             </template>
           </Column>
@@ -204,6 +204,9 @@
 </template>
 
 <script lang="ts" setup>
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionTag} from "@/constants/PermissionTag";
+import permissionsService, {PermissionParams} from "@/services/permissions-service";
 import { useSessionStore } from "@/store/session";
 import { formatAsDate } from "@/utils/date-utils";
 import processError from "@/utils/error-response-utils";
@@ -224,6 +227,11 @@ import currency from "@/utils/currency-utils";
 const { t, d } = useI18n();
 const sessionStore = useSessionStore();
 const toast = useToast();
+
+function canAccess(action: PermissionAction, params: PermissionParams) {
+  return permissionsService.canAccess(PermissionTag.Finance, action, params);
+}
+
 const items = ref([] as FinanceSource[]);
 const fundTypes = ref([] as SelectItem<number>[]);
 const externalErrors = ref({} as Object<string[]>);

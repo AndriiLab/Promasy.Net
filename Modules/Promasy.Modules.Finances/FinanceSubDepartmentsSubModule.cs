@@ -93,11 +93,10 @@ internal class FinanceSubDepartmentsSubModule : SubModule
 
                      return TypedResults.Json(fs, statusCode: StatusCodes.Status201Created);
                  })
-             .WithValidator<CreateFinanceSubDepartmentRequest>()
-             .WithAuthorization(app, Tag,"Create Finance sub-department", PermissionAction.Create,
-                 RoleName.Administrator,
-                 RoleName.ChiefAccountant,
-                 RoleName.ChiefEconomist);
+            .WithAuthorizationAndValidation<CreateFinanceSubDepartmentRequest>(app, Tag,"Create Finance sub-department", PermissionAction.Create,
+                (RoleName.Administrator, PermissionCondition.Allowed),
+                (RoleName.ChiefAccountant, PermissionCondition.Allowed),
+                (RoleName.ChiefEconomist, PermissionCondition.Allowed));
 
         app.MapPut($"{RoutePrefix}/{{subDepartmentId:int}}",
                 async ([FromBody] UpdateFinanceSubDepartmentRequest request, [FromRoute] int financeId, [FromRoute] int subDepartmentId, [FromServices] IFinanceSubDepartmentsRepository repository,
@@ -113,21 +112,20 @@ internal class FinanceSubDepartmentsSubModule : SubModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithValidator<UpdateFinanceSubDepartmentRequest>()
-            .WithAuthorization(app, Tag, "Update Finance sub-department", PermissionAction.Update,
-                RoleName.Administrator,
-                RoleName.ChiefAccountant,
-                RoleName.ChiefEconomist);
+            .WithAuthorizationAndValidation<UpdateFinanceSubDepartmentRequest>(app, Tag, "Update Finance sub-department", PermissionAction.Update,
+                (RoleName.Administrator, PermissionCondition.Allowed),
+                (RoleName.ChiefAccountant, PermissionCondition.Allowed),
+                (RoleName.ChiefEconomist, PermissionCondition.Allowed));
 
         app.MapDelete($"{RoutePrefix}/{{subDepartmentId:int}}", async ([AsParameters] DeleteFinanceSubDepartmentRequest request, [FromServices] IFinanceSubDepartmentsRepository repository) =>
             {
                 await repository.DeleteByFinanceSubDepartmentIdsAsync(request.FinanceId, request.SubDepartmentId);
                 return TypedResults.NoContent();
             })
-            .WithAuthorization(app, Tag, "Delete Finance sub-department", PermissionAction.Delete,
-                RoleName.Administrator,
-                RoleName.ChiefAccountant,
-                RoleName.ChiefEconomist);
+            .WithAuthorizationAndValidation<DeleteFinanceSubDepartmentRequest>(app, Tag, "Delete Finance sub-department", PermissionAction.Delete,
+                (RoleName.Administrator, PermissionCondition.Allowed),
+                (RoleName.ChiefAccountant, PermissionCondition.Allowed),
+                (RoleName.ChiefEconomist, PermissionCondition.Allowed));
         
         return app;
     }

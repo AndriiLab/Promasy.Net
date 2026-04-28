@@ -81,8 +81,7 @@ public class FinancesModule : IModule
 
                 return TypedResults.Json(fs, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateFinanceSourceRequest>()
-            .WithAuthorization(app, Tag, "Create Finance source", PermissionAction.Create, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
+            .WithAuthorizationAndValidation<CreateFinanceSourceRequest>(app, Tag, "Create Finance source", PermissionAction.Create, (RoleName.Administrator, PermissionCondition.Allowed), (RoleName.ChiefAccountant, PermissionCondition.Allowed), (RoleName.ChiefEconomist, PermissionCondition.Allowed));
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateFinanceSourceRequest request, [FromRoute] int id, [FromServices] IFinanceSourcesRepository repository,
@@ -99,8 +98,7 @@ public class FinancesModule : IModule
 
                     return TypedResults.Accepted(string.Empty);
                 })
-            .WithValidator<UpdateFinanceSourceRequest>()
-            .WithAuthorization(app, Tag, "Update Finance source", PermissionAction.Update, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
+            .WithAuthorizationAndValidation<UpdateFinanceSourceRequest>(app, Tag, "Update Finance source", PermissionAction.Update, (RoleName.Administrator, PermissionCondition.Allowed), (RoleName.ChiefAccountant, PermissionCondition.Allowed), (RoleName.ChiefEconomist, PermissionCondition.Allowed));
 
 
         app.MapDelete($"{RoutePrefix}/{{id:int}}", async ([AsParameters] DeleteFinanceSourceRequest request, [FromServices] IFinanceSourcesRepository repository) =>
@@ -108,7 +106,7 @@ public class FinancesModule : IModule
                 await repository.DeleteByIdAsync(request.Id);
                 return TypedResults.NoContent();
             })
-            .WithAuthorization(app, Tag, "Delete Finance source by Id", PermissionAction.Delete, RoleName.Administrator, RoleName.ChiefAccountant, RoleName.ChiefEconomist);
+            .WithAuthorizationAndValidation<DeleteFinanceSourceRequest>(app, Tag, "Delete Finance source by Id", PermissionAction.Delete, (RoleName.Administrator, PermissionCondition.Allowed), (RoleName.ChiefAccountant, PermissionCondition.Allowed), (RoleName.ChiefEconomist, PermissionCondition.Allowed));
 
         _fsSubModule.MapEndpoints(app);
         

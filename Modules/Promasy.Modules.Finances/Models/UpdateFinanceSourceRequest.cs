@@ -4,16 +4,22 @@ using Promasy.Core.Persistence;
 using Promasy.Core.Resources;
 using Promasy.Domain.Finances;
 using Promasy.Modules.Finances.Interfaces;
+using Promasy.Application.Interfaces;
+using Promasy.Modules.Core.Permissions;
+using Promasy.Modules.Core.Validation;
 
 namespace Promasy.Modules.Finances.Models;
 
 public record UpdateFinanceSourceRequest(int Id, string Number, string Name, FinanceFundType FundType,
     DateOnly Start, DateOnly End, string Kpkvk,
-    decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices);
-    
-internal class UpdateFinanceSourceRequestValidator : AbstractValidator<UpdateFinanceSourceRequest>
+    decimal TotalEquipment, decimal TotalMaterials, decimal TotalServices) : IRequestWithPermissionValidation
 {
-    public UpdateFinanceSourceRequestValidator(IFinanceSourceRules rules, IStringLocalizer<SharedResource> localizer)
+    public int GetId() => Id;
+}
+    
+internal class UpdateFinanceSourceRequestValidator : AbstractPermissionsValidator<UpdateFinanceSourceRequest>
+{
+    public UpdateFinanceSourceRequestValidator(IFinanceSourceRules rules, IUserContext userContext, IStringLocalizer<SharedResource> localizer) : base(rules, userContext, localizer)
     {
         RuleFor(r => r.Number)
             .NotEmpty()

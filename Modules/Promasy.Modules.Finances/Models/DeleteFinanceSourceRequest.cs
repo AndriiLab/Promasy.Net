@@ -1,3 +1,8 @@
-﻿namespace Promasy.Modules.Finances.Models;
+using Promasy.Modules.Core.Permissions;
 
-public record DeleteFinanceSourceRequest(int Id);
+namespace Promasy.Modules.Finances.Models;
+
+public record DeleteFinanceSourceRequest(int Id) : IRequestWithPermissionValidation
+{
+    public int GetId() => Id;
+}

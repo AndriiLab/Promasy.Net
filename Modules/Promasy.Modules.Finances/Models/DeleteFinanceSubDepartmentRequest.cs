@@ -1,3 +1,8 @@
-﻿namespace Promasy.Modules.Finances.Models;
+using Promasy.Modules.Core.Permissions;
 
-public record DeleteFinanceSubDepartmentRequest(int FinanceId, int SubDepartmentId);
+namespace Promasy.Modules.Finances.Models;
+
+public record DeleteFinanceSubDepartmentRequest(int FinanceId, int SubDepartmentId) : IRequestWithPermissionValidation
+{
+    public int GetId() => throw new NotSupportedException();
+}
