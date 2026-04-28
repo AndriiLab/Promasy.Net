@@ -21,10 +21,19 @@ internal class PermissionsService : IPermissionsService
     
     public IReadOnlyCollection<EndpointPermission> GetPermissionForRoles(IReadOnlyCollection<RoleName> roleNames)
     {
-        return _dictionary.Select(kv =>
-                new EndpointPermission(kv.Key.Tag, kv.Key.Action, kv.Value.Where(kv2 => roleNames.Contains(kv2.Key)).Max(kv2 => kv2.Value)))
-            .Where(t => t.Condition > PermissionCondition.Forbidden)
-            .ToImmutableArray();
+        return [
+            .._dictionary.Select(kv =>
+                {
+                    var conditions = kv.Value
+                        .Where(kv2 => roleNames.Contains(kv2.Key))
+                        .Select(kv2 => kv2.Value)
+                        .ToArray();
+
+                    var condition = conditions.Length > 0 ? conditions.Min() : PermissionCondition.Forbidden;
+                    return new EndpointPermission(kv.Key.Tag, kv.Key.Action, condition);
+                })
+                .Where(t => t.Condition > PermissionCondition.Forbidden)
+        ];
 
     }
 }

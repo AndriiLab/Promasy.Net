@@ -59,9 +59,7 @@ public class ManufacturersModule : IModule
 
                 return TypedResults.Json(manufacturer, statusCode: StatusCodes.Status201Created);
             })
-            .WithValidator<CreateManufacturerRequest>()
-            .WithApiDescription(Tag, "CreateManufacturer", "Create Manufacturer")
-            .RequireAuthorization();
+            .WithAuthorizationAndValidation<CreateManufacturerRequest>(app, Tag, "Create Manufacturer", PermissionAction.Create);
 
         app.MapPut($"{RoutePrefix}/{{id:int}}",
                 async ([FromBody] UpdateManufacturerRequest request, [FromRoute] int id, [FromServices] IManufacturersRepository repository,
