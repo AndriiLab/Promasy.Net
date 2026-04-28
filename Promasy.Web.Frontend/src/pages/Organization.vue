@@ -97,7 +97,7 @@
             <UserChip :user-id="model.editorId" :user-name="model.editor"/>
             {{ d(new Date(model.editedDate), 'long') }}
           </div>
-          <Button :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
+          <Button v-if="canAccess(PermissionAction.Update, { organizationId: model.id })" :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
         </div>
       </div>
     </div>
@@ -105,6 +105,9 @@
 </template>
 
 <script lang="ts" setup>
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionTag} from "@/constants/PermissionTag";
+import permissionsService, {PermissionParams} from "@/services/permissions-service";
 import ErrorWrap from "@/components/ErrorWrap.vue";
 import OrganizationApi, { Organization, UpdateOrganizationRequest } from "@/services/api/organizations";
 import processError from "@/utils/error-response-utils";
@@ -147,6 +150,10 @@ const rules = computed(() => {
   };
 });
 const v$ = useVuelidate(rules, model, { $lazy: true });
+
+function canAccess(action: PermissionAction, params: PermissionParams) {
+  return permissionsService.canAccess(PermissionTag.Organization, action, params);
+}
 
 onMounted(async () => {
   loading.value = true;

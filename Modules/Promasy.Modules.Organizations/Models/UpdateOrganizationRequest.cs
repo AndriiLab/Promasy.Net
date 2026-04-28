@@ -84,7 +84,7 @@ internal class UpdateOrganizationRequestValidator : AbstractPermissionsValidator
             .MaximumLength(PersistenceConstant.FieldMini);
         
         RuleFor(r => r.StreetType)
-            .Must(t => Enum.GetValues<CityType>().Any(e => (int) e == t))
+            .Must(t => Enum.GetValues<StreetType>().Any(e => (int) e == t))
             .WithMessage(localizer["Street type does not exist"]);
         
         RuleFor(r => r.Street)
