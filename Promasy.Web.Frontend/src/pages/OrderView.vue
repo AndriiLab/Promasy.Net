@@ -62,7 +62,7 @@
                         v-on:before-show="getManufacturersAsync"
                         :filter="true"
                         optionLabel="text" optionValue="value" :loading="loading"/>
-              <router-link :to="{ name: 'CreateManufacturer'}" target="_blank">
+              <router-link v-if="canAccess(PermissionTag.Manufacturer, PermissionAction.Create)" :to="{ name: 'CreateManufacturer'}" target="_blank">
                 <Button icon="pi pi-plus" class="p-button-outlined" severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
@@ -122,7 +122,7 @@
                         v-on:before-show="getSuppliersAsync"
                         :filter="true"
                         optionLabel="text" optionValue="value" :loading="loading"/>
-              <router-link :to="{ name: 'CreateSupplier'}" target="_blank">
+              <router-link v-if="canAccess(PermissionTag.Supplier, PermissionAction.Create)" :to="{ name: 'CreateSupplier'}" target="_blank">
                 <Button icon="pi pi-plus" class="p-button-outlined " severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
@@ -139,7 +139,7 @@
                         :disabled="!isSupplierSelected"
                         :placeholder="isSupplierSelected ? '' : t('selectSupplierFirst')"
                         optionLabel="text" optionValue="value" :loading="loading"/>
-              <router-link :to="{ name: 'CreateReasonForSupplierChoice'}" target="_blank">
+              <router-link v-if="canAccess(PermissionTag.ReasonForSupplierChoice, PermissionAction.Create)" :to="{ name: 'CreateReasonForSupplierChoice'}" target="_blank">
                 <Button icon="pi pi-plus" class="p-button-outlined " severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
@@ -175,7 +175,7 @@
                         v-on:before-show="getUnitsAsync"
                         :filter="true"
                         optionLabel="text" optionValue="value" :loading="loading"/>
-              <router-link :to="{ name: 'CreateUnit'}" target="_blank">
+              <router-link v-if="canAccess(PermissionTag.Unit, PermissionAction.Create)" :to="{ name: 'CreateUnit'}" target="_blank">
                 <Button icon="pi pi-plus" class="p-button-outlined " severity="success"
                         v-tooltip.bottom="t('createDialog.addNew')"/>
               </router-link>
@@ -201,7 +201,8 @@
             <label for="kekv" v-tooltip.bottom="t('kekvFull')">{{ t('kekv') }}</label>
             <div class="p-inputgroup">
               <InputText id="kekv" v-model="model.kekv" :disabled="!isKekvEdit"/>
-              <Button icon="pi pi-pencil" class="p-button-outlined " severity="success"
+              <Button v-if="isCreate ? canAccess(PermissionTag.Order, PermissionAction.Create) : canAccess(PermissionTag.Order, PermissionAction.Update, { userId: model.editorId })"
+                      icon="pi pi-pencil" class="p-button-outlined " severity="success"
                       v-on:click="isKekvEdit = !isKekvEdit"/>
             </div>
           </ErrorWrap>
@@ -219,7 +220,8 @@
             <UserChip :user-id="model.editorId" :user-name="model.editor"/>
             {{ d(new Date(model.editedDate), 'long') }}
           </div>
-          <Button :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
+          <Button v-if="isCreate ? canAccess(PermissionTag.Order, PermissionAction.Create) : canAccess(PermissionTag.Order, PermissionAction.Update, { userId: model.editorId })"
+                  :label="t('save')" icon="pi pi-check" class="p-button" @click="saveAsync"/>
         </div>
       </div>
     </div>
@@ -346,12 +348,21 @@ import CpvSelector from "@/components/CpvSelector.vue";
 import CopyFieldInput from "@/components/CopyFieldInput.vue";
 import UserChip from "@/components/UserChip.vue";
 import {getOrderTypesAsSelectItems, OrderTypeEnum} from "@/constants/OrderTypeEnum";
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionTag} from "@/constants/PermissionTag";
+import permissionsService, {PermissionParams} from "@/services/permissions-service";
 
 const { t, d } = useI18n({ useScope: "local" });
 const Router = useRouter();
 const route = useRoute();
 const session = useSessionStore();
 const user = session.user!;
+
+const isCreate = computed(() => route.path.endsWith("new"));
+
+function canAccess(tag: string, action: PermissionAction, params: PermissionParams = {}) {
+  return permissionsService.canAccess(tag, action, params);
+}
 
 const header = ref("");
 const suggestionsPanel = ref();

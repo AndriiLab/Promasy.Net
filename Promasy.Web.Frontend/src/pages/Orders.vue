@@ -6,11 +6,11 @@
                 <Toolbar class="mb-4">
                     <template v-slot:start>
                         <div class="my-2">
-                            <router-link :to="{ name: 'OrderNew' }">
+                            <router-link v-if="canAccess(PermissionTag.Order, PermissionAction.Create)" :to="{ name: 'OrderNew' }">
                                 <Button :label="t('createDialog.addNew')" icon="pi pi-plus"
                                          severity="success" class="mr-2"/>
                             </router-link>
-                            <Button v-if="selectedItems.length" :label="t('print')" icon="pi pi-print"
+                            <Button v-if="selectedItems.length && canAccess(PermissionTag.OrderPdf, PermissionAction.Export)" :label="t('print')" icon="pi pi-print"
                                     class="p-button-primary mr-2" @click="openExportOrdersDialog"/>
                         </div>
                     </template>
@@ -107,12 +107,14 @@
                     </Column>
                     <Column headerStyle="min-width:10rem;">
                         <template #body="slotProps">
-                            <router-link icon="pi pi-pencil" class="p-button-rounded mr-2" severity="success"
+                            <router-link v-if="canAccess(PermissionTag.Order, PermissionAction.Update, { userId: slotProps.data.editorId })"
+                                         icon="pi pi-pencil" class="p-button-rounded mr-2" severity="success"
                                          :to="{ name: 'OrderView', params: { orderId: slotProps.data.id }}">
                                 <Button v-tooltip.left="t('edit')" icon="pi pi-pencil"
                                         class="p-button-rounded mr-2" severity="success"/>
                             </router-link>
-                            <Button v-tooltip.left="t('delete')" icon="pi pi-trash"
+                            <Button v-if="canAccess(PermissionTag.Order, PermissionAction.Delete, { userId: slotProps.data.editorId })"
+                                    v-tooltip.left="t('delete')" icon="pi pi-trash"
                                     class="p-button-rounded mt-2" severity="warning"
                                     @click="confirmDelete(slotProps.data)"/>
                         </template>
@@ -281,12 +283,19 @@ import useVuelidate from "@vuelidate/core";
 import { minLength, required } from "@/i18n/validators";
 import {getOrderTypesAsSelectItems} from "@/constants/OrderTypeEnum";
 import {getOrderStatusesAsSelectItems} from "@/constants/OrderStatusEnum";
+import {PermissionAction} from "@/constants/PermissionActionEnum";
+import {PermissionTag} from "@/constants/PermissionTag";
+import permissionsService, {PermissionParams} from "@/services/permissions-service";
 
 
 const Router = useRouter();
 const route = useRoute();
 const { t, d } = useI18n();
 const sessionStore = useSessionStore();
+
+function canAccess(tag: string, action: PermissionAction, params: PermissionParams = {}) {
+  return permissionsService.canAccess(tag, action, params);
+}
 const roles = ref(getRolesAsSelectItems());
 const toast = useToast();
 const items = ref([] as OrderShort[]);
